@@ -32,8 +32,8 @@
 *.app
 
 #VCV Rack Build specific files and folders
-/build
-/dist
+/build/**
+/dist/**
 /src/backup
 /src/.vscode
 .DS_Store
