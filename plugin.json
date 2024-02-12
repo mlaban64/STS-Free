@@ -7,11 +7,11 @@
   "author": "Marinko Laban",
   "authorEmail": "mlaban@xs4all.nl",
   "authorUrl": "https://mlaban.home.xs4all.nl/",
-  "pluginUrl": "https://github.com/mlaban64/STS-Bundle",
+  "pluginUrl": "https://github.com/mlaban64/STS-Free",
   "manualUrl": "https://mlaban.home.xs4all.nl/music.html",
-  "sourceUrl": "https://github.com/mlaban64/STS-Bundle",
+  "sourceUrl": "https://github.com/mlaban64/STS-Free",
   "donateUrl": "https://www.buymeacoffee.com/mlaban",
-  "changelogUrl": "https://github.com/mlaban64/STS-Bundle/blob/main/ChangeLog.txt",
+  "changelogUrl": "https://github.com/mlaban64/STS-Free/blob/main/ChangeLog.txt",
   "modules": [
     {
       "slug": "Multiplier",
