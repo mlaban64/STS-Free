@@ -92,8 +92,8 @@ struct Triangle_VCO : Module {
 	void InitTriangle_Waves(int num_Harm)
 	{
 
-		static int i, j, mid;
-		static float iter, harmonic, h_factor;
+		static int i, j, mid, sign;
+		static float iter, harmonic, h_factor, max_harmonic;
 
 		// Populate the triangle wave table
 		// Filled with a full triangle cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
@@ -111,17 +111,36 @@ struct Triangle_VCO : Module {
 		{
 			iter = M_2PI * ((float) i / STS_NUM_WAVE_SAMPLES);
 			triangle_bl_wave_lookup_table[i] = 0.0f;
+			sign = 1;
 
 			// Now loop through the odd harmonics until...
 			for (j = 1 ; j <= num_Harmonics * 2; j+=2)
 			{
 				h_factor = (float) j;
-				harmonic = std::sin(h_factor * iter) / (h_factor * h_factor);	
-				triangle_bl_wave_lookup_table[i] = triangle_bl_wave_lookup_table[i] + harmonic;
-			}
+				
+				// Odd harmonic is added, even is subtracted
+				if (sign == 1) 
+					harmonic = std::sin(h_factor * iter) / (h_factor * h_factor);
+				else
+					harmonic = -std::sin(h_factor * iter) / (h_factor * h_factor);
 
-			// Now multiply to make it fit between -5.0V and 5.0V
-			triangle_bl_wave_lookup_table[i] = 2.9f * triangle_bl_wave_lookup_table[i];
+				triangle_bl_wave_lookup_table[i] = triangle_bl_wave_lookup_table[i] + harmonic;
+				sign = sign * -1; // flip the sign
+			}
+		}
+
+		// Now fnd the max harmonic value to correct the output voltage between -5.0 and 5.0 V
+		// Find tha largest harmoic first
+		max_harmonic = 0.0f;
+		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
+		{
+			if (triangle_bl_wave_lookup_table[i] > max_harmonic)
+				max_harmonic = triangle_bl_wave_lookup_table[i];
+		}
+		// Then correct...
+		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
+		{
+			triangle_bl_wave_lookup_table[i] *= (5.0f / max_harmonic);
 		}
 	}
 

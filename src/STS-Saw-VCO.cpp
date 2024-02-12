@@ -108,7 +108,7 @@ struct Saw_VCO : Module {
 	void InitSaw_Waves (int num_Harm)
 	{
 		static int i, j;
-		static float iter, harmonic, h_factor;
+		static float iter, harmonic, h_factor, max_harmonic;
 
 		// Populate the band-unlimited sawtooth wave tables
 		// Filled with a full sawtooth cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
@@ -140,9 +140,20 @@ struct Saw_VCO : Module {
 				
 				saw_bl_up_wave_lookup_table[i] = saw_bl_up_wave_lookup_table[i] + harmonic;
 			}
+		}
 
-			// Now multiply to make it fit between -5.0V and 5.0V
-			saw_bl_up_wave_lookup_table[i] = 2.9f * saw_bl_up_wave_lookup_table[i];
+		// Now fnd the max harmonic value to correct the output voltage between -5.0 and 5.0 V
+		// Find tha largest harmoic first
+		max_harmonic = 0.0f;
+		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
+		{
+			if (saw_bl_up_wave_lookup_table[i] > max_harmonic)
+				max_harmonic = saw_bl_up_wave_lookup_table[i];
+		}
+		// Then correct...
+		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
+		{
+			saw_bl_up_wave_lookup_table[i] *= (5.0f / max_harmonic);
 			saw_bl_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bl_up_wave_lookup_table[i];
 		}
 	}
