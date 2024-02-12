@@ -1,8 +1,18 @@
 # Changelog VCV-Rack STS Free bundle
 
+11-Feb-2024
+-----------
+2.0.0 Release
+- Refactored code & json as per feedback from VCV
+- Added Triangle VCO with Band Limited/Unlimited menu choice
+- Added Up/Down Ramp menu choice to Saw-VCO
+- Added Band Limited/Unlimited menu choice to Saw-VCO
+- Added choice of 1 to 20 harmonics for band unlimited on Saw and Triangle via menu
+- Moved wave table generation from Model.init to Module class code
+
 10-Feb-2024
 -----------
-2.1.0 Release
+2.0.0 Release
 - Added Triangle VCO
 - Added Up/Down Ramp menu choice to Saw-VCO
 - Added Band Limited/Unlimited menu choice to Saw-VCO
