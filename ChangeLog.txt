@@ -1,0 +1,12 @@
+# Changelog VCV-Rack STS Free bundle
+
+10-Feb-2024
+-----------
+2.1.0 Release
+- Added Triangle VCO
+- Added Up/Down Ramp menu choice to Saw-VCO
+- Added Band Limited/Unlimited menu choice to Saw-VCO
+
+04-Feb-2024
+-----------
+Initial 2.0.0 Release, containing STS-Multiplier, STS-Splitter, STS-Sine-VCO, STS-Saw-VCO
