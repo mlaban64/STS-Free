@@ -270,6 +270,29 @@ struct Saw_VCO : Module {
 			}
 		}
 	}
+
+	json_t* dataToJson() override {
+		json_t* rootJ = json_object();
+
+		json_object_set_new(rootJ, "Band", json_integer(bandLimited));
+		json_object_set_new(rootJ, "Ramp", json_integer(rampDir));
+		json_object_set_new(rootJ, "Harmonics", json_integer(menu_num_Harmonics));
+		
+		return rootJ;
+	}
+
+	void dataFromJson(json_t* rootJ) override {
+		json_t* bandLimitedJ = json_object_get(rootJ, "Band");
+		json_t* rampDirJ = json_object_get(rootJ, "Ramp");
+		json_t* harmonicsJ = json_object_get(rootJ, "Harmonics");
+
+		if (bandLimitedJ)
+			bandLimited = json_integer_value(bandLimitedJ);
+		if (rampDirJ)
+			rampDir = json_integer_value(rampDirJ);
+		if (harmonicsJ)
+			menu_num_Harmonics = json_integer_value(harmonicsJ);
+	}
 };
 
 
