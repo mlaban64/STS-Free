@@ -213,9 +213,13 @@ struct Saw_VCO : Module {
 		else
 			volume_out = volume_param;
 
-		// Compute the phase shift as per the controls
+		// Compute the phase shift as per the controls. Make sure it is not negative, as this may happen with modulation with a bipolar signal
 		if (inputs[PM_IN_INPUT].isConnected())
+		{
 			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
+			if (phase_shift < 0.0f)
+				phase_shift += 1.0f;
+		} 
 		else
 			phase_shift = phase_param;
 
@@ -233,14 +237,14 @@ struct Saw_VCO : Module {
 			else
 				freq = pitch_param;
 
+			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 			phase[0] += freq * args.sampleTime;
-			// Accumulate the phase
-				if (phase[0] >= 1.f)
-					phase[0] -= 1.f;
-				
-				// Compute the wave via the wave table,
-				// output to the correct channel, multiplied by the output volume
-				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+			if (phase[0] >= 1.f)
+				phase[0] -= 1.f;
+			
+			// Compute the wave via the wave table,
+			// output to the correct channel, multiplied by the output volume
+			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
 		} 
 			else 
 		{ 
@@ -255,8 +259,8 @@ struct Saw_VCO : Module {
 				if (inputs[FM_IN_INPUT].isConnected())
 					freq = freq + freq * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
 
+				// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 				phase[idx] += freq * args.sampleTime;
-				// Accumulate the phase
 				if (phase[idx] >= 1.f)
 					phase[idx] -= 1.f;
 				

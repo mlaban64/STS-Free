@@ -62,15 +62,10 @@ struct Sine_VCO : Module {
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
 		idx = (int) ((phase + phase_shift) * STS_NUM_WAVE_SAMPLES); 
+		if (idx < 0) STS_Debug("IDX Negative: ", (float) idx);
 		idx = idx  % STS_NUM_WAVE_SAMPLES;
 
 		return(sine_wave_lookup_table[idx]);
-	}
-
-	// Custom OnReset() to initialize wave tables and set some default values
-	void onReset() override 
-	{
-		InitSine_Waves();
 	}
 
 	void InitSine_Waves ()
@@ -99,7 +94,7 @@ struct Sine_VCO : Module {
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio");
 
-		onReset();
+		InitSine_Waves();
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -131,9 +126,13 @@ struct Sine_VCO : Module {
 		else
 			volume_out = volume_param;
 
-		// Compute the phase shift as per the controls
+		// Compute the phase shift as per the controls. Make sure it is not negative, as this may happen with modulation with a bipolar signal
 		if (inputs[PM_IN_INPUT].isConnected())
+		{
 			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
+			if (phase_shift < 0.0f)
+				phase_shift += 1.0f;
+		} 
 		else
 			phase_shift = phase_param;
 
@@ -151,14 +150,14 @@ struct Sine_VCO : Module {
 			else
 				freq = pitch_param;
 
+			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 			phase[0] += freq * args.sampleTime;
-			// Accumulate the phase
-				if (phase[0] >= 1.f)
-					phase[0] -= 1.f;
+			if (phase[0] >= 1.f)
+				phase[0] -= 1.f;
 				
-				// Compute the wave via the wave table,
-				// output to the correct channel, multiplied by the output volume
-				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Sine(phase[0], phase_shift));
+			// Compute the wave via the wave table,
+			// output to the correct channel, multiplied by the output volume
+			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Sine(phase[0], phase_shift));
 		} 
 			else 
 		{ 
@@ -173,8 +172,8 @@ struct Sine_VCO : Module {
 				if (inputs[FM_IN_INPUT].isConnected())
 					freq = freq + freq * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
 
+				// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 				phase[idx] += freq * args.sampleTime;
-				// Accumulate the phase
 				if (phase[idx] >= 1.f)
 					phase[idx] -= 1.f;
 				
