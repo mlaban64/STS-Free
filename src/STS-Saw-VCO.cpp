@@ -66,7 +66,7 @@ struct Saw_VCO : Module {
 		fs.close();
     }
 
-	// Maps 
+	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Saw(float phase, float phase_shift)
 	{
 		static int idx;

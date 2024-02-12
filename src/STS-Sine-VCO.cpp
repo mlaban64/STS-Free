@@ -36,6 +36,11 @@ struct Sine_VCO : Module {
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
+	#define STS_NUM_WAVE_SAMPLES 1000
+
+	// An array of values to represent the sine wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
+	float sine_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
+
 	// Debug function, not to be used as a logger as it kills performance
 	void STS_Debug(std::string msg, float value)
 	{
@@ -50,7 +55,7 @@ struct Sine_VCO : Module {
 		fs.close();
     }
 
-	// Maps 
+	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Sine(float phase, float phase_shift)
 	{
 		static int idx;
@@ -60,6 +65,24 @@ struct Sine_VCO : Module {
 		idx = idx  % STS_NUM_WAVE_SAMPLES;
 
 		return(sine_wave_lookup_table[idx]);
+	}
+
+	// Custom OnReset() to initialize wave tables and set some default values
+	void onReset() override 
+	{
+		InitSine_Waves();
+	}
+
+	void InitSine_Waves ()
+	{
+		static int i;
+
+		// Populate the sine wave table
+		// Filled with a full sine cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
+		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
+		{
+			sine_wave_lookup_table[i] = 5.0f * std::sin(M_2PI * ((float) i / STS_NUM_WAVE_SAMPLES));
+		}
 	}
 
 	Sine_VCO() {
@@ -75,6 +98,8 @@ struct Sine_VCO : Module {
 		configInput(PM_IN_INPUT, "Phase modulation");
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio");
+
+		onReset();
 	}
 
 	void process(const ProcessArgs& args) override {

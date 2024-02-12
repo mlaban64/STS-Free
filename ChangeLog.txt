@@ -1,6 +1,6 @@
 # Changelog VCV-Rack STS Free bundle
 
-11-Feb-2024
+12-Feb-2024
 -----------
 2.0.0 Release
 - Refactored code & json as per feedback from VCV
