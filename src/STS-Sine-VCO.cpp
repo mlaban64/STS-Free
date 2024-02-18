@@ -159,7 +159,7 @@ struct Sine_VCO : Module {
 			// output to the correct channel, multiplied by the output volume
 			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Sine(phase[0], phase_shift));
 		} 
-			else 
+		else 
 		{ 
 			// Else, compute it as per the V/Oct input for each poly channel
 			// Loop through all input channels

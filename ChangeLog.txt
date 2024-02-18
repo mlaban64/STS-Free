@@ -1,5 +1,10 @@
 # Changelog VCV-Rack STS Free bundle
 
+18-Feb-2024
+-----------
+2.0.0 Release
+- Changed slug name to SmarTAZZStudio-Free
+
 12-Feb-2024
 -----------
 2.0.0 Release
