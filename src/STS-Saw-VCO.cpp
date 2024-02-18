@@ -173,7 +173,7 @@ struct Saw_VCO : Module {
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio");
 
-		onReset();
+		InitSaw_Waves(STS_DEF_NUM_HARMONICS);
 	}
 
 	void process(const ProcessArgs& args) override 
