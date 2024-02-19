@@ -121,24 +121,18 @@ struct Saw_VCO : Module {
 		}
 
 		// Using harmonic sine waves to mimic a band-limited sawtooth wave to limit aliases
-		// Sawtooth = all harmonics 2nd 3rd 4th &c. where 2nd = ½, 3rd = -¹/₃ & 4th = ¼ volume.
+		// Sawtooth = all harmonics 2nd 3rd 4th &c. where 2nd = ½, 3rd = ¹/₃ & 4th = ¼ volume.
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
 			iter = M_2PI * ((float) i / STS_NUM_WAVE_SAMPLES);
-			saw_bl_up_wave_lookup_table[i] = 0.0f;
+			saw_bl_down_wave_lookup_table[i] = 0.0f;
 
 			// Now loop through the harmonics until...
 			for (j = 1 ; j <= num_Harm; j++)
 			{
 				h_factor = (float) j;
-
-				// Odd harmonic is added, even is subtracted
-				if (j % 2) 
-					harmonic = std::sin(h_factor * iter) / h_factor;
-				else
-					harmonic = -std::sin(h_factor * iter) / h_factor;
-				
-				saw_bl_up_wave_lookup_table[i] = saw_bl_up_wave_lookup_table[i] + harmonic;
+				harmonic = std::sin(h_factor * iter) / h_factor;
+				saw_bl_down_wave_lookup_table[i] = saw_bl_down_wave_lookup_table[i] + harmonic;
 			}
 		}
 
@@ -147,14 +141,14 @@ struct Saw_VCO : Module {
 		max_harmonic = 0.0f;
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			if (saw_bl_up_wave_lookup_table[i] > max_harmonic)
-				max_harmonic = saw_bl_up_wave_lookup_table[i];
+			if (saw_bl_down_wave_lookup_table[i] > max_harmonic)
+				max_harmonic = saw_bl_down_wave_lookup_table[i];
 		}
-		// Then correct...
+		// Then correct amplitude and make the inverse saw too
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			saw_bl_up_wave_lookup_table[i] *= (5.0f / max_harmonic);
-			saw_bl_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bl_up_wave_lookup_table[i];
+			saw_bl_down_wave_lookup_table[i] *= (5.0f / max_harmonic);
+			saw_bl_up_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bl_down_wave_lookup_table[i];
 		}
 	}
 
