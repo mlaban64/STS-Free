@@ -62,8 +62,7 @@ struct Sine_VCO : Module {
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
 		idx = (int) ((phase + phase_shift) * STS_NUM_WAVE_SAMPLES); 
-		if (idx < 0) STS_Debug("IDX Negative: ", (float) idx);
-		idx = idx  % STS_NUM_WAVE_SAMPLES;
+		idx = idx % STS_NUM_WAVE_SAMPLES;
 
 		return(sine_wave_lookup_table[idx]);
 	}
