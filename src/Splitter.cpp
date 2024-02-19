@@ -112,7 +112,7 @@ struct Splitter : Module {
 struct SplitterWidget : ModuleWidget {
 	SplitterWidget(Splitter* module) {
 		setModule(module);
-		setPanel(createPanel(asset::plugin(pluginInstance, "res/STS-Splitter.svg")));
+		setPanel(createPanel(asset::plugin(pluginInstance, "res/Splitter.svg")));
 
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));

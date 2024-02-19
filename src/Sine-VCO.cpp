@@ -188,7 +188,7 @@ struct Sine_VCO : Module {
 struct Sine_VCOWidget : ModuleWidget {
 	Sine_VCOWidget(Sine_VCO* module) {
 		setModule(module);
-		setPanel(createPanel(asset::plugin(pluginInstance, "res/STS-Sine-VCO.svg")));
+		setPanel(createPanel(asset::plugin(pluginInstance, "res/Sine-VCO.svg")));
 
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));

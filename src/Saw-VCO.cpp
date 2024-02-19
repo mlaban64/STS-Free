@@ -301,7 +301,7 @@ struct Saw_VCOWidget : ModuleWidget
 	Saw_VCOWidget(Saw_VCO* module) 
 	{
 		setModule(module);
-		setPanel(createPanel(asset::plugin(pluginInstance, "res/STS-Saw-VCO.svg")));
+		setPanel(createPanel(asset::plugin(pluginInstance, "res/Saw-VCO.svg")));
 
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
