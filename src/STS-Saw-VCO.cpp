@@ -330,7 +330,7 @@ struct Saw_VCOWidget : ModuleWidget
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createIndexPtrSubmenuItem("Sawtooth Ramp", {"Up", "Down"}, &module->rampDir));
+		menu->addChild(createIndexPtrSubmenuItem("Ramp", {"Up", "Down"}, &module->rampDir));
 		menu->addChild(createIndexPtrSubmenuItem("Band", {"Unlimited", "Limited"}, &module->bandLimited));
 		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"}, 
 												&module->menu_num_Harmonics));
