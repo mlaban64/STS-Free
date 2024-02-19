@@ -1,5 +1,11 @@
 # Changelog VCV-Rack STS Free bundle
 
+19-Feb-2024
+-----------
+2.0.0 Release
+- Fixed some code issues
+- Removed STS acronym from source code and artwork
+
 18-Feb-2024
 -----------
 2.0.0 Release
