@@ -50,6 +50,17 @@ struct Triangle_VCO : Module {
 	float triangle_bl_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 	float triangle_bu_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
+	// local class variable declarations. For some reason, putting them as static/dynamic in the class Process() function does not work.
+	// For instance, the PITCH_PARAM knob would infuence other instances of the same module. Putting it here circumvents the problem
+	float pitch_param, phase_param, volume_param;
+	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
+	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
+	float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f;
+	int num_channels, idx;
+
+	// Array of 16 phases to accomodate for polyphony
+	float phase[16] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+
 	// Debug function, not to be used as a logger as it kills performance
 	void STS_Debug(std::string msg, float value)
 	{
@@ -150,7 +161,7 @@ struct Triangle_VCO : Module {
 		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
 		configParam(PM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for phase modulation");
 		configParam(VM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for volume modulation");
-		configParam(PITCH_PARAM, 40.f, 10000.f, 261.6256f, "Fixed pitch", " Hz");
+		configParam(PITCH_PARAM, 40.f, 10000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
 		configParam(PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
@@ -163,16 +174,6 @@ struct Triangle_VCO : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
-		
-		// local variable declarations
-		static float pitch_param, phase_param, volume_param;
-		static float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
-		static float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
-		static float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f;
-		static int num_channels, idx;
-
-		// Array of 16 phases to accomodate for polyphony
-		static float phase[16] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
 
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
@@ -239,7 +240,7 @@ struct Triangle_VCO : Module {
 			for (idx = 0; idx < num_channels; idx++)
 			{
 				pitch = inputs[V_OCT_IN_INPUT].getVoltage(idx);
-				freq = dsp::FREQ_C4 * std::pow(2.f, pitch);
+				freq = pitch_param * std::pow(2.f, pitch);
 
 				// Compute the pitch as per the controls
 				if (inputs[FM_IN_INPUT].isConnected())

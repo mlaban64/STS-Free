@@ -1,5 +1,10 @@
 # Changelog VCV-Rack STS Free bundle
 
+22-Feb-2024
+-----------
+2.0.0 Release
+- Fixed issue in Sine/Saw/Triangle VCO, where the Pitch knob influenced all instances of the same VCO
+
 19-Feb-2024
 -----------
 2.0.0 Release
