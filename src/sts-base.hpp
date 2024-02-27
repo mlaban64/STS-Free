@@ -41,3 +41,6 @@ struct TSTSYellowLight : TBase {
 	}
 };
 using STSYellowLight = TSTSYellowLight<>;
+
+// Macro to swap to scalars, type-indipendent
+#define sts_swap(a,b) {static auto tmp = a; a = b; b = tmp;}

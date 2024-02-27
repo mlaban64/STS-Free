@@ -1,5 +1,10 @@
 # Changelog VCV-Rack STS Free bundle
 
+25-Feb-2024
+-----------
+2.0.1 Release
+- Splitter now allows sorting of channels by pitch up/down or channel
+
 22-Feb-2024
 -----------
 2.0.0 Release
