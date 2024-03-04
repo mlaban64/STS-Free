@@ -14,6 +14,7 @@ extern Model* modelSplitter;
 extern Model* modelSine_VCO;
 extern Model* modelSaw_VCO;
 extern Model* modelTriangle_VCO;
+extern Model* modelClipper;
 
 // Some useful constants
 #define M_2PI 	6.2831853071758f

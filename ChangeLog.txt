@@ -1,4 +1,8 @@
 # Changelog VCV-Rack STS Free bundle
+04-Mar-2024
+-----------
+2.1.0 Release
+- Clipper added as a new module (Distortion)
 
 25-Feb-2024
 -----------

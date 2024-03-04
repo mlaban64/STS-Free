@@ -1,9 +1,9 @@
 {
-  "slug": "SmarTAZZStudio-Free",
-  "name": "Sm@rTAZZ Studio Free",
-  "version": "2.0.1",
+  "slug": "STS-Free-DEV",
+  "name": "STS-Free-DEV",
+  "version": "2.1.0",
   "license": "GPL-3.0-or-later",
-  "brand": "Sm@rTAZZ Studio",
+  "brand": "STS-Free-DEV",
   "author": "Marinko Laban",
   "authorEmail": "mlaban@xs4all.nl",
   "authorUrl": "https://mlaban.home.xs4all.nl/",
@@ -20,7 +20,7 @@
       "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Multiplier.html",
       "tags": [
         "Multiple",
-		"Polyphonic",
+        "Polyphonic",
         "Utility"
       ]
     },
@@ -28,7 +28,7 @@
       "slug": "Splitter",
       "name": "Splitter",
       "description": "Splits a polyphonic signal to max 4 channels",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Splitter.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Splitter.html",
       "tags": [
         "Polyphonic",
         "Utility"
@@ -38,9 +38,9 @@
       "slug": "Saw-VCO",
       "name": "Saw-VCO",
       "description": "A sawtooth wave VCO with phase, volume and frequency modulation",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Saw-VCO.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Saw-VCO.html",
       "tags": [
-		"Polyphonic",
+        "Polyphonic",
         "Oscillator"
       ]
     },
@@ -48,9 +48,9 @@
       "slug": "Sine-VCO",
       "name": "Sine-VCO",
       "description": "A sine wave VCO with phase, volume and frequency modulation",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Sine-VCO.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Sine-VCO.html",
       "tags": [
-		"Polyphonic",
+        "Polyphonic",
         "Oscillator"
       ]
     },
@@ -58,10 +58,20 @@
       "slug": "Triangle-VCO",
       "name": "Triangle-VCO",
       "description": "A triangle wave VCO with phase, volume and frequency modulation",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Triangle-VCO.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/STS-Triangle-VCO.html",
       "tags": [
-		"Polyphonic",
+        "Polyphonic",
         "Oscillator"
+      ]
+    },
+    {
+      "slug": "Clipper",
+      "name": "Clipper",
+      "description": "Clips or folds an audio signal",
+	  "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/Clipper.html",
+      "tags": [
+        "Polyphonic",
+		"Distortion"
       ]
     }
   ]
