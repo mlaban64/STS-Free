@@ -168,7 +168,7 @@ struct Triangle_VCO : Module {
 		configInput(FM_IN_INPUT, "Frequence modulation");
 		configInput(PM_IN_INPUT, "Phase modulation");
 		configInput(VM_IN_INPUT, "Volume modulation");
-		configOutput(OUTPUT_OUTPUT, "Audio");
+		configOutput(OUTPUT_OUTPUT, "Audio Out");
 
 		InitTriangle_Waves(STS_DEF_NUM_HARMONICS);
 	}

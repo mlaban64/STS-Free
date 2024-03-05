@@ -63,14 +63,14 @@ struct Clipper : Module
 	Clipper()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(UTM_ATTN_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(LTM_ATTN_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(UPPER_THRESHOLD_PARAM, 0.f, 5.f, 5.f, " V");
-		configParam(LOWER__THRESHOLD_PARAM, -5.f, 0.f, -5.f, " V");
-		configInput(V_OCT_IN_INPUT, "");
-		configInput(UTM_IN_INPUT, "");
-		configInput(LTM_IN_INPUT, "");
-		configOutput(OUTPUT_OUTPUT, "");
+		configParam(UTM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for Upper Threshold Modulation");
+		configParam(LTM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for Upper Threshold Modulation");
+		configParam(UPPER_THRESHOLD_PARAM, 0.f, 5.f, 5.f, "Volt");
+		configParam(LOWER__THRESHOLD_PARAM, -5.f, 0.f, -5.f, "Volt");
+		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
+		configInput(UTM_IN_INPUT, "Upper Threshold Modulation");
+		configInput(LTM_IN_INPUT, "Lower Threshold Modulation");
+		configOutput(OUTPUT_OUTPUT, "Audio Out");
 	}
 
 	void process(const ProcessArgs &args) override
@@ -96,22 +96,47 @@ struct Clipper : Module
 		if (inputs[UTM_IN_INPUT].isConnected())
 		{
 			UTM_mod = UTM_attn_param * UTM_in + UTM_param;
-			if (UTM_mod < 0.f)
-				UTM_mod = 0.f;
+			if (polarity == POLARITY_BIPOLAR)
+			{
+				if (UTM_mod < 0.f)
+					UTM_mod = 0.f;
+			}
+			else
+			{
+				if (UTM_mod < 5.f)
+					UTM_mod = 5.f;
+			}
 		}
 		else
-			UTM_mod = UTM_param;
+		{
+			if (polarity == POLARITY_BIPOLAR)
+				UTM_mod = UTM_param;
+			else
+				UTM_mod = UTM_param + 5.f;
+		}
 
 		// Compute the Lower Treshold Modulation (UTM) as per the controls
 		if (inputs[LTM_IN_INPUT].isConnected())
 		{
 			LTM_mod = LTM_attn_param * LTM_in + LTM_param;
-			if (LTM_mod > 0.f)
-				LTM_mod = 0.f;
+			if (polarity == POLARITY_BIPOLAR)
+			{
+				if (LTM_mod > 0.f)
+					LTM_mod = 0.f;
+			}
+			else
+			{
+				if (LTM_mod > 5.f)
+					LTM_mod = 5.f;
+			}
 		}
-
 		else
-			LTM_mod = LTM_param;
+		{
+			if (polarity == POLARITY_BIPOLAR)
+				LTM_mod = LTM_param;
+			else
+				LTM_mod = LTM_param + 5.f;
+		}
 
 		// Is the V-In connected and polyphonic?
 		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
@@ -123,45 +148,23 @@ struct Clipper : Module
 			// Compute the new output voltage
 			out_Volt = inputs[V_OCT_IN_INPUT].getVoltage(idx);
 			// output to the correct channel, multiplied by the output volume
-			// If Bipolar, assume +/- 5V as the extremes and the UMT and LMT params as the offset towards those extremes
-			if (polarity == POLARITY_BIPOLAR)
+
+			// If clip, set output to the threshold, else subtract from the threshold
+			if (clipMethod == CLIPMETHOD_CLIP)
 			{
-				// If clip, set output to the threshold, else subtract from the threshold
-				if (clipMethod == CLIPMETHOD_CLIP)
-				{
-					if (out_Volt > UTM_mod)
-						out_Volt = UTM_mod;
-					if (out_Volt < LTM_mod)
-						out_Volt = LTM_mod;
-				}
-				else
-				{
-					if (out_Volt > UTM_mod)
-						out_Volt = UTM_mod - (out_Volt - UTM_mod);
-					if (out_Volt < LTM_mod)
-						out_Volt = LTM_mod - (out_Volt - LTM_mod);
-				}
+				if (out_Volt > UTM_mod)
+					out_Volt = UTM_mod;
+				if (out_Volt < LTM_mod)
+					out_Volt = LTM_mod;
 			}
-			else // Unipolar
+			else
 			{
-				UTM_mod = UTM_mod + 5.0f;
-				LTM_mod = LTM_mod + 5.0f;
-				// If clip, set output to the threshold, else subtract from the threshold
-				if (clipMethod == CLIPMETHOD_CLIP)
-				{
-					if (out_Volt > UTM_mod)
-						out_Volt = UTM_mod;
-					if (out_Volt < LTM_mod)
-						out_Volt = LTM_mod;
-				}
-				else
-				{
-					if (out_Volt > UTM_mod)
-						out_Volt = UTM_mod - (out_Volt - UTM_mod);
-					if (out_Volt < LTM_mod)
-						out_Volt = LTM_mod - (out_Volt - LTM_mod);
-				}
+				if (out_Volt > UTM_mod)
+					out_Volt = UTM_mod - (out_Volt - UTM_mod);
+				if (out_Volt < LTM_mod)
+					out_Volt = LTM_mod - (out_Volt - LTM_mod);
 			}
+
 			outputs[OUTPUT_OUTPUT].setVoltage(out_Volt, idx);
 		}
 		// Done, so exit
