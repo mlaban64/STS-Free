@@ -16,7 +16,7 @@ struct Clipper : Module
 	};
 	enum InputId
 	{
-		V_OCT_IN_INPUT,
+		INPUT_INPUT,
 		UTM_IN_INPUT,
 		LTM_IN_INPUT,
 		INPUTS_LEN
@@ -67,7 +67,7 @@ struct Clipper : Module
 		configParam(LTM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for Upper Threshold Modulation");
 		configParam(UPPER_THRESHOLD_PARAM, 0.f, 5.f, 5.f, "Volt");
 		configParam(LOWER__THRESHOLD_PARAM, -5.f, 0.f, -5.f, "Volt");
-		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
+		configInput(INPUT_INPUT, "Audio In");
 		configInput(UTM_IN_INPUT, "Upper Threshold Modulation");
 		configInput(LTM_IN_INPUT, "Lower Threshold Modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio Out");
@@ -76,7 +76,7 @@ struct Clipper : Module
 	void process(const ProcessArgs &args) override
 	{
 		// If no VC/In connected, bail out
-		if (!inputs[V_OCT_IN_INPUT].isConnected())
+		if (!inputs[INPUT_INPUT].isConnected())
 			return;
 
 		// If no Output connected, bail out
@@ -139,14 +139,14 @@ struct Clipper : Module
 		}
 
 		// Is the V-In connected and polyphonic?
-		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
+		num_channels = inputs[INPUT_INPUT].getChannels();
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
 		outputs[OUTPUT_OUTPUT].setChannels(num_channels);
 
 		for (idx = 0; idx < num_channels; idx++)
 		{
 			// Compute the new output voltage
-			out_Volt = inputs[V_OCT_IN_INPUT].getVoltage(idx);
+			out_Volt = inputs[INPUT_INPUT].getVoltage(idx);
 			// output to the correct channel, multiplied by the output volume
 
 			// If clip, set output to the threshold, else subtract from the threshold
@@ -211,7 +211,7 @@ struct ClipperWidget : ModuleWidget
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(12.7, 76.5)), module, Clipper::UPPER_THRESHOLD_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(12.7, 97.2)), module, Clipper::LOWER__THRESHOLD_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.0, 14.0)), module, Clipper::V_OCT_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.0, 14.0)), module, Clipper::INPUT_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 32.5)), module, Clipper::UTM_IN_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 52.5)), module, Clipper::LTM_IN_INPUT));
 
