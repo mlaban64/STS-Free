@@ -1,4 +1,11 @@
 # Changelog VCV-Rack STS Free bundle
+
+11-Mar-2024
+-----------
+2.1.0 Release
+- D-Octer added as a new module (Utility)
+- All Panels refactored for uniformity
+
 04-Mar-2024
 -----------
 2.1.0 Release

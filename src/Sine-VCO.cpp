@@ -4,9 +4,10 @@
 #include <string.h>
 #include <math.h>
 
-
-struct Sine_VCO : Module {
-	enum ParamId {
+struct Sine_VCO : Module
+{
+	enum ParamId
+	{
 		FM_ATTN_PARAM,
 		PM_ATTN_PARAM,
 		VM_ATTN_PARAM,
@@ -15,18 +16,21 @@ struct Sine_VCO : Module {
 		VOLUME_PARAM,
 		PARAMS_LEN
 	};
-	enum InputId {
+	enum InputId
+	{
 		V_OCT_IN_INPUT,
 		FM_IN_INPUT,
 		PM_IN_INPUT,
 		VM_IN_INPUT,
 		INPUTS_LEN
 	};
-	enum OutputId {
+	enum OutputId
+	{
 		OUTPUT_OUTPUT,
 		OUTPUTS_LEN
 	};
-	enum LightId {
+	enum LightId
+	{
 		LIGHTS_LEN
 	};
 
@@ -36,7 +40,7 @@ struct Sine_VCO : Module {
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
-	#define STS_NUM_WAVE_SAMPLES 1000
+#define STS_NUM_WAVE_SAMPLES 1000
 
 	// An array of values to represent the sine wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
 	float sine_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
@@ -50,21 +54,21 @@ struct Sine_VCO : Module {
 	int num_channels, idx;
 
 	// Array of 16 phases to accomodate for polyphony
-	float phase[16] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
 	// Debug function, not to be used as a logger as it kills performance
 	void STS_Debug(std::string msg, float value)
 	{
 		std::ofstream fs;
-		
-		fs.open("C:/Temp/STS-Debug.txt",std::ofstream::app);
+
+		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
 
 		fs << msg;
 		fs << " ";
 		fs << value;
 		fs << "\n";
 		fs.close();
-    }
+	}
 
 	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Sine(float phase, float phase_shift)
@@ -72,13 +76,13 @@ struct Sine_VCO : Module {
 		static int idx;
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
-		idx = (int) ((phase + phase_shift) * STS_NUM_WAVE_SAMPLES); 
+		idx = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
 		idx = idx % STS_NUM_WAVE_SAMPLES;
 
-		return(sine_wave_lookup_table[idx]);
+		return (sine_wave_lookup_table[idx]);
 	}
 
-	void InitSine_Waves ()
+	void InitSine_Waves()
 	{
 		static int i;
 
@@ -86,11 +90,12 @@ struct Sine_VCO : Module {
 		// Filled with a full sine cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			sine_wave_lookup_table[i] = 5.0f * std::sin(M_2PI * ((float) i / STS_NUM_WAVE_SAMPLES));
+			sine_wave_lookup_table[i] = 5.0f * std::sin(M_2PI * ((float)i / STS_NUM_WAVE_SAMPLES));
 		}
 	}
 
-	Sine_VCO() {
+	Sine_VCO()
+	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
 		configParam(PM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for phase modulation");
@@ -107,8 +112,9 @@ struct Sine_VCO : Module {
 		InitSine_Waves();
 	}
 
-	void process(const ProcessArgs& args) override {
-		
+	void process(const ProcessArgs &args) override
+	{
+
 		// Get all the values from the module UI
 		pitch_param = params[PITCH_PARAM].getValue();
 		phase_param = params[PHASE_PARAM].getValue();
@@ -132,7 +138,7 @@ struct Sine_VCO : Module {
 			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
 			if (phase_shift < 0.0f)
 				phase_shift += 1.0f;
-		} 
+		}
 		else
 			phase_shift = phase_param;
 
@@ -140,8 +146,8 @@ struct Sine_VCO : Module {
 		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
 		outputs[OUTPUT_OUTPUT].setChannels(num_channels);
-		
-		if (num_channels == 0) 
+
+		if (num_channels == 0)
 		// If not, set the frequency as per the pitch parameter, using phase[0]
 		{
 			// Compute the pitch as per the controls
@@ -154,13 +160,13 @@ struct Sine_VCO : Module {
 			phase[0] += freq * args.sampleTime;
 			if (phase[0] >= 1.f)
 				phase[0] -= 1.f;
-				
+
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
 			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Sine(phase[0], phase_shift));
-		} 
-		else 
-		{ 
+		}
+		else
+		{
 			// Else, compute it as per the V/Oct input for each poly channel
 			// Loop through all input channels
 			for (idx = 0; idx < num_channels; idx++)
@@ -176,7 +182,7 @@ struct Sine_VCO : Module {
 				phase[idx] += freq * args.sampleTime;
 				if (phase[idx] >= 1.f)
 					phase[idx] -= 1.f;
-				
+
 				// Compute the wave via the wave table,
 				// output to the correct channel, multiplied by the output volume
 				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Sine(phase[idx], phase_shift), idx);
@@ -185,9 +191,10 @@ struct Sine_VCO : Module {
 	}
 };
 
-
-struct Sine_VCOWidget : ModuleWidget {
-	Sine_VCOWidget(Sine_VCO* module) {
+struct Sine_VCOWidget : ModuleWidget
+{
+	Sine_VCOWidget(Sine_VCO *module)
+	{
 		setModule(module);
 		setPanel(createPanel(asset::plugin(pluginInstance, "res/Sine-VCO.svg")));
 
@@ -212,5 +219,4 @@ struct Sine_VCOWidget : ModuleWidget {
 	}
 };
 
-
-Model* modelSine_VCO = createModel<Sine_VCO, Sine_VCOWidget>("Sine-VCO");
+Model *modelSine_VCO = createModel<Sine_VCO, Sine_VCOWidget>("Sine-VCO");

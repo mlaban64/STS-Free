@@ -4,40 +4,45 @@
 #include <string.h>
 #include <math.h>
 
-struct Multiplier : Module {
-	enum ParamId {
+struct Multiplier : Module
+{
+	enum ParamId
+	{
 		PARAMS_LEN
 	};
-	enum InputId {
+	enum InputId
+	{
 		IN_INPUT,
 		INPUTS_LEN
 	};
-	enum OutputId {
+	enum OutputId
+	{
 		OUT_1_OUTPUT,
 		OUT_2_OUTPUT,
 		OUT_3_OUTPUT,
 		OUT_4_OUTPUT,
 		OUTPUTS_LEN
 	};
-	enum LightId {
+	enum LightId
+	{
 		LIGHTS_LEN
 	};
-	
+
 	// A simple debug message funcion. Note this takes quite a bit of CPU time, so do not expect proper sound processing when used
 	void STS_Debug(std::string msg, float value)
 	{
 		std::ofstream fs;
-		
-		fs.open("C:/Temp/STS-Debug.txt",std::ofstream::app);
+
+		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
 
 		fs << msg;
 		fs << " ";
 		fs << value;
 		fs << "\n";
 		fs.close();
-    }
+	}
 
-	Multiplier() 
+	Multiplier()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configInput(IN_INPUT, "Signal");
@@ -47,7 +52,7 @@ struct Multiplier : Module {
 		configOutput(OUT_4_OUTPUT, "Signal 4");
 	}
 
-	void process(const ProcessArgs& args) override 
+	void process(const ProcessArgs &args) override
 	{
 		// Get the number of polyphonic channels from the Input, if any
 		int num_channels = inputs[IN_INPUT].getChannels();
@@ -70,9 +75,10 @@ struct Multiplier : Module {
 	}
 };
 
-
-struct MultiplierWidget : ModuleWidget {
-	MultiplierWidget(Multiplier* module) {
+struct MultiplierWidget : ModuleWidget
+{
+	MultiplierWidget(Multiplier *module)
+	{
 		setModule(module);
 		setPanel(createPanel(asset::plugin(pluginInstance, "res/Multiplier.svg")));
 
@@ -90,5 +96,4 @@ struct MultiplierWidget : ModuleWidget {
 	}
 };
 
-
-Model* modelMultiplier = createModel<Multiplier, MultiplierWidget>("Multiplier");
+Model *modelMultiplier = createModel<Multiplier, MultiplierWidget>("Multiplier");

@@ -4,9 +4,10 @@
 #include <string.h>
 #include <math.h>
 
-
-struct Saw_VCO : Module {
-	enum ParamId {
+struct Saw_VCO : Module
+{
+	enum ParamId
+	{
 		FM_ATTN_PARAM,
 		PM_ATTN_PARAM,
 		VM_ATTN_PARAM,
@@ -15,18 +16,21 @@ struct Saw_VCO : Module {
 		VOLUME_PARAM,
 		PARAMS_LEN
 	};
-	enum InputId {
+	enum InputId
+	{
 		V_OCT_IN_INPUT,
 		FM_IN_INPUT,
 		PM_IN_INPUT,
 		VM_IN_INPUT,
 		INPUTS_LEN
 	};
-	enum OutputId {
+	enum OutputId
+	{
 		OUTPUT_OUTPUT,
 		OUTPUTS_LEN
 	};
-	enum LightId {
+	enum LightId
+	{
 		LIGHTS_LEN
 	};
 
@@ -35,8 +39,8 @@ struct Saw_VCO : Module {
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
-	#define STS_NUM_WAVE_SAMPLES 1000
-	#define STS_DEF_NUM_HARMONICS 10
+#define STS_NUM_WAVE_SAMPLES 1000
+#define STS_DEF_NUM_HARMONICS 10
 
 	// Some class-wide variables
 	int rampDir = 0;
@@ -44,7 +48,7 @@ struct Saw_VCO : Module {
 	int num_Harmonics = STS_DEF_NUM_HARMONICS;
 	int last_menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 	int menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
-	
+
 	// An array of values to represent the sawtooth wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
 	// 4 arrays are used: Band-limited (# of harmonics set as per STS_NUM_SAW_HARMONICS) and Band-unlimited, approachng the mathematicsl sawtooth
 	float saw_bl_up_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
@@ -61,21 +65,21 @@ struct Saw_VCO : Module {
 	int num_channels, idx;
 
 	// Array of 16 phases to accomodate for polyphony
-	float phase[16] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
 	// Debug function, not to be used as a logger as it kills performance
 	void STS_Debug(std::string msg, float value)
 	{
 		std::ofstream fs;
-		
-		fs.open("C:/Temp/STS-Debug.txt",std::ofstream::app);
+
+		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
 
 		fs << msg;
 		fs << " ";
 		fs << value;
 		fs << "\n";
 		fs.close();
-    }
+	}
 
 	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Saw(float phase, float phase_shift)
@@ -83,7 +87,7 @@ struct Saw_VCO : Module {
 		static int idx;
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
-		idx = (int) ((phase + phase_shift) * STS_NUM_WAVE_SAMPLES); 
+		idx = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
 		idx = idx % STS_NUM_WAVE_SAMPLES;
 
 		// ramp is up?
@@ -91,22 +95,22 @@ struct Saw_VCO : Module {
 		{
 			// Band-unlimited?
 			if (bandLimited)
-				return(saw_bl_up_wave_lookup_table[idx]);
+				return (saw_bl_up_wave_lookup_table[idx]);
 			else
-				return(saw_bu_up_wave_lookup_table[idx]);
+				return (saw_bu_up_wave_lookup_table[idx]);
 		}
 		else // ramp is down
 		{
 			// Band-unlimited?
 			if (bandLimited)
-				return(saw_bl_down_wave_lookup_table[idx]);
+				return (saw_bl_down_wave_lookup_table[idx]);
 			else
-				return(saw_bu_down_wave_lookup_table[idx]);
+				return (saw_bu_down_wave_lookup_table[idx]);
 		}
 	}
 
 	// Custom OnReset() to initialize wave tables and set some default values
-	void onReset() override 
+	void onReset() override
 	{
 		rampDir = 0;
 		bandLimited = 0;
@@ -116,7 +120,7 @@ struct Saw_VCO : Module {
 		InitSaw_Waves(num_Harmonics);
 	}
 
-	void InitSaw_Waves (int num_Harm)
+	void InitSaw_Waves(int num_Harm)
 	{
 		static int i, j;
 		static float iter, harmonic, h_factor, max_harmonic;
@@ -126,7 +130,7 @@ struct Saw_VCO : Module {
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
 			// Up ramp
-			saw_bu_up_wave_lookup_table[i] = -5.0f + 10.0f * ((float) i / STS_NUM_WAVE_SAMPLES);
+			saw_bu_up_wave_lookup_table[i] = -5.0f + 10.0f * ((float)i / STS_NUM_WAVE_SAMPLES);
 			// Down ramp
 			saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bu_up_wave_lookup_table[i];
 		}
@@ -135,13 +139,13 @@ struct Saw_VCO : Module {
 		// Sawtooth = all harmonics 2nd 3rd 4th &c. where 2nd = ½, 3rd = ¹/₃ & 4th = ¼ volume.
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			iter = M_2PI * ((float) i / STS_NUM_WAVE_SAMPLES);
+			iter = M_2PI * ((float)i / STS_NUM_WAVE_SAMPLES);
 			saw_bl_down_wave_lookup_table[i] = 0.0f;
 
 			// Now loop through the harmonics until...
-			for (j = 1 ; j <= num_Harm; j++)
+			for (j = 1; j <= num_Harm; j++)
 			{
-				h_factor = (float) j;
+				h_factor = (float)j;
 				harmonic = std::sin(h_factor * iter) / h_factor;
 				saw_bl_down_wave_lookup_table[i] = saw_bl_down_wave_lookup_table[i] + harmonic;
 			}
@@ -163,7 +167,7 @@ struct Saw_VCO : Module {
 		}
 	}
 
-	Saw_VCO() 
+	Saw_VCO()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
@@ -181,7 +185,7 @@ struct Saw_VCO : Module {
 		InitSaw_Waves(STS_DEF_NUM_HARMONICS);
 	}
 
-	void process(const ProcessArgs& args) override 
+	void process(const ProcessArgs &args) override
 	{
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
@@ -190,7 +194,7 @@ struct Saw_VCO : Module {
 			InitSaw_Waves(num_Harmonics);
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
-		
+
 		// Get all the values from the module UI
 		pitch_param = params[PITCH_PARAM].getValue();
 		phase_param = params[PHASE_PARAM].getValue();
@@ -214,7 +218,7 @@ struct Saw_VCO : Module {
 			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
 			if (phase_shift < 0.0f)
 				phase_shift += 1.0f;
-		} 
+		}
 		else
 			phase_shift = phase_param;
 
@@ -222,8 +226,8 @@ struct Saw_VCO : Module {
 		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
 		outputs[OUTPUT_OUTPUT].setChannels(num_channels);
-		
-		if (num_channels == 0) 
+
+		if (num_channels == 0)
 		// If not, set the frequency as per the pitch parameter, using phase[0]
 		{
 			// Compute the pitch as per the controls
@@ -236,13 +240,13 @@ struct Saw_VCO : Module {
 			phase[0] += freq * args.sampleTime;
 			if (phase[0] >= 1.f)
 				phase[0] -= 1.f;
-			
+
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
 			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
-		} 
-		else 
-		{ 
+		}
+		else
+		{
 			// Else, compute it as per the V/Oct input for each poly channel
 			// Loop through all input channels
 			for (idx = 0; idx < num_channels; idx++)
@@ -258,7 +262,7 @@ struct Saw_VCO : Module {
 				phase[idx] += freq * args.sampleTime;
 				if (phase[idx] >= 1.f)
 					phase[idx] -= 1.f;
-				
+
 				// Compute the wave via the wave table,
 				// output to the correct channel, multiplied by the output volume
 				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[idx], phase_shift), idx);
@@ -266,20 +270,22 @@ struct Saw_VCO : Module {
 		}
 	}
 
-	json_t* dataToJson() override {
-		json_t* rootJ = json_object();
+	json_t *dataToJson() override
+	{
+		json_t *rootJ = json_object();
 
 		json_object_set_new(rootJ, "Band", json_integer(bandLimited));
 		json_object_set_new(rootJ, "Ramp", json_integer(rampDir));
 		json_object_set_new(rootJ, "Harmonics", json_integer(menu_num_Harmonics));
-		
+
 		return rootJ;
 	}
 
-	void dataFromJson(json_t* rootJ) override {
-		json_t* bandLimitedJ = json_object_get(rootJ, "Band");
-		json_t* rampDirJ = json_object_get(rootJ, "Ramp");
-		json_t* harmonicsJ = json_object_get(rootJ, "Harmonics");
+	void dataFromJson(json_t *rootJ) override
+	{
+		json_t *bandLimitedJ = json_object_get(rootJ, "Band");
+		json_t *rampDirJ = json_object_get(rootJ, "Ramp");
+		json_t *harmonicsJ = json_object_get(rootJ, "Harmonics");
 
 		if (bandLimitedJ)
 			bandLimited = json_integer_value(bandLimitedJ);
@@ -290,10 +296,9 @@ struct Saw_VCO : Module {
 	}
 };
 
-
-struct Saw_VCOWidget : ModuleWidget 
+struct Saw_VCOWidget : ModuleWidget
 {
-	Saw_VCOWidget(Saw_VCO* module) 
+	Saw_VCOWidget(Saw_VCO *module)
 	{
 		setModule(module);
 		setPanel(createPanel(asset::plugin(pluginInstance, "res/Saw-VCO.svg")));
@@ -316,20 +321,19 @@ struct Saw_VCOWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 59.5)), module, Saw_VCO::VM_IN_INPUT));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(18.5, 14.0)), module, Saw_VCO::OUTPUT_OUTPUT));
-
 	}
 
-	void appendContextMenu(Menu* menu) override 
+	void appendContextMenu(Menu *menu) override
 	{
-		Saw_VCO* module = getModule<Saw_VCO>();
+		Saw_VCO *module = getModule<Saw_VCO>();
 
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Ramp", {"Up", "Down"}, &module->rampDir));
 		menu->addChild(createIndexPtrSubmenuItem("Band", {"Unlimited", "Limited"}, &module->bandLimited));
-		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"}, 
-												&module->menu_num_Harmonics));
+		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"},
+												 &module->menu_num_Harmonics));
 	}
 };
 
-Model* modelSaw_VCO = createModel<Saw_VCO, Saw_VCOWidget>("Saw-VCO");
+Model *modelSaw_VCO = createModel<Saw_VCO, Saw_VCOWidget>("Saw-VCO");
