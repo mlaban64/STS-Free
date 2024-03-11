@@ -13,10 +13,10 @@ struct Multiplier : Module {
 		INPUTS_LEN
 	};
 	enum OutputId {
-		OUT1_OUTPUT,
-		OUT2_OUTPUT,
-		OUT3_OUTPUT,
-		OUT4_OUTPUT,
+		OUT_1_OUTPUT,
+		OUT_2_OUTPUT,
+		OUT_3_OUTPUT,
+		OUT_4_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId {
@@ -40,11 +40,11 @@ struct Multiplier : Module {
 	Multiplier() 
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configInput(IN_INPUT, "Voltage");
-		configOutput(OUT1_OUTPUT, "Voltage 1");
-		configOutput(OUT2_OUTPUT, "Voltage 2");
-		configOutput(OUT3_OUTPUT, "Voltage 3");
-		configOutput(OUT4_OUTPUT, "Voltage 4");
+		configInput(IN_INPUT, "Signal");
+		configOutput(OUT_1_OUTPUT, "Signal 1");
+		configOutput(OUT_2_OUTPUT, "Signal 2");
+		configOutput(OUT_3_OUTPUT, "Signal 3");
+		configOutput(OUT_4_OUTPUT, "Signal 4");
 	}
 
 	void process(const ProcessArgs& args) override 
@@ -57,16 +57,16 @@ struct Multiplier : Module {
 			return;
 
 		// Set the number of channels as per the number of input channels
-		outputs[OUT1_OUTPUT].setChannels(num_channels);
-		outputs[OUT2_OUTPUT].setChannels(num_channels);
-		outputs[OUT3_OUTPUT].setChannels(num_channels);
-		outputs[OUT4_OUTPUT].setChannels(num_channels);
+		outputs[OUT_1_OUTPUT].setChannels(num_channels);
+		outputs[OUT_2_OUTPUT].setChannels(num_channels);
+		outputs[OUT_3_OUTPUT].setChannels(num_channels);
+		outputs[OUT_4_OUTPUT].setChannels(num_channels);
 
 		// Copy input voltages to the four outputs
-		outputs[OUT1_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT2_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT3_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT4_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
+		outputs[OUT_1_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
+		outputs[OUT_2_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
+		outputs[OUT_3_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
+		outputs[OUT_4_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
 	}
 };
 
@@ -83,10 +83,10 @@ struct MultiplierWidget : ModuleWidget {
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(12.7, 20.586)), module, Multiplier::IN_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 37.586)), module, Multiplier::OUT1_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 54.586)), module, Multiplier::OUT2_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 71.586)), module, Multiplier::OUT3_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 88.586)), module, Multiplier::OUT4_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 37.586)), module, Multiplier::OUT_1_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 54.586)), module, Multiplier::OUT_2_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 71.586)), module, Multiplier::OUT_3_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(12.7, 88.586)), module, Multiplier::OUT_4_OUTPUT));
 	}
 };
 

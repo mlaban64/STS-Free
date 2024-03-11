@@ -68,10 +68,10 @@
       "slug": "Clipper",
       "name": "Clipper",
       "description": "Clips or folds an audio signal",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/Clipper.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/Clipper.html",
       "tags": [
         "Polyphonic",
-		"Distortion"
+        "Distortion"
       ]
     }
   ]
