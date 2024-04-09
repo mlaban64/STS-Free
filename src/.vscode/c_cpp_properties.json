@@ -5,9 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "D:/Apps/msys64/mingw64/include/**",
-                "D:/Apps/msys64/home/marin/Rack-SDK/include/**",
-                "D:/Apps/msys64/home/marin/Rack-SDK/dep/include/**",
-				"D:/Apps/msys64/home/marin/Rack-Dev/STS-Lib/**"
+                "D:/Apps/msys64/home/mlaban/Rack-SDK/include/**",
+                "D:/Apps/msys64/home/mlaban/Rack-SDK/dep/include/**",
+				"D:/Apps/msys64/home/mlaban/Rack-Dev/STS-Lib/**"
             ],
             "defines": [
                 "_DEBUG",

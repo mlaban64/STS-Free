@@ -109,7 +109,11 @@ struct Splitter : Module
 
 				// Now sort the two values ascending
 				if (volt_In[0] > volt_In[1])
-					sts_swap(volt_In[0], volt_In[1]);
+				{
+					volt_Temp = volt_In[0];
+					volt_In[0] = volt_In[1];
+					volt_In[1] = volt_Temp;
+				}
 
 				// Output the voltages and set the lights
 				outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
@@ -129,13 +133,25 @@ struct Splitter : Module
 
 				// Now sort the three values ascending, using a simplified bubble sort
 				if (volt_In[0] > volt_In[1])
-					sts_swap(volt_In[0], volt_In[1]);
+				{
+					volt_Temp = volt_In[0];
+					volt_In[0] = volt_In[1];
+					volt_In[1] = volt_Temp;
+				}
 				// Now sort the last two elements. Now the last element is the largest
 				if (volt_In[1] > volt_In[2])
-					sts_swap(volt_In[1], volt_In[2]);
+				{
+					volt_Temp = volt_In[1];
+					volt_In[1] = volt_In[2];
+					volt_In[2] = volt_Temp;
+				}
 				// Now sort the first two elements and we're done
 				if (volt_In[0] > volt_In[1])
-					sts_swap(volt_In[0], volt_In[1]);
+				{
+					volt_Temp = volt_In[0];
+					volt_In[0] = volt_In[1];
+					volt_In[1] = volt_Temp;
+				}
 
 				// Output the voltages and set the lights
 				outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
@@ -156,18 +172,39 @@ struct Splitter : Module
 
 			// 4 channels, so sort the four values ascending. First sort 0 & 1, then 2 & 3 so we have two sorted mini-arrays of length 2
 			if (volt_In[0] > volt_In[1])
-				sts_swap(volt_In[0], volt_In[1]);
+			{
+				volt_Temp = volt_In[0];
+				volt_In[0] = volt_In[1];
+				volt_In[1] = volt_Temp;
+			}
 			if (volt_In[2] > volt_In[3])
-				sts_swap(volt_In[2], volt_In[3]);
+			{
+				volt_Temp = volt_In[2];
+				volt_In[2] = volt_In[3];
+				volt_In[3] = volt_Temp;
+			}
 			// Now find the smallest of 0 & 2 and swap
 			if (volt_In[0] > volt_In[2])
-				sts_swap(volt_In[0], volt_In[2]);
+			{
+				volt_Temp = volt_In[0];
+				volt_In[0] = volt_In[2];
+				volt_In[2] = volt_Temp;
+			}
 			// Now find the largest of 1 & 3 and swap
+
 			if (volt_In[1] > volt_In[3])
-				sts_swap(volt_In[1], volt_In[3]);
+			{
+				volt_Temp = volt_In[1];
+				volt_In[1] = volt_In[3];
+				volt_In[3] = volt_Temp;
+			}
 			// Now sort the middle two elements 1 & 2 as they may be out of order yet
 			if (volt_In[1] > volt_In[2])
-				sts_swap(volt_In[1], volt_In[2]);
+			{
+				volt_Temp = volt_In[1];
+				volt_In[1] = volt_In[2];
+				volt_In[2] = volt_Temp;
+			}
 
 			// Output the voltages and set the lights
 			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
@@ -193,7 +230,11 @@ struct Splitter : Module
 
 			// Now sort the two values ascending
 			if (volt_In[0] < volt_In[1])
-				sts_swap(volt_In[0], volt_In[1]);
+			{
+				volt_Temp = volt_In[0];
+				volt_In[0] = volt_In[1];
+				volt_In[1] = volt_Temp;
+			}
 
 			// Output the voltages and set the lights
 			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
@@ -213,13 +254,24 @@ struct Splitter : Module
 
 			// Now sort the three values ascending, using a simplified bubble sort
 			if (volt_In[0] < volt_In[1])
-				sts_swap(volt_In[0], volt_In[1]);
+			{
+				volt_Temp = volt_In[0];
+				volt_In[0] = volt_In[1];
+				volt_In[1] = volt_Temp;
+			}
 			// Now sort the last two elements. Now the last element is the largest
 			if (volt_In[1] < volt_In[2])
-				sts_swap(volt_In[1], volt_In[2]);
+			{
+				volt_Temp = volt_In[1];
+				volt_In[1] = volt_In[2];
+				volt_In[2] = volt_Temp;
+			}
 			// Now sort the first two elements and we're done
-			if (volt_In[0] < volt_In[1])
-				sts_swap(volt_In[0], volt_In[1]);
+			{
+				volt_Temp = volt_In[0];
+				volt_In[0] = volt_In[1];
+				volt_In[1] = volt_Temp;
+			}
 
 			// Output the voltages and set the lights
 			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
@@ -240,18 +292,38 @@ struct Splitter : Module
 
 		// 4 channels, so sort the four values ascending. First sort 0 & 1, then 2 & 3 so we have two sorted mini-arrays of length 2
 		if (volt_In[0] < volt_In[1])
-			sts_swap(volt_In[0], volt_In[1]);
+		{
+			volt_Temp = volt_In[0];
+			volt_In[0] = volt_In[1];
+			volt_In[1] = volt_Temp;
+		}
 		if (volt_In[2] < volt_In[3])
-			sts_swap(volt_In[2], volt_In[3]);
+		{
+			volt_Temp = volt_In[2];
+			volt_In[2] = volt_In[3];
+			volt_In[3] = volt_Temp;
+		}
 		// Now find the smallest of 0 & 2 and swap
 		if (volt_In[0] < volt_In[2])
-			sts_swap(volt_In[0], volt_In[2]);
+		{
+			volt_Temp = volt_In[0];
+			volt_In[0] = volt_In[2];
+			volt_In[2] = volt_Temp;
+		}
 		// Now find the largest of 1 & 3 and swap
 		if (volt_In[1] < volt_In[3])
-			sts_swap(volt_In[1], volt_In[3]);
+		{
+			volt_Temp = volt_In[1];
+			volt_In[1] = volt_In[3];
+			volt_In[3] = volt_Temp;
+		}
 		// Now sort the middle two elements 1 & 2 as they may be out of order yet
 		if (volt_In[1] < volt_In[2])
-			sts_swap(volt_In[1], volt_In[2]);
+		{
+			volt_Temp = volt_In[1];
+			volt_In[1] = volt_In[2];
+			volt_In[2] = volt_Temp;
+		}
 
 		// Output the voltages and set the lights
 		outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);

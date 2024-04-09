@@ -1,5 +1,11 @@
 # Changelog VCV-Rack STS Free bundle
 
+09-APR-2024
+-----------
+2.2.0 Release
+- Fixed issue with local variable in sts_swap and removed all usage of sts_swap(a,b)
+- Changes min & max pitch to 10Hz...20,000Hz for Saw, Sine and Triangle VCO
+
 11-Mar-2024
 -----------
 2.1.0 Release

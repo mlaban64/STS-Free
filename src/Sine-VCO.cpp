@@ -100,7 +100,7 @@ struct Sine_VCO : Module
 		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
 		configParam(PM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for phase modulation");
 		configParam(VM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for volume modulation");
-		configParam(PITCH_PARAM, 40.f, 10000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
+		configParam(PITCH_PARAM, 10.f, 20000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
 		configParam(PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
