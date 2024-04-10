@@ -31,20 +31,6 @@ struct Multiplier : Module
 	// Some class-wide parameters
 	int num_Channels; // Number of active channels
 
-	// A simple debug message funcion. Note this takes quite a bit of CPU time, so do not expect proper sound processing when used
-	void STS_Debug(std::string msg, float value)
-	{
-		std::ofstream fs;
-
-		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
-
-		fs << msg;
-		fs << " ";
-		fs << value;
-		fs << "\n";
-		fs.close();
-	}
-
 	Multiplier()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);

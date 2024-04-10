@@ -37,20 +37,6 @@ struct Splitter : Module
 	int splitOrder = 0;									 // Split order menu entry
 	int old_num_Channels = 0, num_Channels, cur_Channel; // Number of active channels
 
-	// A simple debug message funcion. Note this takes quite a bit of CPU time, so do not expect proper sound processing when used
-	void STS_Debug(std::string msg, float value)
-	{
-		std::ofstream fs;
-
-		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
-
-		fs << msg;
-		fs << " ";
-		fs << value;
-		fs << "\n";
-		fs.close();
-	}
-
 	Splitter()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -63,7 +49,6 @@ struct Splitter : Module
 
 	void process(const ProcessArgs &args) override
 	{
-
 		// Get the number of channels from the Input, if any
 		num_Channels = inputs[POLY_IN_INPUT].getChannels();
 

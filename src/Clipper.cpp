@@ -47,19 +47,6 @@ struct Clipper : Module
 	float out_Volt;
 	int num_channels, idx;
 
-	// Debug function, not to be used as a logger as it kills performance
-	void STS_Debug(std::string msg, float value)
-	{
-		std::ofstream fs;
-
-		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
-
-		fs << msg;
-		fs << " ";
-		fs << value;
-		fs << "\n";
-		fs.close();
-	}
 	Clipper()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);

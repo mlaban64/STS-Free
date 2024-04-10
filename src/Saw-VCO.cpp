@@ -67,20 +67,6 @@ struct Saw_VCO : Module
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-	// Debug function, not to be used as a logger as it kills performance
-	void STS_Debug(std::string msg, float value)
-	{
-		std::ofstream fs;
-
-		fs.open("C:/Temp/STS-Debug.txt", std::ofstream::app);
-
-		fs << msg;
-		fs << " ";
-		fs << value;
-		fs << "\n";
-		fs.close();
-	}
-
 	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Saw(float phase, float phase_shift)
 	{
