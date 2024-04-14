@@ -1,7 +1,5 @@
 #include "plugin.hpp"
 #include "sts-base.hpp"
-#include <fstream>
-#include <string.h>
 #include <math.h>
 
 struct Saw_VCO : Module

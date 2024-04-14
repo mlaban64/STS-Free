@@ -78,10 +78,19 @@
       "slug": "D-Octer",
       "name": "D-Octer",
       "description": "Transposed the input voltage by 2 and 1 octave, up and down, each result is sent to a separate output.",
-	  "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/D-Octer.html",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/D-Octer.html",
       "tags": [
         "Polyphonic",
         "Utility"
+      ]
+    },
+    {
+      "slug": "Spiquencer",
+      "name": "Spiquencer",
+      "description": "Sequencer based on a spike board",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/Spiquencer.html",
+      "tags": [
+        "Sequencer"
       ]
     }
   ]
