@@ -33,7 +33,6 @@ struct Triangle_VCO : Module
 	};
 
 	// Some class-wide constants
-	// const float M_2PI = 2.0 * M_PI;
 	const float FREQ_MOD_MULTIPLIER = 0.1f;
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
@@ -47,13 +46,12 @@ struct Triangle_VCO : Module
 	int last_menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 	int menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 
-	// An array of values to represent the sine wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
+	// An array of values to represent the Triangle wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
 	// 2 arrays are used: Band-limited (# of harmonics set as per STS_NUM_SAW_HARMONICS) and Band-unlimited, approachng the mathematicsl triangle
 	float triangle_bl_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 	float triangle_bu_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
-	// local class variable declarations. For some reason, putting them as static/dynamic in the class Process() function does not work.
-	// For instance, the PITCH_PARAM knob would infuence other instances of the same module. Putting it here circumvents the problem
+	// local class variable declarations
 	float pitch_param, phase_param, volume_param;
 	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
 	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
@@ -66,16 +64,16 @@ struct Triangle_VCO : Module
 	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Triangle(float phase, float phase_shift)
 	{
-		static int idx;
+		int index;
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
-		idx = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
-		idx = idx % STS_NUM_WAVE_SAMPLES;
+		index = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
+		index = index % STS_NUM_WAVE_SAMPLES;
 
 		if (bandLimited)
-			return (triangle_bl_wave_lookup_table[idx]);
+			return (triangle_bl_wave_lookup_table[index]);
 		else
-			return (triangle_bu_wave_lookup_table[idx]);
+			return (triangle_bu_wave_lookup_table[index]);
 	}
 
 	// Custom OnReset() to initialize wave tables and set some default values
@@ -85,14 +83,14 @@ struct Triangle_VCO : Module
 		num_Harmonics = STS_DEF_NUM_HARMONICS;
 		menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 		last_menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
-		InitTriangle_Waves(num_Harmonics);
+		InitTriangle_Waves();
 	}
 
-	void InitTriangle_Waves(int num_Harm)
+	void InitTriangle_Waves()
 	{
 
-		static int i, j, mid, sign;
-		static float iter, harmonic, h_factor, max_harmonic;
+		int i, j, mid, sign;
+		float iter, harmonic, h_factor, max_harmonic;
 
 		// Populate the triangle wave table
 		// Filled with a full triangle cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
@@ -105,7 +103,6 @@ struct Triangle_VCO : Module
 		}
 
 		// Using harmonic sine waves to mimic a band-limited triangle wave to limit aliases
-		// Triangle = odd harmonics only, ¹/₉ of 3rd, ¹/₂₅ of 5th &c. (⅟harmonic²)
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
 			iter = M_2PI * ((float)i / STS_NUM_WAVE_SAMPLES);
@@ -158,7 +155,7 @@ struct Triangle_VCO : Module
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio Out");
 
-		InitTriangle_Waves(STS_DEF_NUM_HARMONICS);
+		InitTriangle_Waves();
 	}
 
 	void process(const ProcessArgs &args) override
@@ -168,7 +165,7 @@ struct Triangle_VCO : Module
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
 		{
 			num_Harmonics = menu_num_Harmonics + 1;
-			InitTriangle_Waves(num_Harmonics);
+			InitTriangle_Waves();
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
 

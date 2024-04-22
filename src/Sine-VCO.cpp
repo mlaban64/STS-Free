@@ -33,7 +33,6 @@ struct Sine_VCO : Module
 	};
 
 	// Some class-wide constants
-	// const float M_2PI = 2.0 * M_PI;
 	const float FREQ_MOD_MULTIPLIER = 0.1f;
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
@@ -43,8 +42,7 @@ struct Sine_VCO : Module
 	// An array of values to represent the sine wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
 	float sine_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
-	// local class variable declarations. For some reason, putting them as static/dynamic in the class Process() function does not work.
-	// For instance, the PITCH_PARAM knob would infuence other instances of the same module. Putting it here circumvents the problem
+	// local class variable declarations
 	float pitch_param, phase_param, volume_param;
 	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
 	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
@@ -57,18 +55,18 @@ struct Sine_VCO : Module
 	// Maps  phase & phase shift to an index in the wave table
 	float STS_My_Sine(float phase, float phase_shift)
 	{
-		static int idx;
+		int index;
 
 		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
-		idx = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
-		idx = idx % STS_NUM_WAVE_SAMPLES;
+		index = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
+		index = index % STS_NUM_WAVE_SAMPLES;
 
-		return (sine_wave_lookup_table[idx]);
+		return (sine_wave_lookup_table[index]);
 	}
 
 	void InitSine_Waves()
 	{
-		static int i;
+		int i;
 
 		// Populate the sine wave table
 		// Filled with a full sine cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels

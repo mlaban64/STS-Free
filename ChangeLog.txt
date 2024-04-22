@@ -1,5 +1,16 @@
 # Changelog VCV-Rack STS Free bundle
 
+22-APR-2024
+-----------
+2.2.0 Release
+- Final version of Pulse-VCO
+- Some code refactoring
+
+18-APR-2024
+-----------
+2.2.0 Release
+- Initial version of Ticker
+
 14-APR-2024
 -----------
 2.2.0 Release

@@ -2,16 +2,18 @@
 #include "sts-base.hpp"
 #include <math.h>
 
-struct Saw_VCO : Module
+struct Pulse_VCO : Module
 {
 	enum ParamId
 	{
 		FM_ATTN_PARAM,
 		PM_ATTN_PARAM,
 		VM_ATTN_PARAM,
+		PW_ATTN_PARAM,
 		PITCH_PARAM,
 		PHASE_PARAM,
 		VOLUME_PARAM,
+		PULSE_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -20,6 +22,7 @@ struct Saw_VCO : Module
 		FM_IN_INPUT,
 		PM_IN_INPUT,
 		VM_IN_INPUT,
+		PW_IN_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId
@@ -36,101 +39,87 @@ struct Saw_VCO : Module
 	const float FREQ_MOD_MULTIPLIER = 0.1f;
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
+	const float PULSEWIDTH_MOD_MULTIPLIER = 0.1f;
 
 #define STS_NUM_WAVE_SAMPLES 1000
 #define STS_DEF_NUM_HARMONICS 10
 
-	// Some class-wide variables
-	int rampDir = 0;
 	int bandLimited = 0;
 	int num_Harmonics = STS_DEF_NUM_HARMONICS;
 	int last_menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 	int menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 
-	// An array of values to represent the sawtooth wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
-	// 4 arrays are used: Band-limited (# of harmonics set as per STS_NUM_SAW_HARMONICS) and Band-unlimited, approachng the mathematicsl sawtooth
-	float saw_bl_up_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
-	float saw_bl_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
-	float saw_bu_up_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
-	float saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
+	// An array of values to represent the sine wave, as values in the range [-1.0, 1.0]. This can arguebly be regarded as a wavetable
+	float pulse_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable declarations
-	float pitch_param, phase_param, volume_param;
-	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
-	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
-	float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f;
+	float pitch_param, phase_param, volume_param, pulsewidth_param;
+	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f, pulse_width = 0.5;
+	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f, pulsewidth_mod = 0.f;
+	float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f, pulsewidth_mod_attn = 0.f;
 	int num_channels, idx;
 
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-	// Maps  phase & phase shift to an index in the wave table
-	float STS_My_Saw(float phase, float phase_shift)
+	// Maps  phase & phase shift to an index in the wave table or compute a putre pulse
+	float STS_My_Pulse(float phase, float phase_shift)
 	{
 		int index;
-
-		// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
-		index = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
-		index = index % STS_NUM_WAVE_SAMPLES;
-
-		// ramp is up?
-		if (rampDir == 0)
+		float pulse_pos;
+		// Band-unlimited?
+		if (bandLimited)
 		{
-			// Band-unlimited?
-			if (bandLimited)
-				return (saw_bl_up_wave_lookup_table[index]);
-			else
-				return (saw_bu_up_wave_lookup_table[index]);
+
+			// Compute the index by mapping phase + phase_shift across the total number of samples in the wave table
+			index = (int)((phase + phase_shift) * STS_NUM_WAVE_SAMPLES);
+			index = index % STS_NUM_WAVE_SAMPLES;
+
+			return (pulse_wave_lookup_table[index]);
 		}
-		else // ramp is down
+		else
 		{
-			// Band-unlimited?
-			if (bandLimited)
-				return (saw_bl_down_wave_lookup_table[index]);
+			// Compute the pulse position by mapping phase + phase_shift across the 0..1 range with the pulse width as cut-off
+			pulse_pos = phase + phase_shift;
+			if (pulse_pos > 1.0f)
+				pulse_pos -= 1.0f;
+
+			if (pulse_pos < pulse_width)
+				return (5.0f);
 			else
-				return (saw_bu_down_wave_lookup_table[index]);
+				return (-5.0f);
 		}
 	}
 
 	// Custom OnReset() to initialize wave tables and set some default values
 	void onReset() override
 	{
-		rampDir = 0;
 		bandLimited = 0;
 		num_Harmonics = STS_DEF_NUM_HARMONICS;
 		menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
 		last_menu_num_Harmonics = STS_DEF_NUM_HARMONICS - 1;
-		InitSaw_Waves(num_Harmonics);
+		InitPulse_Waves();
 	}
 
-	void InitSaw_Waves(int num_Harm)
+	void
+	InitPulse_Waves()
 	{
 		int i, j;
 		float iter, harmonic, h_factor, max_harmonic;
 
-		// Populate the band-unlimited sawtooth wave tables
-		// Filled with a full sawtooth cycle, multiplied by 5.0 to reflect the default +/- 5V audio output levels
-		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
-		{
-			// Up ramp
-			saw_bu_up_wave_lookup_table[i] = -5.0f + 10.0f * ((float)i / STS_NUM_WAVE_SAMPLES);
-			// Down ramp
-			saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bu_up_wave_lookup_table[i];
-		}
-
-		// Using harmonic sine waves to mimic a band-limited sawtooth wave to limit aliases
-		// Sawtooth = all harmonics 2nd 3rd 4th &c. where 2nd = ½, 3rd = ¹/₃ & 4th = ¼ volume.
+		// Using harmonic sine waves to mimic a band-limited square wave to limit aliases
+		// Square = odd harmonics only, ¹/3 of 3rd, ¹/5 of 5th &c. (⅟harmonic)
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
 			iter = M_2PI * ((float)i / STS_NUM_WAVE_SAMPLES);
-			saw_bl_down_wave_lookup_table[i] = 0.0f;
+			pulse_wave_lookup_table[i] = 0.0f;
 
-			// Now loop through the harmonics until...
-			for (j = 1; j <= num_Harm; j++)
+			// Now loop through the odd harmonics until...
+			for (j = 1; j <= num_Harmonics * 2; j += 2)
 			{
 				h_factor = (float)j;
-				harmonic = std::sin(h_factor * iter) / h_factor;
-				saw_bl_down_wave_lookup_table[i] = saw_bl_down_wave_lookup_table[i] + harmonic;
+				harmonic = std::sin(h_factor * iter) / (h_factor);
+				pulse_wave_lookup_table[i] = pulse_wave_lookup_table[i] + harmonic;
 			}
 		}
 
@@ -139,33 +128,35 @@ struct Saw_VCO : Module
 		max_harmonic = 0.0f;
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			if (saw_bl_down_wave_lookup_table[i] > max_harmonic)
-				max_harmonic = saw_bl_down_wave_lookup_table[i];
+			if (pulse_wave_lookup_table[i] > max_harmonic)
+				max_harmonic = pulse_wave_lookup_table[i];
 		}
-		// Then correct amplitude and make the inverse saw too
+		// Then correct...
 		for (i = 0; i < STS_NUM_WAVE_SAMPLES; i++)
 		{
-			saw_bl_down_wave_lookup_table[i] *= (5.0f / max_harmonic);
-			saw_bl_up_wave_lookup_table[STS_NUM_WAVE_SAMPLES - i - 1] = saw_bl_down_wave_lookup_table[i];
+			pulse_wave_lookup_table[i] *= (5.0f / max_harmonic);
 		}
 	}
 
-	Saw_VCO()
+	Pulse_VCO()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
 		configParam(PM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for phase modulation");
 		configParam(VM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for volume modulation");
+		configParam(PW_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for pulse-width modulation");
 		configParam(PITCH_PARAM, 10.f, 20000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
 		configParam(PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");
+		configParam(PULSE_PARAM, 1.f, 99.f, 50.0f, "Pulse Width", " %");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
 		configInput(FM_IN_INPUT, "Frequence modulation");
 		configInput(PM_IN_INPUT, "Phase modulation");
 		configInput(VM_IN_INPUT, "Volume modulation");
+		configInput(PW_IN_INPUT, "Pulse-width modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio Out");
 
-		InitSaw_Waves(STS_DEF_NUM_HARMONICS);
+		InitPulse_Waves();
 	}
 
 	void process(const ProcessArgs &args) override
@@ -174,7 +165,7 @@ struct Saw_VCO : Module
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
 		{
 			num_Harmonics = menu_num_Harmonics + 1;
-			InitSaw_Waves(num_Harmonics);
+			InitPulse_Waves();
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
 
@@ -182,12 +173,15 @@ struct Saw_VCO : Module
 		pitch_param = params[PITCH_PARAM].getValue();
 		phase_param = params[PHASE_PARAM].getValue();
 		volume_param = params[VOLUME_PARAM].getValue();
+		pulsewidth_param = params[PULSE_PARAM].getValue();
 		freq_mod_attn = params[FM_ATTN_PARAM].getValue();
 		phase_mod_attn = params[PM_ATTN_PARAM].getValue();
 		volume_mod_attn = params[VM_ATTN_PARAM].getValue();
+		pulsewidth_mod_attn = params[PW_ATTN_PARAM].getValue();
 		freq_mod = inputs[FM_IN_INPUT].getVoltage();
 		phase_mod = inputs[PM_IN_INPUT].getVoltage();
 		volume_mod = inputs[VM_IN_INPUT].getVoltage();
+		pulsewidth_mod = inputs[PW_IN_INPUT].getVoltage();
 
 		// Compute the volume output as per the controls
 		if (inputs[VM_IN_INPUT].isConnected())
@@ -204,6 +198,12 @@ struct Saw_VCO : Module
 		}
 		else
 			phase_shift = phase_param;
+
+		// Compute the pulse width output as per the controls
+		if (inputs[PW_IN_INPUT].isConnected())
+			pulse_width = 0.01f * pulsewidth_param + pulsewidth_mod * pulsewidth_mod_attn * PULSEWIDTH_MOD_MULTIPLIER;
+		else
+			pulse_width = 0.01f * pulsewidth_param; // pulse width param is a %
 
 		// Is the V-In connected?
 		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
@@ -226,7 +226,7 @@ struct Saw_VCO : Module
 
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
-			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Pulse(phase[0], phase_shift));
 		}
 		else
 		{
@@ -248,7 +248,7 @@ struct Saw_VCO : Module
 
 				// Compute the wave via the wave table,
 				// output to the correct channel, multiplied by the output volume
-				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[idx], phase_shift), idx);
+				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Pulse(phase[idx], phase_shift), idx);
 			}
 		}
 	}
@@ -258,7 +258,6 @@ struct Saw_VCO : Module
 		json_t *rootJ = json_object();
 
 		json_object_set_new(rootJ, "Band", json_integer(bandLimited));
-		json_object_set_new(rootJ, "Ramp", json_integer(rampDir));
 		json_object_set_new(rootJ, "Harmonics", json_integer(menu_num_Harmonics));
 
 		return rootJ;
@@ -267,56 +266,56 @@ struct Saw_VCO : Module
 	void dataFromJson(json_t *rootJ) override
 	{
 		json_t *bandLimitedJ = json_object_get(rootJ, "Band");
-		json_t *rampDirJ = json_object_get(rootJ, "Ramp");
 		json_t *harmonicsJ = json_object_get(rootJ, "Harmonics");
 
 		if (bandLimitedJ)
 			bandLimited = json_integer_value(bandLimitedJ);
-		if (rampDirJ)
-			rampDir = json_integer_value(rampDirJ);
 		if (harmonicsJ)
 			menu_num_Harmonics = json_integer_value(harmonicsJ);
 	}
 };
 
-struct Saw_VCOWidget : ModuleWidget
+struct Pulse_VCOWidget : ModuleWidget
 {
-	Saw_VCOWidget(Saw_VCO *module)
+	Pulse_VCOWidget(Pulse_VCO *module)
 	{
 		setModule(module);
-		setPanel(createPanel(asset::plugin(pluginInstance, "res/Saw-VCO.svg")));
+		setPanel(createPanel(asset::plugin(pluginInstance, "res/Pulse-VCO.svg")));
 
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 29.5)), module, Saw_VCO::FM_ATTN_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 44.5)), module, Saw_VCO::PM_ATTN_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 59.5)), module, Saw_VCO::VM_ATTN_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(12.7, 74.5)), module, Saw_VCO::PITCH_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(12.7, 89.5)), module, Saw_VCO::PHASE_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(12.7, 104.5)), module, Saw_VCO::VOLUME_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 28.5)), module, Pulse_VCO::FM_ATTN_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 40.0)), module, Pulse_VCO::PM_ATTN_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 51.5)), module, Pulse_VCO::VM_ATTN_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.5, 63.0)), module, Pulse_VCO::PW_ATTN_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.0, 14.0)), module, Saw_VCO::V_OCT_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 29.5)), module, Saw_VCO::FM_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 44.5)), module, Saw_VCO::PM_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 59.5)), module, Saw_VCO::VM_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(7.5, 77.5)), module, Pulse_VCO::PITCH_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(17.5, 87.5)), module, Pulse_VCO::PHASE_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(7.5, 97.5)), module, Pulse_VCO::VOLUME_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(17.5, 107.5)), module, Pulse_VCO::PULSE_PARAM));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(18.5, 14.0)), module, Saw_VCO::OUTPUT_OUTPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.0, 14.0)), module, Pulse_VCO::V_OCT_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 28.5)), module, Pulse_VCO::FM_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 40.0)), module, Pulse_VCO::PM_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 51.5)), module, Pulse_VCO::VM_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5, 63.0)), module, Pulse_VCO::PW_IN_INPUT));
+
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(18.5, 14.0)), module, Pulse_VCO::OUTPUT_OUTPUT));
 	}
 
 	void appendContextMenu(Menu *menu) override
 	{
-		Saw_VCO *module = getModule<Saw_VCO>();
+		Pulse_VCO *module = getModule<Pulse_VCO>();
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createIndexPtrSubmenuItem("Ramp", {"Up", "Down"}, &module->rampDir));
 		menu->addChild(createIndexPtrSubmenuItem("Band", {"Unlimited", "Limited"}, &module->bandLimited));
 		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"},
 												 &module->menu_num_Harmonics));
 	}
 };
 
-Model *modelSaw_VCO = createModel<Saw_VCO, Saw_VCOWidget>("Saw-VCO");
+Model *modelPulse_VCO = createModel<Pulse_VCO, Pulse_VCOWidget>("Pulse-VCO");

@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="152mm"
+   width="101.6mm"
    height="128.5mm"
-   viewBox="0 0 152 128.5"
+   viewBox="0 0 101.6 128.5"
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
@@ -29,21 +29,33 @@
      inkscape:pagecheckerboard="false"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.6760376"
-     inkscape:cx="193.90973"
-     inkscape:cy="248.20446"
+     inkscape:zoom="1.1851376"
+     inkscape:cx="183.52299"
+     inkscape:cy="234.57192"
      inkscape:window-width="1920"
      inkscape:window-height="1130"
      inkscape:window-x="-6"
      inkscape:window-y="-6"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     showguides="false">
-    <sodipodi:guide
-       position="101.13278,122.58385"
-       orientation="0,-1"
-       id="guide1"
-       inkscape:locked="false" />
+     inkscape:current-layer="layer2"
+     showguides="true"
+     showgrid="true">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.50000001"
+       spacingy="0.50000001"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       dotted="false"
+       gridanglex="30"
+       gridanglez="30"
+       visible="true" />
   </sodipodi:namedview>
   <defs
      id="defs1">
@@ -123,15 +135,15 @@
      id="layer1"
      style="display:inline">
     <rect
-       style="fill:#93b5cf;fill-opacity:1;stroke:#97c6c1;stroke-width:0.159967;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       style="fill:#93b5cf;fill-opacity:1;stroke:#97c6c1;stroke-width:0.130784;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="guid-133bc867-ad6a-494a-bd77-ef0c326a6449"
-       width="151.84003"
-       height="128.34004"
-       x="0.079983823"
-       y="0.079984039"
+       width="101.46922"
+       height="128.36923"
+       x="0.065392196"
+       y="0.065392412"
        ry="0"
-       inkscape:transform-center-x="0.80765935"
-       inkscape:transform-center-y="11.253708"
+       inkscape:transform-center-x="0.53972624"
+       inkscape:transform-center-y="11.25627"
        inkscape:label="Panel" />
     <g
        id="guid-836c62ac-2363-4971-88ce-5a5d0a73b10b"
@@ -162,557 +174,731 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="components"
-     style="display:inline">
+     style="display:none">
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1"
        id="guid-02a7bebb-177d-449f-aca3-055687f4c9a1"
        data-name="In#PJ301MPort"
-       cx="9.0691643"
-       cy="118.01965"
+       cx="10.332064"
+       cy="105.70638"
        r="5"
-       inkscape:label="POLY_IN">
+       inkscape:label="RUN_IN">
       <title
          id="title18">Poly In</title>
     </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2"
-       cx="59.635174"
-       cy="21.092138"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
     <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4"
-       data-name="Out1#PJ301MPort"
-       cx="51.099201"
-       cy="21.25"
+       style="display:inline;fill:#00ff00;fill-opacity:1"
+       id="guid-02a7bebb-177d-449f-aca3-055687f4c9a1-1"
+       data-name="In#PJ301MPort"
+       cx="27.225"
+       cy="105.54167"
        r="5"
-       inkscape:label="CH_11_OUT">
+       inkscape:label="CLK_IN">
       <title
-         id="title12">Channel 1 Out</title>
+         id="title18-2">Poly In</title>
     </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c"
-       data-name="Out0#PJ301MPort"
-       cx="59.628613"
-       cy="21.092138"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-2"
-       cx="77.936447"
-       cy="40.605476"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-8"
-       data-name="Out1#PJ301MPort"
-       cx="69.400475"
-       cy="40.76334"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-2">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-1"
-       data-name="Out0#PJ301MPort"
-       cx="77.929886"
-       cy="40.605476"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-0">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4"
-       cx="51.086521"
-       cy="30.917967"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4"
-       data-name="Out1#PJ301MPort"
-       cx="42.550549"
-       cy="31.07583"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3"
-       data-name="Out0#PJ301MPort"
-       cx="51.07996"
-       cy="30.917967"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45"
-       cx="69.069519"
-       cy="30.564205"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7"
-       data-name="Out1#PJ301MPort"
-       cx="60.533546"
-       cy="30.722065"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6"
-       data-name="Out0#PJ301MPort"
-       cx="69.062958"
-       cy="30.564205"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1"
-       cx="41.77264"
-       cy="41.056877"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2"
-       data-name="Out1#PJ301MPort"
-       cx="33.236668"
-       cy="41.214741"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4"
-       data-name="Out0#PJ301MPort"
-       cx="41.766079"
-       cy="41.056877"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7"
-       cx="59.755634"
-       cy="40.703114"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9"
-       data-name="Out1#PJ301MPort"
-       cx="51.219662"
-       cy="40.860973"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3"
-       data-name="Out0#PJ301MPort"
-       cx="59.749073"
-       cy="40.703114"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9"
-       cx="32.323292"
-       cy="51.026516"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2"
-       data-name="Out1#PJ301MPort"
-       cx="23.787321"
-       cy="51.18438"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0-5">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8"
-       data-name="Out0#PJ301MPort"
-       cx="32.31673"
-       cy="51.026516"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6"
-       cx="50.30629"
-       cy="50.672752"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7"
-       data-name="Out1#PJ301MPort"
-       cx="41.770317"
-       cy="50.830612"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6-7">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0"
-       data-name="Out0#PJ301MPort"
-       cx="50.299728"
-       cy="50.672752"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9-4">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-0"
-       cx="69.079025"
-       cy="50.508549"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2-3"
-       data-name="Out1#PJ301MPort"
-       cx="60.543053"
-       cy="50.666412"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0-5-3">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-1"
-       data-name="Out0#PJ301MPort"
-       cx="69.072464"
-       cy="50.508549"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8-2">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6-9"
-       cx="87.062019"
-       cy="50.154785"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-8"
-       data-name="Out1#PJ301MPort"
-       cx="78.526047"
-       cy="50.312645"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6-7-3">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0-0"
-       data-name="Out0#PJ301MPort"
-       cx="87.055458"
-       cy="50.154785"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9-4-2">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-5"
-       cx="23.809708"
-       cy="61.636471"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2-39"
-       data-name="Out1#PJ301MPort"
-       cx="15.27374"
-       cy="61.794338"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0-5-38">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-3"
-       data-name="Out0#PJ301MPort"
-       cx="23.803146"
-       cy="61.636471"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8-8">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6-3"
-       cx="41.792709"
-       cy="61.282711"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-3"
-       data-name="Out1#PJ301MPort"
-       cx="33.256737"
-       cy="61.440571"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6-7-34">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0-6"
-       data-name="Out0#PJ301MPort"
-       cx="41.786148"
-       cy="61.282711"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9-4-4">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-0-5"
-       cx="60.565453"
-       cy="61.118504"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2-3-9"
-       data-name="Out1#PJ301MPort"
-       cx="52.029472"
-       cy="61.276371"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0-5-3-0">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-1-8"
-       data-name="Out0#PJ301MPort"
-       cx="60.558876"
-       cy="61.118504"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8-2-5">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6-9-7"
-       cx="78.548439"
-       cy="60.764744"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-8-7"
-       data-name="Out1#PJ301MPort"
-       cx="70.012466"
-       cy="60.922604"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6-7-3-3">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0-0-1"
-       data-name="Out0#PJ301MPort"
-       cx="78.541878"
-       cy="60.764744"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9-4-2-7">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7"
-       cx="14.82064"
-       cy="71.407875"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2-34"
-       data-name="Out1#PJ301MPort"
-       cx="6.284667"
-       cy="71.56575"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-8-0-5-0">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4"
-       data-name="Out0#PJ301MPort"
-       cx="14.814078"
-       cy="71.407875"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8-1">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6-6"
-       cx="32.803635"
-       cy="71.054115"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
-       style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-5"
-       data-name="Out1#PJ301MPort"
-       cx="24.26766"
-       cy="71.211975"
-       r="5"
-       inkscape:label="CH_11_OUT">
-      <title
-         id="title12-9-6-7-6">Channel 1 Out</title>
-    </circle>
-    <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0-66"
-       data-name="Out0#PJ301MPort"
-       cx="32.797073"
-       cy="71.054115"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-80-9-4-0">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-0-1"
-       cx="51.57637"
-       cy="70.889915"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
     <circle
        style="display:inline;fill:#0000ff"
        id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-4-2-2-3-1"
        data-name="Out1#PJ301MPort"
-       cx="43.040398"
-       cy="71.047775"
+       cx="62.931061"
+       cy="105.7775"
        r="5"
-       inkscape:label="CH_11_OUT">
+       inkscape:label="V_OUT">
       <title
          id="title12-8-0-5-3-4">Channel 1 Out</title>
     </circle>
     <circle
-       style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-1-9"
-       data-name="Out0#PJ301MPort"
-       cx="51.569809"
-       cy="70.889915"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
-      <title
-         id="title10-8-4-8-2-8">Light Out 1</title>
-    </circle>
-    <ellipse
-       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-45-7-6-9-3"
-       cx="69.559364"
-       cy="70.536156"
-       inkscape:label="V_11_OUT"
-       rx="2.500025"
-       ry="2.5" />
-    <circle
        style="display:inline;fill:#0000ff"
-       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-8-3"
+       id="guid-f04a8e42-c2b6-4f11-8367-55466c0df6d4-7-9-7-5"
        data-name="Out1#PJ301MPort"
-       cx="61.023399"
-       cy="70.694016"
+       cx="45.421223"
+       cy="106.09956"
        r="5"
-       inkscape:label="CH_11_OUT">
+       inkscape:label="GATE_OUT">
       <title
-         id="title12-9-6-7-3-5">Channel 1 Out</title>
+         id="title12-9-6-7-6">Channel 1 Out</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-39"
+       cx="17.553802"
+       cy="70.13945"
+       inkscape:label="V_81"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-04"
+       data-name="Out0#PJ301MPort"
+       cx="17.547241"
+       cy="70.13945"
+       inkscape:label="LGT_81"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-8-1"
+       cx="27.122355"
+       cy="70.13945"
+       inkscape:label="V_82"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6"
+       data-name="Out0#PJ301MPort"
+       cx="27.115793"
+       cy="70.13945"
+       inkscape:label="LGT_82"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-4-4"
+       cx="36.690903"
+       cy="70.13945"
+       inkscape:label="V_83"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7"
+       data-name="Out0#PJ301MPort"
+       cx="36.684341"
+       cy="70.13945"
+       inkscape:label="LGT_83"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-9-4"
+       cx="46.259453"
+       cy="70.13945"
+       inkscape:label="V_84"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7"
+       data-name="Out0#PJ301MPort"
+       cx="46.252892"
+       cy="70.13945"
+       inkscape:label="LGT_84"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-54-3">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-3-2"
+       cx="55.828007"
+       cy="70.13945"
+       inkscape:label="V_85"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9"
+       data-name="Out0#PJ301MPort"
+       cx="55.821445"
+       cy="70.13945"
+       inkscape:label="LGT_85"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-8-5">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-85-4"
+       cx="65.396561"
+       cy="70.13945"
+       inkscape:label="V_86"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-06-1"
+       data-name="Out0#PJ301MPort"
+       cx="65.389999"
+       cy="70.13945"
+       inkscape:label="LGT_86"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-4-9">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-1-9"
+       cx="74.965111"
+       cy="70.13945"
+       inkscape:label="V_87"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-2-4"
+       data-name="Out0#PJ301MPort"
+       cx="74.958549"
+       cy="70.13945"
+       inkscape:label="LGT_87"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-43-0">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-47-8"
+       cx="84.533661"
+       cy="70.13945"
+       inkscape:label="V_88"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-8-4"
+       data-name="Out0#PJ301MPort"
+       cx="84.5271"
+       cy="70.13945"
+       inkscape:label="LGT_88"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-6-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-39-3"
+       cx="22.556564"
+       cy="62.606415"
+       inkscape:label="V_71"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-04-7"
+       data-name="Out0#PJ301MPort"
+       cx="22.550003"
+       cy="62.606415"
+       inkscape:label="LGT_71"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0-8">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-8-1-5"
+       cx="32.125114"
+       cy="62.606415"
+       inkscape:label="V_72"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4"
+       data-name="Out0#PJ301MPort"
+       cx="32.118553"
+       cy="62.606415"
+       inkscape:label="LGT_72"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-4-4-5"
+       cx="41.693665"
+       cy="62.606415"
+       inkscape:label="V_73"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8"
+       data-name="Out0#PJ301MPort"
+       cx="41.687103"
+       cy="62.606415"
+       inkscape:label="LGT_73"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4-0">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-9-4-8"
+       cx="51.262215"
+       cy="62.606415"
+       inkscape:label="V_74"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7"
+       data-name="Out0#PJ301MPort"
+       cx="51.255653"
+       cy="62.606415"
+       inkscape:label="LGT_74"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-54-3-8">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-3-2-3"
+       cx="60.830769"
+       cy="62.606415"
+       inkscape:label="V_75"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1"
+       data-name="Out0#PJ301MPort"
+       cx="60.824207"
+       cy="62.606415"
+       inkscape:label="LGT_75"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-8-5-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-85-4-0"
+       cx="70.399315"
+       cy="62.606415"
+       inkscape:label="V_76"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-06-1-8"
+       data-name="Out0#PJ301MPort"
+       cx="70.392754"
+       cy="62.606415"
+       inkscape:label="LGT_76"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-4-9-9">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-1-9-3"
+       cx="79.967873"
+       cy="62.606415"
+       inkscape:label="V_77"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-2-4-9"
+       data-name="Out0#PJ301MPort"
+       cx="79.961311"
+       cy="62.606415"
+       inkscape:label="LGT_77"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-43-0-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-85-4-0-8"
+       cx="75.032433"
+       cy="55.02808"
+       inkscape:label="V_66"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-06-1-8-4"
+       data-name="Out0#PJ301MPort"
+       cx="75.025871"
+       cy="55.02808"
+       inkscape:label="LGT_66"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-4-9-9-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-3-2-3-7"
+       cx="65.463882"
+       cy="55.02808"
+       inkscape:label="V_65"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1-5"
+       data-name="Out0#PJ301MPort"
+       cx="65.457321"
+       cy="55.02808"
+       inkscape:label="LGT_65"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-8-5-7-4">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-9-4-8-9"
+       cx="55.895329"
+       cy="55.02808"
+       inkscape:label="V_64"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7-1"
+       data-name="Out0#PJ301MPort"
+       cx="55.888767"
+       cy="55.02808"
+       inkscape:label="LGT_64"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-54-3-8-4">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-4-4-5-5"
+       cx="46.326778"
+       cy="55.02808"
+       inkscape:label="V_63"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8-7"
+       data-name="Out0#PJ301MPort"
+       cx="46.320217"
+       cy="55.02808"
+       inkscape:label="LGT_63"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4-0-1">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-8-1-5-8"
+       cx="36.758228"
+       cy="55.02808"
+       inkscape:label="V_62"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4-2"
+       data-name="Out0#PJ301MPort"
+       cx="36.751667"
+       cy="55.02808"
+       inkscape:label="LGT_62"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-9">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-39-3-0"
+       cx="27.189678"
+       cy="55.02808"
+       inkscape:label="V_61"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-04-7-4"
+       data-name="Out0#PJ301MPort"
+       cx="27.183117"
+       cy="55.02808"
+       inkscape:label="LGT_61"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0-8-5">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-3-2-3-2"
+       cx="70.418915"
+       cy="47.500877"
+       inkscape:label="V_55"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1-2"
+       data-name="Out0#PJ301MPort"
+       cx="70.412354"
+       cy="47.500877"
+       inkscape:label="LGT_55"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-8-5-7-7">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-9-4-8-2"
+       cx="60.850365"
+       cy="47.500877"
+       inkscape:label="V_54"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7-9"
+       data-name="Out0#PJ301MPort"
+       cx="60.843803"
+       cy="47.500877"
+       inkscape:label="LGT_54"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-54-3-8-0">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-4-4-5-9"
+       cx="51.281811"
+       cy="47.500877"
+       inkscape:label="V_53"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8-4"
+       data-name="Out0#PJ301MPort"
+       cx="51.275249"
+       cy="47.500877"
+       inkscape:label="LGT_53"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4-0-4">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="path1-3-2-4-1-9-7-8-1-5-9"
+       cx="41.713264"
+       cy="47.500877"
+       inkscape:label="V_52"
+       r="2.5" />
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4-5"
+       data-name="Out0#PJ301MPort"
+       cx="41.706703"
+       cy="47.500877"
+       inkscape:label="LGT_52"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-4">Light Out 1</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-2f34073a-aaf5-496f-820d-5ccf543fc635"
+       cx="32.144714"
+       cy="47.500877"
+       inkscape:label="V_51"
+       r="2.5">
+      <title
+         id="title13">V/Oct Out 51</title>
     </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-6-3-0-0-6"
+       id="guid-e56f8d6b-f7d5-49f2-88d7-1a5a6042713d"
        data-name="Out0#PJ301MPort"
-       cx="69.552803"
-       cy="70.536156"
-       r="1.5"
-       inkscape:label="LGT_11_OUT">
+       cx="32.138153"
+       cy="47.500877"
+       inkscape:label="LGT_51"
+       r="1.5">
       <title
-         id="title10-80-9-4-2-6">Light Out 1</title>
+         id="title10-8-4-8-1-0-8-2">Light Out 51</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-c6896962-60c0-447d-aa17-0abf8fbd0d01"
+       cx="65.536156"
+       cy="40.018528"
+       inkscape:label="V_44"
+       r="2.5">
+      <title
+         id="title12">V/Oct Out 44</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-558aa04b-71b1-4bcd-87f3-927087757e2a"
+       data-name="Out0#PJ301MPort"
+       cx="65.529594"
+       cy="40.018528"
+       inkscape:label="LGT_44"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-54-3-8-0-8">Light Out 44</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-50721996-2561-4f39-b7f0-c642271d4837"
+       cx="55.967609"
+       cy="40.018528"
+       inkscape:label="V_43"
+       r="2.5">
+      <title
+         id="title11">V/Oct Out 43</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-c8bbecc7-cfa8-4306-abd2-7ca7996539fb"
+       data-name="Out0#PJ301MPort"
+       cx="55.961048"
+       cy="40.018528"
+       inkscape:label="LGT_43"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4-0-4-6">Light Out 43</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-c87be665-c2f2-44df-a545-c675fad429b7"
+       cx="46.399059"
+       cy="40.018528"
+       inkscape:label="V_42"
+       r="2.5">
+      <title
+         id="title10">V/Oct Out 42</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-1851513e-0b2a-4690-8881-be8e7a7a7c76"
+       data-name="Out0#PJ301MPort"
+       cx="46.392498"
+       cy="40.018528"
+       inkscape:label="LGT_42"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-4-0">Light Out 42</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-9e87f05b-2ab0-4c41-a1a4-12ee66de3459"
+       cx="36.830505"
+       cy="40.018528"
+       inkscape:label="V_41"
+       r="2.5">
+      <title
+         id="title9">V/Oct Out 42</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-428eb014-318e-4df0-8122-0f670222a7aa"
+       data-name="Out0#PJ301MPort"
+       cx="36.823944"
+       cy="40.018528"
+       inkscape:label="LGT_41"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0-8-2-5">Light Out 41</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-27c65e5f-6187-43a3-a106-fd76dfd95d35"
+       cx="60.756237"
+       cy="32.585217"
+       inkscape:label="V_33"
+       r="2.5">
+      <title
+         id="title7">V/Oct Out 33</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-ab72668e-858b-4368-bad0-563c1191641b"
+       data-name="Out0#PJ301MPort"
+       cx="60.749676"
+       cy="32.585217"
+       inkscape:label="LGT_33"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-55-4-0-4-4">Light Out 33</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-5f332390-1336-4512-b090-2c1c303b1002"
+       cx="51.187687"
+       cy="32.585217"
+       inkscape:label="V_32"
+       r="2.5">
+      <title
+         id="title5">V/Oct Out 32</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-4eeef367-2b58-4935-97d3-c248c92755cd"
+       data-name="Out0#PJ301MPort"
+       cx="51.181126"
+       cy="32.585217"
+       inkscape:label="LGT_32"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-4-9">Light Out 32</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-95f48469-38a6-4ad3-92de-55f783d47a20"
+       cx="41.619137"
+       cy="32.585217"
+       inkscape:label="V_31"
+       r="2.5">
+      <title
+         id="title4">V/Oct Out 31</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-f7e207f5-6a15-4bc7-801a-80a767f1c976"
+       data-name="Out0#PJ301MPort"
+       cx="41.612576"
+       cy="32.585217"
+       inkscape:label="LGT_31"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0-8-2-9">Light Out 31</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-4fddd678-26b5-4e30-afc3-b5834a77bbda"
+       cx="56.104424"
+       cy="24.981306"
+       inkscape:label="V_22"
+       r="2.5">
+      <title
+         id="title3">V/Oct Out 22</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-71fbc091-b346-46e4-b50b-11d3d7978745"
+       data-name="Out0#PJ301MPort"
+       cx="56.097862"
+       cy="24.981306"
+       inkscape:label="LGT_22"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-4-9-3">Light Out 22</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-474ff152-06c9-4d69-b198-2a7ab8ee640a"
+       cx="46.535873"
+       cy="24.981306"
+       inkscape:label="V_21"
+       r="2.5">
+      <title
+         id="title2">V/Oct Out 21</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="guid-f65ae618-7779-4c70-ad7d-bcd27170fa3a"
+       data-name="Out0#PJ301MPort"
+       cx="46.529312"
+       cy="24.981306"
+       inkscape:label="LGT_21"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-0-8-2-9-3">Light Out 21</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
+       id="guid-18a2c4a7-ecac-4bc2-8e3d-566fc4feff5e"
+       cx="51.16235"
+       cy="17.579861"
+       inkscape:label="V_11"
+       r="2.5">
+      <title
+         id="title1">V/Oct Out 11</title>
+    </circle>
+    <circle
+       style="display:inline;fill:#ff00ff;fill-opacity:1"
+       id="031daa98-26dc-4c31-91a5-e12b215b8759"
+       data-name="Out0#PJ301MPort"
+       cx="51.155788"
+       cy="17.579861"
+       inkscape:label="LGT_11"
+       r="1.5">
+      <title
+         id="title10-8-4-8-1-5-3-7-4-9-3-6">Light Out 11</title>
     </circle>
   </g>
   <metadata
