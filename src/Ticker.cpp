@@ -8,6 +8,8 @@ struct Ticker : Module
 	enum ParamId
 	{
 		BPM_PARAM,
+		RESET_PARAM,
+		RUN_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -17,20 +19,41 @@ struct Ticker : Module
 	};
 	enum OutputId
 	{
-		GATE_OUT_OUTPUT,
+		GATE_MSR_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId
 	{
+		RESET_LIGHT,
+		RUN_LIGHT,
 		LIGHTS_LEN
 	};
 
 	// Some class-wide parameters
-	int cur_BPM; // current BPM value
+
+	dsp::BooleanTrigger runButtonTrigger;
+	dsp::BooleanTrigger resetButtonTrigger;
+
+	bool is_Running = false; // is the clock running?
+
+	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
+	int master_BPM = 120;			 // current Master BPM value
+	float master_Freq = 2.0;		 // current Master Frequence = BPM / 60
+	float master_Phase = 0.0;		 // holds the phase of the Master Clock
+
+	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
+	float STS_My_Pulse(float phase, float pulse_width)
+	{
+		if (phase < pulse_width)
+			return (10.f);
+		else
+			return (0.f);
+	}
 
 	void onReset() override
 	{
-		cur_BPM = 120;
+		master_BPM = 120;
+		is_Running = false;
 	}
 
 	Ticker()
@@ -38,7 +61,7 @@ struct Ticker : Module
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(BPM_PARAM, 10.f, 400.f, 120.f, "BPM");
 		configInput(RUN_IN_INPUT, "Run Trigger");
-		configOutput(GATE_OUT_OUTPUT, "Clock Gate Out");
+		configOutput(GATE_MSR_OUTPUT, "Clock Gate Out");
 
 		onReset();
 	}
@@ -46,9 +69,35 @@ struct Ticker : Module
 	void process(const ProcessArgs &args) override
 	{
 		// Get all the values from the module UI
-		cur_BPM = (int)params[BPM_PARAM].getValue();
+		master_BPM = (int)params[BPM_PARAM].getValue();
 
-		return;
+		// Compute Master Clock Frequence
+		master_Freq = master_BPM * One_Hz;
+
+		// Toggle run
+		bool runButtonTriggered = runButtonTrigger.process(params[RUN_PARAM].getValue());
+		// bool runTriggered = runTrigger.process(inputs[RUN_INPUT].getVoltage(), 0.1f, 2.f);
+		if (runButtonTriggered)
+		{
+			is_Running ^= true;
+		}
+
+		if (is_Running)
+		{
+			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
+			master_Phase += master_Freq * args.sampleTime;
+			if (master_Phase >= 1.f)
+				master_Phase -= 1.f;
+
+			// Output the pulse as per the pulse width and phase
+			outputs[GATE_MSR_OUTPUT].setVoltage(STS_My_Pulse(master_Phase, 0.5f));
+			lights[RUN_LIGHT].setBrightness(1.0f);
+		}
+		else // Not running
+		{	 // Output the pulse as per the pulse width and phase
+			outputs[GATE_MSR_OUTPUT].setVoltage(0.f);
+			lights[RUN_LIGHT].setBrightness(0.0f);
+		}
 	}
 };
 
@@ -59,7 +108,7 @@ struct Ticker_BPM_Display : BPM_Display
 	{
 		int display_BPM = 99;
 		if (module)
-			display_BPM = module->cur_BPM;
+			display_BPM = module->master_BPM;
 		text = string::f("%d", display_BPM);
 	}
 };
@@ -78,9 +127,12 @@ struct TickerWidget : ModuleWidget
 
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(30.374, 16.836)), module, Ticker::BPM_PARAM));
 
+		addParam(createLightParamCentered<VCVLightButton<LargeSimpleLight<STSBlueLight>>>(mm2px(Vec(77.5, 17.5)), module, Ticker::RUN_PARAM, Ticker::RUN_LIGHT));
+		addParam(createLightParamCentered<VCVLightBezel<STSRedLight>>(mm2px(Vec(57.5, 17.5)), module, Ticker::RESET_PARAM, Ticker::RESET_LIGHT));
+
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.332, 105.706)), module, Ticker::RUN_IN_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45.421, 106.1)), module, Ticker::GATE_OUT_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(89.0, 43.5)), module, Ticker::GATE_MSR_OUTPUT));
 
 		// mm2px(Vec(10.0, 10.0))
 		// addChild(createWidget<Widget>(mm2px(Vec(7.032, 13.06))));
