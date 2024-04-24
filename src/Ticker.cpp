@@ -14,6 +14,7 @@ struct Ticker : Module
 	};
 	enum InputId
 	{
+		RESET_IN_INPUT,
 		RUN_IN_INPUT,
 		INPUTS_LEN
 	};
@@ -33,6 +34,9 @@ struct Ticker : Module
 
 	dsp::BooleanTrigger runButtonTrigger;
 	dsp::BooleanTrigger resetButtonTrigger;
+
+	dsp::SchmittTrigger runTrigger;
+	dsp::SchmittTrigger resetTrigger;
 
 	bool is_Running = false; // is the clock running?
 
@@ -60,6 +64,7 @@ struct Ticker : Module
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(BPM_PARAM, 10.f, 400.f, 120.f, "BPM");
+		configInput(RESET_IN_INPUT, "Reset Trigger");
 		configInput(RUN_IN_INPUT, "Run Trigger");
 		configOutput(GATE_MSR_OUTPUT, "Clock Gate Out");
 
@@ -76,8 +81,9 @@ struct Ticker : Module
 
 		// Toggle run
 		bool runButtonTriggered = runButtonTrigger.process(params[RUN_PARAM].getValue());
-		// bool runTriggered = runTrigger.process(inputs[RUN_INPUT].getVoltage(), 0.1f, 2.f);
-		if (runButtonTriggered)
+		bool runTriggered = runTrigger.process(inputs[RUN_IN_INPUT].getVoltage(), 0.1f, 2.f);
+
+		if (runButtonTriggered || runTriggered)
 		{
 			is_Running ^= true;
 		}
@@ -127,10 +133,11 @@ struct TickerWidget : ModuleWidget
 
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(30.374, 16.836)), module, Ticker::BPM_PARAM));
 
-		addParam(createLightParamCentered<VCVLightButton<LargeSimpleLight<STSBlueLight>>>(mm2px(Vec(77.5, 17.5)), module, Ticker::RUN_PARAM, Ticker::RUN_LIGHT));
 		addParam(createLightParamCentered<VCVLightBezel<STSRedLight>>(mm2px(Vec(57.5, 17.5)), module, Ticker::RESET_PARAM, Ticker::RESET_LIGHT));
+		addParam(createLightParamCentered<VCVLightButton<LargeSimpleLight<STSBlueLight>>>(mm2px(Vec(79.5, 17.5)), module, Ticker::RUN_PARAM, Ticker::RUN_LIGHT));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.332, 105.706)), module, Ticker::RUN_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(67.0, 17.5)), module, Ticker::RESET_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(89.0, 17.5)), module, Ticker::RUN_IN_INPUT));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(89.0, 43.5)), module, Ticker::GATE_MSR_OUTPUT));
 
