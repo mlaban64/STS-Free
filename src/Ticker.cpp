@@ -11,6 +11,7 @@ struct Ticker : Module
 		RESET_PARAM,
 		RUN_PARAM,
 		GATE_LEN_PARAM,
+		CLK1_DIV_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -50,10 +51,16 @@ struct Ticker : Module
 	bool is_Reset = false;	 // are we resetting?
 
 	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
-	int master_BPM = 120;			 // current Master BPM value
-	float master_Freq = 2.f;		 // current Master Frequence = BPM / 60
-	float master_Phase = 0.f;		 // holds the phase of the Master Clock
-	float master_Gate_Len = 50.f;	 // Master Gate length in %
+
+	int master_BPM = 120;		  // current Master BPM value
+	float master_Freq = 2.f;	  // current Master Frequence = BPM / 60
+	float master_Phase = 0.f;	  // holds the phase of the Master Clock
+	float master_Gate_Len = 50.f; // Master Gate length in %
+
+	float CLK1_Divider = 2.f;	// current Master BPM value
+	float CLK1_Freq = 2.f;		// current Master Frequence = BPM / 60
+	float CLK1_Phase = 0.f;		// holds the phase of the Master Clock
+	float CLK1_Gate_Len = 50.f; // Master Gate length in %
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
 	// phase_shift is used to delay/swing the pulse, pulse_width is a %%
@@ -78,6 +85,7 @@ struct Ticker : Module
 	Ticker()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
+
 		// Master Clock Params
 		configParam(BPM_PARAM, 10.f, 400.f, 120.f, "BPM");
 		configInput(BPM_IN_INPUT, "BPM Voltage (0..10V)");
@@ -86,6 +94,10 @@ struct Ticker : Module
 		configParam(GATE_LEN_PARAM, 1.f, 99.f, 50.f, "%");
 		configInput(GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
 		configOutput(GATE_MSR_OUTPUT, "Clock Gate Out");
+
+		// CLK1 Params
+		configParam(CLK1_DIV_PARAM, -64.f, 64.f, 1.f, "Divider", "", 0.f, 1.f, 0.f);
+		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
 
 		onReset();
 	}
@@ -113,6 +125,7 @@ struct Ticker : Module
 		// The real clock processing starts here
 		// Compute Master Clock Frequence
 		master_Freq = master_BPM * One_Hz;
+		CLK1_Divider = params[CLK1_DIV_PARAM].getValue();
 
 		// Was Run pressed or a pulse received on Run In?
 		bool runButtonTriggered = runButtonTrigger.process(params[RUN_PARAM].getValue());
@@ -132,6 +145,7 @@ struct Ticker : Module
 			is_Reset = true;
 			is_Running = false;
 			master_Phase = 0.f;
+			lights[RESET_LIGHT].setBrightnessSmooth(1.f,0.1f,30.f);
 		}
 
 		if (is_Running)
@@ -165,7 +179,24 @@ struct Ticker_BPM_Display : BPM_Display
 		int display_BPM = 99;
 		if (module)
 			display_BPM = module->master_BPM;
-		text = string::f("%d", display_BPM);
+		text = string::f("%0*d", 3, display_BPM);
+	}
+};
+
+struct Ticker_CLK1_Div_Display : CLK1_Div_Display
+{
+	Ticker *module;
+	void step() override
+	{
+		int display_DIV = 1;
+		if (module)
+			display_DIV = (int)module->CLK1_Divider;
+		if (display_DIV == 0)
+			display_DIV = 1;
+		if (display_DIV < 0)
+			text = string::f("div %*u", 3, -display_DIV);
+		else
+			text = string::f("mul %*u", 3, display_DIV);
 	}
 };
 
@@ -183,10 +214,10 @@ struct TickerWidget : ModuleWidget
 
 		// Clock Master Inputs
 		// BPM
-		Ticker_BPM_Display *display = createWidget<Ticker_BPM_Display>(mm2px(Vec(7.032, 13.06)));
-		display->box.size = mm2px(Vec(15.0, 8.0));
-		display->module = module;
-		addChild(display);
+		Ticker_BPM_Display *Msr_BMP_display = createWidget<Ticker_BPM_Display>(mm2px(Vec(6.0, 13.5)));
+		Msr_BMP_display->box.size = mm2px(Vec(18.0, 8.0));
+		Msr_BMP_display->module = module;
+		addChild(Msr_BMP_display);
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(30.0, 17.5)), module, Ticker::BPM_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(39.0, 17.5)), module, Ticker::BPM_IN_INPUT));
 
@@ -206,6 +237,13 @@ struct TickerWidget : ModuleWidget
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(10.0, 40.781)), module, Ticker::GATE_MSR_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(25.0, 40.781)), module, Ticker::RESET_MSR_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(40.0, 40.781)), module, Ticker::RUN_MSR_OUTPUT));
+
+		// Clock 1 Panel
+		Ticker_CLK1_Div_Display *CLK1_Div_display = createWidget<Ticker_CLK1_Div_Display>(mm2px(Vec(6.0, 60.0)));
+		CLK1_Div_display->box.size = mm2px(Vec(18.0, 8.0));
+		CLK1_Div_display->module = module;
+		addChild(CLK1_Div_display);
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.0, 63.5)), module, Ticker::CLK1_DIV_PARAM));
 	}
 };
 
