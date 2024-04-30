@@ -1,4 +1,5 @@
 #include <rack.hpp>
+#include "sts-base.hpp"
 using namespace rack;
 
 // Custom Widgets, borrowed from Fundamental module by Andrew Belt et al
@@ -9,8 +10,8 @@ struct DigitalDisplay : Widget
 	std::string bgText;
 	std::string text;
 	float fontSize;
-	NVGcolor bgColor = nvgRGB(0x46, 0x46, 0x46);
-	NVGcolor fgColor = SCHEME_BLUE;
+	NVGcolor bgColor = nvgRGB(0x0, 0x0, 0x0);
+	NVGcolor fgColor = SCHEME_STS_LIGHT_BLUE;
 	Vec textPos;
 
 	void prepareFont(const DrawArgs &args)
@@ -30,7 +31,7 @@ struct DigitalDisplay : Widget
 		// Background
 		nvgBeginPath(args.vg);
 		nvgRoundedRect(args.vg, 0, 0, box.size.x, box.size.y, 2);
-		nvgFillColor(args.vg, nvgRGB(0x19, 0x19, 0x19));
+		nvgFillColor(args.vg, nvgRGB(0x0, 0x0, 0x0));
 		nvgFill(args.vg);
 
 		prepareFont(args);
@@ -59,7 +60,7 @@ struct BPM_Display : DigitalDisplay
 	BPM_Display()
 	{
 		fontPath = std::string(asset::plugin(pluginInstance, "res/fonts/DSEG14Modern-Regular.ttf"));
-		textPos = Vec(36.0, 20.0);
+		textPos = Vec(43.0, 20.0);
 		bgText = "888";
 		fontSize = 16;
 	}
@@ -70,8 +71,8 @@ struct CLK1_Div_Display : DigitalDisplay
 	CLK1_Div_Display()
 	{
 		fontPath = std::string(asset::plugin(pluginInstance, "res/fonts/DSEG14Modern-Regular.ttf"));
-		textPos = Vec(36.0, 20.0);
-		bgText = "XXX888";
-		fontSize = 16;
+		textPos = Vec(53.0, 18.0);
+		bgText = "    88";
+		fontSize = 12;
 	}
 };

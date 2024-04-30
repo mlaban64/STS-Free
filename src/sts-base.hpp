@@ -6,6 +6,7 @@ using namespace rack;
 
 // Derived types for STS
 static const NVGcolor SCHEME_STS_BLUE = nvgRGB(0x00, 0x00, 0xff);
+static const NVGcolor SCHEME_STS_LIGHT_BLUE = nvgRGB(0x60, 0x80, 0xff);
 static const NVGcolor SCHEME_STS_RED = nvgRGB(0xff, 0x00, 0x00);
 static const NVGcolor SCHEME_STS_GREEN = nvgRGB(0x00, 0xff, 0x00);
 static const NVGcolor SCHEME_STS_YELLOW = nvgRGB(0xff, 0xff, 0x00);
@@ -41,4 +42,3 @@ struct TSTSYellowLight : TBase {
 	}
 };
 using STSYellowLight = TSTSYellowLight<>;
-
