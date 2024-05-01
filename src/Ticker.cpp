@@ -70,10 +70,13 @@ struct Ticker : Module
 	float master_Gate_Len = 50.f; // Master Gate length in %
 	float master_Gate_Voltage;	  // Output voltage for Master Gate
 
-	float clk1_Divider = 1.f;	// current Master BPM value
-	float clk1_Freq = 2.f;		// current Master Frequence = BPM / 60
-	float clk1_Phase = 0.f;		// holds the phase of the Master Clock
-	float clk1_Gate_Len = 50.f; // Master Gate length in %
+	float clk1_Divider = 1.f;	   // current CLK1 Divider
+	float clk1_Freq = 2.f;		   // current CLK1 Frequency
+	float clk1_Phase = 0.f;		   // holds the phase of CLK1
+	float clk1_Gate_Len = 50.f;	   // CLK1 Gate length in %
+	float clk1_Phase_Shift = 0.f;  // Phase shift / delay / swing of the pulse
+	float clk1_Factor = 1.f;	   // To compute the clk1_Freq as per the Divider
+	float clk1_Gate_Voltage = 0.f; // Output voltage for CLK1 Gate
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
 	// phase_shift is used to delay/swing the pulse, pulse_width is a %%
@@ -95,6 +98,7 @@ struct Ticker : Module
 		master_BPM = 120;
 		is_Running = false;
 		master_Phase = 0.f;
+		clk1_Phase = 0.f;
 
 		// Reset all outputs & lights
 		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
@@ -131,6 +135,7 @@ struct Ticker : Module
 		configParam(CLK1_DIV_PARAM, -64.f, 64.f, 1.f, "Divider", "", 0.f, 1.f, 0.f);
 		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK1_PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle", 0.f, 1.f, 0.f);
+		configParam(CLK1_GATE_LEN_PARAM, 1.f, 99.f, 50.f, "Gate Length", "%");
 		// Clock 1 Inputs
 		configInput(CLK1_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
 		configInput(CLK1_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
@@ -167,12 +172,31 @@ struct Ticker : Module
 		// Clock 1
 		// Divider data
 		clk1_Divider = params[CLK1_DIV_PARAM].getValue();
-		// Phase data
+		if (clk1_Divider < 0.f)
+			clk1_Factor = -1.f / clk1_Divider;
+		else
+			clk1_Factor = clk1_Divider;
+
+		// Phase data, 0..10V mapped to 0..1
+		if (inputs[CLK1_PHASE_IN_INPUT].isConnected())
+		{
+			clk1_Phase_Shift = inputs[CLK1_PHASE_IN_INPUT].getVoltage() * 0.1f;
+		}
+		else
+			clk1_Phase_Shift = (int)params[CLK1_PHASE_PARAM].getValue();
+
 		// Gate Length Data = 10V mapped to range 1-99%
+		if (inputs[CLK1_GATE_LEN_IN_INPUT].isConnected())
+		{
+			clk1_Gate_Len = 1.f + 98.f * inputs[CLK1_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
+		}
+		else
+			clk1_Gate_Len = (int)params[CLK1_GATE_LEN_PARAM].getValue();
 
 		// The real clock processing starts here
-		// Compute Master Clock Frequence
+		// Compute Master Clock Frequency and derive the individual clocks
 		master_Freq = master_BPM * One_Hz;
+		clk1_Freq = master_Freq * clk1_Factor;
 
 		// Was Run pressed or a pulse received on Run In?
 		runButtonTriggered = runButtonTrigger.process(params[MSR_RUN_BTN_PARAM].getValue());
@@ -192,6 +216,7 @@ struct Ticker : Module
 			is_Reset = true;
 			is_Running = false;
 			master_Phase = 0.f;
+			clk1_Phase = 0.f;
 		}
 		// Toggle the Reset light. The smaller the delta time, the slower the fade
 		lights[MSR_RESET_LIGHT].setBrightnessSmooth(is_Reset, 0.25f * args.sampleTime);
@@ -199,16 +224,23 @@ struct Ticker : Module
 		if (is_Running)
 		{
 			is_Reset = false;
-			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
+			// Accumulate the phase for each clock, make sure it rotates between 0.0 and 1.0
 			master_Phase += master_Freq * args.sampleTime;
 			if (master_Phase >= 1.f)
 				master_Phase -= 1.f;
+			clk1_Phase += clk1_Freq * args.sampleTime;
+			if (clk1_Phase >= 1.f)
+				clk1_Phase -= 1.f;
 
 			// Output the pulse as per the pulse width and phase
 			master_Gate_Voltage = STS_My_Pulse(master_Phase, 0.0, master_Gate_Len);
 			outputs[MSR_GATE_OUTPUT].setVoltage(master_Gate_Voltage);
-			// Toggle the light. The smaller the delta time, the slower the fade
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, 0.0, clk1_Gate_Len);
+			outputs[CLK1_GATE_OUTPUT].setVoltage(clk1_Gate_Voltage);
+
+			// Toggle the CLock lights. The smaller the delta time, the slower the fade
 			lights[MSR_PULSE_LIGHT].setBrightnessSmooth(master_Gate_Voltage > 0.f, args.sampleTime);
+			lights[CLK1_PULSE_LIGHT].setBrightnessSmooth(clk1_Gate_Voltage > 0.f, args.sampleTime);
 
 			// Pass the Run = HIGH value (10V) to the RUN_MSR_OUTPUT
 			outputs[MSR_RUN_OUTPUT].setVoltage(10.f);
