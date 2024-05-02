@@ -14,6 +14,7 @@ struct Ticker : Module
 		CLK1_DIV_PARAM,
 		CLK1_PHASE_PARAM,
 		CLK1_GATE_LEN_PARAM,
+		CLK1_SWING_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -24,6 +25,7 @@ struct Ticker : Module
 		MSR_GATE_LEN_IN_INPUT,
 		CLK1_PHASE_IN_INPUT,
 		CLK1_GATE_LEN_IN_INPUT,
+		CLK1_SWING_IN_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId
@@ -65,12 +67,14 @@ struct Ticker : Module
 	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
 
 	int master_BPM = 120;		  // current Master BPM value
+	int master_BPM_Old = 120;	  // Old Master BPM value
 	float master_Freq = 2.f;	  // current Master Frequence = BPM / 60
 	float master_Phase = 0.f;	  // holds the phase of the Master Clock
 	float master_Gate_Len = 50.f; // Master Gate length in %
 	float master_Gate_Voltage;	  // Output voltage for Master Gate
 
 	float clk1_Divider = 1.f;	   // current CLK1 Divider
+	float clk1_Divider_Old = 1.f;  // Old CLK1 Divider
 	float clk1_Freq = 2.f;		   // current CLK1 Frequency
 	float clk1_Phase = 0.f;		   // holds the phase of CLK1
 	float clk1_Gate_Len = 50.f;	   // CLK1 Gate length in %
@@ -84,7 +88,12 @@ struct Ticker : Module
 	{
 		float local_phase;
 
+		// Displace by phase shift, map into 0..1. Note that phase_shift can be negative in this code
 		local_phase = (phase + phase_shift) * 100.f;
+		if (local_phase < 0.f)
+			local_phase += 100.f;
+		if (local_phase > 100.f)
+			local_phase -= 100.f;
 		if (local_phase < pulse_width)
 			return (10.f);
 		else
@@ -95,10 +104,12 @@ struct Ticker : Module
 	void onReset() override
 	{
 		// Set defaults
-		master_BPM = 120;
-		is_Running = false;
+		master_BPM = master_BPM_Old = 120;
+		clk1_Divider = clk1_Divider_Old = 2.f;
+		is_Running = is_Reset = false;
 		master_Phase = 0.f;
 		clk1_Phase = 0.f;
+		clk1_Phase_Shift = 0.f;
 
 		// Reset all outputs & lights
 		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
@@ -134,7 +145,7 @@ struct Ticker : Module
 		// Clock 1 Params
 		configParam(CLK1_DIV_PARAM, -64.f, 64.f, 1.f, "Divider", "", 0.f, 1.f, 0.f);
 		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
-		configParam(CLK1_PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle", 0.f, 1.f, 0.f);
+		configParam(CLK1_PHASE_PARAM, -1.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK1_GATE_LEN_PARAM, 1.f, 99.f, 50.f, "Gate Length", "%");
 		// Clock 1 Inputs
 		configInput(CLK1_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
@@ -160,7 +171,13 @@ struct Ticker : Module
 		}
 		else
 			master_BPM = (int)params[MSR_BPM_PARAM].getValue();
-
+		// Did we change the BPM? If so, reset all clock phases
+		if (master_BPM != master_BPM_Old)
+		{
+			master_BPM_Old = master_BPM;
+			master_Phase = 0.f;
+			clk1_Phase = 0.f;
+		}
 		// Gate Length Data = 10V mapped to range 1-99%
 		if (inputs[MSR_GATE_LEN_IN_INPUT].isConnected())
 		{
@@ -172,18 +189,24 @@ struct Ticker : Module
 		// Clock 1
 		// Divider data
 		clk1_Divider = params[CLK1_DIV_PARAM].getValue();
-		if (clk1_Divider < 0.f)
-			clk1_Factor = -1.f / clk1_Divider;
-		else
-			clk1_Factor = clk1_Divider;
-
+		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
+		if (clk1_Divider != clk1_Divider_Old)
+		{
+			clk1_Divider_Old = clk1_Divider;
+			master_Phase = 0.f;
+			clk1_Phase = 0.f;
+			if (clk1_Divider < 0.f)
+				clk1_Factor = -1.f / clk1_Divider;
+			else
+				clk1_Factor = clk1_Divider;
+		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK1_PHASE_IN_INPUT].isConnected())
 		{
 			clk1_Phase_Shift = inputs[CLK1_PHASE_IN_INPUT].getVoltage() * 0.1f;
 		}
 		else
-			clk1_Phase_Shift = (int)params[CLK1_PHASE_PARAM].getValue();
+			clk1_Phase_Shift = params[CLK1_PHASE_PARAM].getValue();
 
 		// Gate Length Data = 10V mapped to range 1-99%
 		if (inputs[CLK1_GATE_LEN_IN_INPUT].isConnected())
@@ -193,7 +216,8 @@ struct Ticker : Module
 		else
 			clk1_Gate_Len = (int)params[CLK1_GATE_LEN_PARAM].getValue();
 
-		// The real clock processing starts here
+		// PROCESSING OF ALL INPUT STARTS HERE
+		//
 		// Compute Master Clock Frequency and derive the individual clocks
 		master_Freq = master_BPM * One_Hz;
 		clk1_Freq = master_Freq * clk1_Factor;
@@ -235,7 +259,7 @@ struct Ticker : Module
 			// Output the pulse as per the pulse width and phase
 			master_Gate_Voltage = STS_My_Pulse(master_Phase, 0.0, master_Gate_Len);
 			outputs[MSR_GATE_OUTPUT].setVoltage(master_Gate_Voltage);
-			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, 0.0, clk1_Gate_Len);
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Gate_Len);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(clk1_Gate_Voltage);
 
 			// Toggle the CLock lights. The smaller the delta time, the slower the fade
@@ -250,9 +274,11 @@ struct Ticker : Module
 		{
 			// Set phase to 0.0 to avoid the first pulse to be too short/quick
 			master_Phase = 0.f;
+			clk1_Phase = 0.f;
 			// Reset all outputs & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
 			outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
+			outputs[CLK1_GATE_OUTPUT].setVoltage(0.f);
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
 			lights[MSR_PULSE_LIGHT].setBrightness(0.f);
 		}
@@ -344,8 +370,12 @@ struct TickerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 63.5)), module, Ticker::CLK1_GATE_LEN_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 63.5)), module, Ticker::CLK1_GATE_LEN_IN_INPUT));
 
+		// Swing Amount
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 63.5)), module, Ticker::CLK1_SWING_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 63.5)), module, Ticker::CLK1_SWING_IN_INPUT));
+
 		// Outputs
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(89.0, 63.5)), module, Ticker::CLK1_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(110.0, 63.5)), module, Ticker::CLK1_GATE_OUTPUT));
 	}
 };
 

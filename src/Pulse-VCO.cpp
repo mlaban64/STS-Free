@@ -62,7 +62,7 @@ struct Pulse_VCO : Module
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-	// Maps  phase & phase shift to an index in the wave table or compute a putre pulse
+	// Maps phase & phase shift to an index in the wave table or compute a mathematical pulse
 	float STS_My_Pulse(float phase, float phase_shift)
 	{
 		int index;
