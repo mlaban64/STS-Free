@@ -71,8 +71,8 @@ struct CLK1_Div_Display : DigitalDisplay
 	CLK1_Div_Display()
 	{
 		fontPath = std::string(asset::plugin(pluginInstance, "res/fonts/DSEG14Modern-Regular.ttf"));
-		textPos = Vec(53.0, 18.0);
-		bgText = "    88";
-		fontSize = 12;
+		textPos = Vec(53.0, 19.0);
+		bgText = "8888";
+		fontSize = 14;
 	}
 };
