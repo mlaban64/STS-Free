@@ -638,21 +638,21 @@ struct TickerWidget : ModuleWidget
 		Msr_BMP_display->box.size = mm2px(Vec(16.0, 8.0));
 		Msr_BMP_display->module = module;
 		addChild(Msr_BMP_display);
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 17.5)), module, Ticker::MSR_BPM_PARAM));
-		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 17.5)), module, Ticker::MSR_PULSE_LIGHT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(39.0, 17.5)), module, Ticker::MSR_BPM_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.0, 16.25)), module, Ticker::MSR_BPM_PARAM));
+		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.0, 16.25)), module, Ticker::MSR_PULSE_LIGHT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(29.0, 26.75)), module, Ticker::MSR_BPM_IN_INPUT));
 
 		// Reset
-		addParam(createLightParamCentered<VCVLightButton<MediumSimpleLight<STSBlueLight>>>(mm2px(Vec(54.5, 17.5)), module, Ticker::MSR_RESET_BTN_PARAM, Ticker::MSR_RESET_LIGHT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(64.0, 17.5)), module, Ticker::MSR_RESET_IN_INPUT));
+		addParam(createLightParamCentered<VCVLightButton<MediumSimpleLight<STSBlueLight>>>(mm2px(Vec(44.0, 16.25)), module, Ticker::MSR_RESET_BTN_PARAM, Ticker::MSR_RESET_LIGHT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(44.0, 26.75)), module, Ticker::MSR_RESET_IN_INPUT));
 
 		// Run
-		addParam(createLightParamCentered<VCVLightButton<MediumSimpleLight<STSBlueLight>>>(mm2px(Vec(79.5, 17.5)), module, Ticker::MSR_RUN_BTN_PARAM, Ticker::MSR_RUN_LIGHT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(89.0, 17.5)), module, Ticker::MSR_RUN_IN_INPUT));
+		addParam(createLightParamCentered<VCVLightButton<MediumSimpleLight<STSBlueLight>>>(mm2px(Vec(59.0, 16.25)), module, Ticker::MSR_RUN_BTN_PARAM, Ticker::MSR_RUN_LIGHT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(59.0, 26.75)), module, Ticker::MSR_RUN_IN_INPUT));
 
 		// Gate Length
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(104.5, 17.5)), module, Ticker::MSR_GATE_LEN_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(114.0, 17.5)), module, Ticker::MSR_GATE_LEN_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.0, 16.25)), module, Ticker::MSR_GATE_LEN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.0, 26.75)), module, Ticker::MSR_GATE_LEN_IN_INPUT));
 
 		// Clock Master Outputs
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(10.0, 40.781)), module, Ticker::MSR_GATE_OUTPUT));
