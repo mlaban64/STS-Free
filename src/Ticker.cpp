@@ -89,7 +89,8 @@ struct Ticker : Module
 	float clk1_Freq = 2.f;			 // current CLK1 Frequency
 	float clk1_Phase = 0.f;			 // holds the phase of CLK1
 	float clk1_Gate_Len = 50.f;		 // CLK1 Gate length in %
-	float clk1_Phase_Shift = 0.f;	 // Phase shift / delay / swing of the pulse
+	float clk1_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
+	float clk1_Swing_Amount = 0.f;	 // Amount of Swing to apply (0..10%)
 	float clk1_Gate_Voltage = 0.f;	 // Output voltage for CLK1 Gate
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
@@ -120,6 +121,7 @@ struct Ticker : Module
 		master_Phase = 0.f;
 		clk1_Phase = 0.f;
 		clk1_Phase_Shift = 0.f;
+		clk1_Swing_Amount = 0.f;
 
 		// Reset some other vars
 		clockGate = false;
@@ -233,6 +235,14 @@ struct Ticker : Module
 		else
 			clk1_Gate_Len = (int)params[CLK1_GATE_LEN_PARAM].getValue();
 
+		// Swing Amount Data = 10V mapped to range 1-10%
+		if (inputs[CLK1_SWING_IN_INPUT].isConnected())
+		{
+			clk1_Swing_Amount = inputs[CLK1_SWING_IN_INPUT].getVoltage() * 0.1f;
+		}
+		else
+			clk1_Swing_Amount = (int)params[CLK1_SWING_PARAM].getValue() * 0.1f;
+
 		// PROCESSING OF ALL INPUT STARTS HERE
 		//
 		// Compute Master Clock Frequency and derive the individual clocks
@@ -246,23 +256,12 @@ struct Ticker : Module
 		if (runButtonTriggered || runTriggered)
 		{
 			// Start the run trigger
-			INFO("STS - Calling RUNPULSE.TRIGGER");
 			runPulse.trigger(0.001);
-
 			is_Running ^= true;
 		}
 		// Check if the run pulse should be sent, and if so, send it out
-		bool runGate = runPulse.process(args.sampleTime);
-		if (runGate)
-		{
-			INFO("STS - Sending 10v to RUN");
-			outputs[MSR_RUN_OUTPUT].setVoltage(10.f);
-		}
-		else
-		{
-			INFO("STS - CLearing RUN");
-			outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
-		}
+		runGate = runPulse.process(args.sampleTime);
+		outputs[MSR_RUN_OUTPUT].setVoltage((runGate) ? 10.f : 0.f);
 
 		// Was Reset pressed or a pulse received on Reset In?
 		resetButtonTriggered = resetButtonTrigger.process(params[MSR_RESET_BTN_PARAM].getValue());
@@ -301,17 +300,14 @@ struct Ticker : Module
 			outputs[MSR_GATE_OUTPUT].setVoltage(master_Gate_Voltage);
 			outputs[MSR_TRIGGER_OUTPUT].setVoltage((clockGate) ? 10.f : 0.f);
 
-			// Output the derived clockz as per the pulse width and phase
-
-			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Gate_Len);
+			// Output the derived clocks as per the pulse width, phase and random swing amount
+			float tmp = (1.f - 2.f * rack::random::uniform()) * clk1_Swing_Amount;
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift + tmp, clk1_Gate_Len);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(clk1_Gate_Voltage);
 
-			// Toggle the CLock lights. The smaller the delta time, the slower the fade
+			// Toggle the lights. The smaller the delta time, the slower the fade
 			lights[MSR_PULSE_LIGHT].setBrightnessSmooth(master_Gate_Voltage > 0.f, args.sampleTime);
 			lights[CLK1_PULSE_LIGHT].setBrightnessSmooth(clk1_Gate_Voltage > 0.f, args.sampleTime);
-
-			// Pass the Run = HIGH value (10V) to the RUN_MSR_OUTPUT
-			outputs[MSR_RUN_OUTPUT].setVoltage(10.f);
 			lights[MSR_RUN_LIGHT].setBrightness(1.f);
 		}
 		else // Not running
@@ -321,8 +317,8 @@ struct Ticker : Module
 			clk1_Phase = 0.f;
 			// Reset all outputs & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
-			outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
-			outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
+			// outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
+			// outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(0.f);
 
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
