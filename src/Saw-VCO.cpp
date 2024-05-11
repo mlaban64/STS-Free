@@ -33,7 +33,7 @@ struct Saw_VCO : Module
 	};
 
 	// Some class-wide constants
-	const float FREQ_MOD_MULTIPLIER = 0.1f;
+	const float FREQ_MOD_MULTIPLIER = 0.5f;
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
@@ -153,9 +153,9 @@ struct Saw_VCO : Module
 	Saw_VCO()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(FM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for frequency modulation");
-		configParam(PM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for phase modulation");
-		configParam(VM_ATTN_PARAM, 0.f, 1.f, 0.f, "Attenuation for volume modulation");
+		configParam(FM_ATTN_PARAM, -1.f, 1.f, 0.f, "Attenuation for frequency modulation");
+		configParam(PM_ATTN_PARAM, -1.f, 1.f, 0.f, "Attenuation for phase modulation");
+		configParam(VM_ATTN_PARAM, -1.f, 1.f, 0.f, "Attenuation for volume modulation");
 		configParam(PITCH_PARAM, 10.f, 20000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
 		configParam(PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");

@@ -31,6 +31,7 @@ struct Ticker : Module
 	enum OutputId
 	{
 		MSR_GATE_OUTPUT,
+		MSR_TRIGGER_OUTPUT,
 		MSR_RESET_OUTPUT,
 		MSR_RUN_OUTPUT,
 		CLK1_GATE_OUTPUT,
@@ -50,19 +51,28 @@ struct Ticker : Module
 #define MIN_BPM_PARAM 10.f	// minimum BPM value
 #define MAX_BPM_PARAM 400.f // maximum BPM value
 
+	// Triggers to detect an button push on run or reset signal
 	dsp::BooleanTrigger runButtonTrigger;
 	dsp::BooleanTrigger resetButtonTrigger;
 
+	// Triggers to detect an external run or reset signal
 	dsp::SchmittTrigger runTrigger;
 	dsp::SchmittTrigger resetTrigger;
 
-	bool is_Running = false; // is the clock running?
-	bool is_Reset = false;	 // are we resetting?
+	dsp::PulseGenerator runPulse;
+	dsp::PulseGenerator clockPulse;
+	dsp::PulseGenerator resetPulse;
 
-	bool runButtonTriggered;
-	bool runTriggered;
-	bool resetButtonTriggered;
-	bool resetTriggered;
+	bool is_Running = false; // is the clock running?
+
+	bool runButtonTriggered = false;
+	bool runTriggered = false;
+	bool resetButtonTriggered = false;
+	bool resetTriggered = false;
+	// Vars to trigger Run, Reset and Master Clock Trigger outputs
+	bool resetGate = false;
+	bool runGate = false;
+	bool clockGate = false;
 
 	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
 
@@ -106,13 +116,23 @@ struct Ticker : Module
 		// Set defaults
 		master_BPM = master_BPM_Old = 120;
 		clk1_Divider = clk1_Divider_Old = 2.f;
-		is_Running = is_Reset = false;
+		is_Running = false;
 		master_Phase = 0.f;
 		clk1_Phase = 0.f;
 		clk1_Phase_Shift = 0.f;
 
+		// Reset some other vars
+		clockGate = false;
+		runGate = false;
+		resetGate = false;
+
+		resetPulse.reset();
+		clockPulse.reset();
+		runPulse.reset();
+
 		// Reset all outputs & lights
 		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
+		outputs[MSR_TRIGGER_OUTPUT].setVoltage(0.f);
 		outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
 		outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
 
@@ -138,7 +158,8 @@ struct Ticker : Module
 		configInput(MSR_RUN_IN_INPUT, "Run Trigger");
 		configInput(MSR_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
 		// Master Clock Outputs
-		configOutput(MSR_GATE_OUTPUT, "Clock Gate Out");
+		configOutput(MSR_GATE_OUTPUT, "Master Clock Gate Out");
+		configOutput(MSR_TRIGGER_OUTPUT, "Master Clock Trigger Out");
 		configOutput(MSR_RESET_OUTPUT, "Reset Out");
 		configOutput(MSR_RUN_OUTPUT, "Run Out");
 
@@ -147,9 +168,11 @@ struct Ticker : Module
 		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK1_PHASE_PARAM, -1.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK1_GATE_LEN_PARAM, 1.f, 99.f, 50.f, "Gate Length", "%");
+		configParam(CLK1_SWING_PARAM, 0.f, 10.f, 0.f, "Swing Amount", "%");
 		// Clock 1 Inputs
 		configInput(CLK1_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
 		configInput(CLK1_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
+		configInput(CLK1_SWING_IN_INPUT, "Swing Amount Voltage (0..10V)");
 		// Clock 1 Outputs
 		configOutput(CLK1_GATE_OUTPUT, "Clock Gate Out");
 
@@ -158,9 +181,6 @@ struct Ticker : Module
 
 	void process(const ProcessArgs &args) override
 	{
-		// Init some params
-		is_Reset = false;
-
 		// Get all the values from the module UI
 
 		// Master Clock
@@ -225,7 +245,23 @@ struct Ticker : Module
 
 		if (runButtonTriggered || runTriggered)
 		{
+			// Start the run trigger
+			INFO("STS - Calling RUNPULSE.TRIGGER");
+			runPulse.trigger(0.001);
+
 			is_Running ^= true;
+		}
+		// Check if the run pulse should be sent, and if so, send it out
+		bool runGate = runPulse.process(args.sampleTime);
+		if (runGate)
+		{
+			INFO("STS - Sending 10v to RUN");
+			outputs[MSR_RUN_OUTPUT].setVoltage(10.f);
+		}
+		else
+		{
+			INFO("STS - CLearing RUN");
+			outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
 		}
 
 		// Was Reset pressed or a pulse received on Reset In?
@@ -234,17 +270,23 @@ struct Ticker : Module
 
 		if (resetButtonTriggered || resetTriggered)
 		{
-			is_Reset = true;
+			// Start the reset trigger
+			resetPulse.trigger(1e-3f);
+
+			// Reset some vars
 			is_Running = false;
 			master_Phase = 0.f;
 			clk1_Phase = 0.f;
 		}
+		// Check if the reset pulse should be sent, and if so, send it out
+		resetGate = resetPulse.process(args.sampleTime);
+		outputs[MSR_RESET_OUTPUT].setVoltage((resetGate) ? 10.f : 0.f);
+
 		// Toggle the Reset light. The smaller the delta time, the slower the fade
-		lights[MSR_RESET_LIGHT].setBrightnessSmooth(is_Reset, 0.25f * args.sampleTime);
+		lights[MSR_RESET_LIGHT].setBrightnessSmooth(resetGate, 0.25f * args.sampleTime);
 
 		if (is_Running)
 		{
-			is_Reset = false;
 			// Accumulate the phase for each clock, make sure it rotates between 0.0 and 1.0
 			master_Phase += master_Freq * args.sampleTime;
 			if (master_Phase >= 1.f)
@@ -253,9 +295,14 @@ struct Ticker : Module
 			if (clk1_Phase >= 1.f)
 				clk1_Phase -= 1.f;
 
-			// Output the pulse as per the pulse width and phase
+			// Output the Master Clock signals
 			master_Gate_Voltage = STS_My_Pulse(master_Phase, 0.0, master_Gate_Len);
+			clockGate = clockPulse.process(args.sampleTime);
 			outputs[MSR_GATE_OUTPUT].setVoltage(master_Gate_Voltage);
+			outputs[MSR_TRIGGER_OUTPUT].setVoltage((clockGate) ? 10.f : 0.f);
+
+			// Output the derived clockz as per the pulse width and phase
+
 			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Gate_Len);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(clk1_Gate_Voltage);
 
@@ -274,8 +321,10 @@ struct Ticker : Module
 			clk1_Phase = 0.f;
 			// Reset all outputs & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
+			outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
 			outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(0.f);
+
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
 			lights[MSR_PULSE_LIGHT].setBrightness(0.f);
 		}
@@ -656,6 +705,7 @@ struct TickerWidget : ModuleWidget
 
 		// Clock Master Outputs
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(10.0, 40.781)), module, Ticker::MSR_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(25.0, 40.781)), module, Ticker::MSR_TRIGGER_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(40.0, 40.781)), module, Ticker::MSR_RESET_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(55.0, 40.781)), module, Ticker::MSR_RUN_OUTPUT));
 
