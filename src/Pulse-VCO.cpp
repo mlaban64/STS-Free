@@ -219,6 +219,12 @@ struct Pulse_VCO : Module
 			else
 				freq = pitch_param;
 
+			// limit the pitch if modulation takes it too extreme
+			if (freq < 10.f)
+				freq = 10.f;
+			else if (freq > 20000.f)
+				freq = 20000.f;
+
 			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 			phase[0] += freq * args.sampleTime;
 			if (phase[0] >= 1.f)
@@ -240,6 +246,12 @@ struct Pulse_VCO : Module
 				// Compute the pitch as per the controls
 				if (inputs[FM_IN_INPUT].isConnected())
 					freq = freq + freq * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
+
+				// limit the pitch if modulation takes it too extreme
+				if (freq < 10.f)
+					freq = 10.f;
+				else if (freq > 20000.f)
+					freq = 20000.f;
 
 				// Accumulate the phase, make sure it rotates between 0.0 and 1.0
 				phase[idx] += freq * args.sampleTime;

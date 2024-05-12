@@ -60,7 +60,8 @@ struct Ticker : Module
 	dsp::SchmittTrigger resetTrigger;
 
 	dsp::PulseGenerator runPulse;
-	dsp::PulseGenerator clockPulse;
+	dsp::PulseGenerator msr_clockPulse;
+	dsp::PulseGenerator clk1_clockPulse;
 	dsp::PulseGenerator resetPulse;
 
 	bool is_Running = false; // is the clock running?
@@ -76,22 +77,25 @@ struct Ticker : Module
 
 	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
 
-	int master_BPM = 120;		  // current Master BPM value param
-	int master_BPM_Old = 120;	  // Old Master BPM value
-	float master_Freq = 2.f;	  // current Master Frequence = BPM / 60
-	float master_Phase = 0.f;	  // holds the phase of the Master Clock
-	float master_Gate_Len = 50.f; // Master Gate length in %
-	float master_Gate_Voltage;	  // Output voltage for Master Gate
+	int master_BPM = 120;			  // current Master BPM value param
+	int master_BPM_Old = 120;		  // Old Master BPM value
+	bool master_Gate_started = false; // Toggle to see if we started a new master pulse
+	float master_Freq = 2.f;		  // current Master Frequence = BPM / 60
+	float master_Phase = 0.f;		  // holds the phase of the Master Clock
+	float master_Gate_Len = 50.f;	  // Master Gate length in %
+	float master_Gate_Voltage;		  // Output voltage for Master Gate
 
 	float clk1_Divider = 1.f;		 // current CLK1 Divider param
 	float clk1_Divider_Mapped = 1.f; // current CLK1 Divider param mapped to actual divider factor
 	float clk1_Divider_Old = 1.f;	 // Old CLK1 Divider
+	bool clk1_Gate_started = false;	 // Toggle to see if we started a new clk1 gate
 	float clk1_Freq = 2.f;			 // current CLK1 Frequency
 	float clk1_Phase = 0.f;			 // holds the phase of CLK1
 	float clk1_Gate_Len = 50.f;		 // CLK1 Gate length in %
 	float clk1_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
 	float clk1_Swing_Amount = 0.f;	 // Amount of Swing to apply (0..10%)
-	float clk1_Gate_Voltage = 0.f;	 // Output voltage for CLK1 Gate
+	float clk1_Swing_value = 0.f;
+	float clk1_Gate_Voltage = 0.f; // Output voltage for CLK1 Gate
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
 	// phase_shift is used to delay/swing the pulse, pulse_width is a %%
@@ -122,15 +126,19 @@ struct Ticker : Module
 		clk1_Phase = 0.f;
 		clk1_Phase_Shift = 0.f;
 		clk1_Swing_Amount = 0.f;
+		clk1_Swing_value = 0.f;
 
 		// Reset some other vars
 		clockGate = false;
 		runGate = false;
 		resetGate = false;
+		master_Gate_started = false;
 
+		// Reset all triggers
 		resetPulse.reset();
-		clockPulse.reset();
+		msr_clockPulse.reset();
 		runPulse.reset();
+		clk1_clockPulse.reset();
 
 		// Reset all outputs & lights
 		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
@@ -170,7 +178,7 @@ struct Ticker : Module
 		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK1_PHASE_PARAM, -1.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK1_GATE_LEN_PARAM, 1.f, 99.f, 50.f, "Gate Length", "%");
-		configParam(CLK1_SWING_PARAM, 0.f, 10.f, 0.f, "Swing Amount", "%");
+		configParam(CLK1_SWING_PARAM, 0.f, 5.f, 0.f, "Swing Amount", "%");
 		// Clock 1 Inputs
 		configInput(CLK1_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
 		configInput(CLK1_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
@@ -286,6 +294,7 @@ struct Ticker : Module
 
 		if (is_Running)
 		{
+
 			// Accumulate the phase for each clock, make sure it rotates between 0.0 and 1.0
 			master_Phase += master_Freq * args.sampleTime;
 			if (master_Phase >= 1.f)
@@ -294,15 +303,34 @@ struct Ticker : Module
 			if (clk1_Phase >= 1.f)
 				clk1_Phase -= 1.f;
 
-			// Output the Master Clock signals
+			// compute the Master Clock signal, which has no swing/phase shift
 			master_Gate_Voltage = STS_My_Pulse(master_Phase, 0.0, master_Gate_Len);
-			clockGate = clockPulse.process(args.sampleTime);
+			// Start the master clock trigger, if the new pulse started
+			if (master_Gate_Voltage > 0.f && !master_Gate_started)
+			{
+				master_Gate_started = true;
+				msr_clockPulse.trigger(1e-3f);
+			}
+			if (master_Gate_Voltage == 0.f)
+				master_Gate_started = false;
+			// Check the master trigger pulse
+			clockGate = msr_clockPulse.process(args.sampleTime);
+			// Output the master gate & trigger
 			outputs[MSR_GATE_OUTPUT].setVoltage(master_Gate_Voltage);
 			outputs[MSR_TRIGGER_OUTPUT].setVoltage((clockGate) ? 10.f : 0.f);
 
 			// Output the derived clocks as per the pulse width, phase and random swing amount
-			float tmp = (1.f - 2.f * rack::random::uniform()) * clk1_Swing_Amount;
-			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift + tmp, clk1_Gate_Len);
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift + clk1_Swing_value, clk1_Gate_Len);
+			// Are we outputting a new CLK1 gate?
+			if (clk1_Gate_Voltage > 0.0 && !clk1_Gate_started)
+			{
+				clk1_Gate_started = true;
+				// Recomputeb a new swing value
+				clk1_Swing_value = (1.f - 2.f * rack::random::uniform()) * clk1_Swing_Amount;
+			}
+			if (clk1_Gate_Voltage == 0.f)
+				clk1_Gate_started = false;
+
 			outputs[CLK1_GATE_OUTPUT].setVoltage(clk1_Gate_Voltage);
 
 			// Toggle the lights. The smaller the delta time, the slower the fade
@@ -315,10 +343,11 @@ struct Ticker : Module
 			// Set phase to 0.0 to avoid the first pulse to be too short/quick
 			master_Phase = 0.f;
 			clk1_Phase = 0.f;
+			master_Gate_started = false;
+			clk1_Gate_started = false;
+
 			// Reset all outputs & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
-			// outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
-			// outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(0.f);
 
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
