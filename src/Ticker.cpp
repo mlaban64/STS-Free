@@ -729,10 +729,10 @@ struct TickerWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.0, 26.75)), module, Ticker::MSR_GATE_LEN_IN_INPUT));
 
 		// Clock Master Outputs
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(10.0, 40.781)), module, Ticker::MSR_GATE_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(25.0, 40.781)), module, Ticker::MSR_TRIGGER_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(40.0, 40.781)), module, Ticker::MSR_RESET_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(55.0, 40.781)), module, Ticker::MSR_RUN_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(92.1, 16.25)), module, Ticker::MSR_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(101.2, 16.25)), module, Ticker::MSR_TRIGGER_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(110.3, 16.25)), module, Ticker::MSR_RESET_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.4, 16.25)), module, Ticker::MSR_RUN_OUTPUT));
 
 		// Clock 1 Panel
 		// Divider
