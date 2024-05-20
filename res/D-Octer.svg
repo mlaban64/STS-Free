@@ -30,7 +30,7 @@
      inkscape:cx="48.029817"
      inkscape:cy="242.83398"
      inkscape:window-width="1920"
-     inkscape:window-height="1010"
+     inkscape:window-height="1130"
      inkscape:window-x="-6"
      inkscape:window-y="-6"
      inkscape:window-maximized="1"
@@ -124,7 +124,7 @@
        inkscape:transform-center-y="11.262005"
        inkscape:label="Panel" />
     <rect
-       style="display:inline;fill:#a0a0a0;stroke:#4f4f4f;stroke-width:0.2;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       style="display:inline;fill:#808080;stroke:#4f4f4f;stroke-width:0.2;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        id="OutputBlock"
        width="13"
        height="67.198601"
