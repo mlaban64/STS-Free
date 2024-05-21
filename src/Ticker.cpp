@@ -15,6 +15,18 @@ struct Ticker : Module
 		CLK1_PHASE_PARAM,
 		CLK1_GATE_LEN_PARAM,
 		CLK1_SWING_PARAM,
+		CLK2_DIV_PARAM,
+		CLK2_PHASE_PARAM,
+		CLK2_GATE_LEN_PARAM,
+		CLK2_SWING_PARAM,
+		CLK3_DIV_PARAM,
+		CLK3_PHASE_PARAM,
+		CLK3_GATE_LEN_PARAM,
+		CLK3_SWING_PARAM,
+		CLK4_DIV_PARAM,
+		CLK4_PHASE_PARAM,
+		CLK4_GATE_LEN_PARAM,
+		CLK4_SWING_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -26,6 +38,15 @@ struct Ticker : Module
 		CLK1_PHASE_IN_INPUT,
 		CLK1_GATE_LEN_IN_INPUT,
 		CLK1_SWING_IN_INPUT,
+		CLK2_PHASE_IN_INPUT,
+		CLK2_GATE_LEN_IN_INPUT,
+		CLK2_SWING_IN_INPUT,
+		CLK3_PHASE_IN_INPUT,
+		CLK3_GATE_LEN_IN_INPUT,
+		CLK3_SWING_IN_INPUT,
+		CLK4_PHASE_IN_INPUT,
+		CLK4_GATE_LEN_IN_INPUT,
+		CLK4_SWING_IN_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId
@@ -36,6 +57,12 @@ struct Ticker : Module
 		MSR_RUN_OUTPUT,
 		CLK1_GATE_OUTPUT,
 		CLK1_TRIGGER_OUTPUT,
+		CLK2_GATE_OUTPUT,
+		CLK2_TRIGGER_OUTPUT,
+		CLK3_GATE_OUTPUT,
+		CLK3_TRIGGER_OUTPUT,
+		CLK4_GATE_OUTPUT,
+		CLK4_TRIGGER_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId
@@ -44,6 +71,9 @@ struct Ticker : Module
 		MSR_RUN_LIGHT,
 		MSR_PULSE_LIGHT,
 		CLK1_PULSE_LIGHT,
+		CLK2_PULSE_LIGHT,
+		CLK3_PULSE_LIGHT,
+		CLK4_PULSE_LIGHT,
 		LIGHTS_LEN
 	};
 
@@ -71,6 +101,12 @@ struct Ticker : Module
 	dsp::PulseGenerator msr_TrgPulse;
 	dsp::PulseGenerator clk1_GatePulse;
 	dsp::PulseGenerator clk1_TrgPulse;
+	dsp::PulseGenerator clk2_GatePulse;
+	dsp::PulseGenerator clk2_TrgPulse;
+	dsp::PulseGenerator clk3_GatePulse;
+	dsp::PulseGenerator clk3_TrgPulse;
+	dsp::PulseGenerator clk4_GatePulse;
+	dsp::PulseGenerator clk4_TrgPulse;
 
 	bool is_Running = false; // is the clock running?
 
@@ -85,6 +121,12 @@ struct Ticker : Module
 	bool msr_GateState = false;
 	bool clk1_TrgState = false;
 	bool clk1_GateState = false;
+	bool clk2_TrgState = false;
+	bool clk2_GateState = false;
+	bool clk3_TrgState = false;
+	bool clk3_GateState = false;
+	bool clk4_TrgState = false;
+	bool clk4_GateState = false;
 
 	const float One_Hz = 1.f / 60.f; // Factor to convert BPM to Hertz
 
@@ -98,24 +140,79 @@ struct Ticker : Module
 	float msr_Gate_Duration = 0.f; // Master Gate duration
 	float msr_Gate_Voltage;		   // Output voltage for Master Gate
 
+	bool clk1_Gate_Started = false;	 // Toggle to see if we started a new CLK1 gate
 	float clk1_Divider = 1.f;		 // current CLK1 Divider param
 	float clk1_Divider_Mapped = 1.f; // current CLK1 Divider param mapped to actual divider factor
 	float clk1_Divider_Old = 1.f;	 // Old CLK1 Divider
+	float clk1_Freq = 2.f;			 // current CLK1 Frequency
+	float clk1_Phase = 0.f;			 // holds the phase of CLK1
+	float clk1_Gate_Len = 50.f;		 // CLK1 Gate length in %
+	float clk1_Gate_Duration = 0.f;	 // CLK1 Gate duration
+	float clk1_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
+	float clk1_Swing_Amount = 0.f;	 // Amount of Swing to apply
+	float clk1_Swing_value = 0.f;	 // Amount of swing to apply
+	float clk1_Gate_Voltage = 0.f;	 // Output voltage for CLK1 Gate
 
-	bool clk1_Gate_Started = false; // Toggle to see if we started a new clk1 gate
-	float clk1_Freq = 2.f;			// current CLK1 Frequency
-	float clk1_Phase = 0.f;			// holds the phase of CLK1
-	float clk1_Gate_Len = 50.f;		// CLK1 Gate length in %
-	float clk1_Gate_Duration = 0.f; // CLK1 Gate duration
-	float clk1_Wait_Duration = 0.f; // CLK1 Wait duration
-	float clk1_Phase_Shift = 0.f;	// Phase shift / delay of the pulse
-	float clk1_Swing_Amount = 0.f;	// Amount of Swing to apply
-	float clk1_Swing_value = 0.f;	// Amount of swing to apply
-	float clk1_Gate_Voltage = 0.f;	// Output voltage for CLK1 Gate
+	bool clk2_Gate_Started = false;	 // Toggle to see if we started a new CLK2 gate
+	float clk2_Divider = 1.f;		 // current CLK2 Divider param
+	float clk2_Divider_Mapped = 1.f; // current CLK2 Divider param mapped to actual divider factor
+	float clk2_Divider_Old = 1.f;	 // Old CLK2 Divider
+	float clk2_Freq = 2.f;			 // current CLK2 Frequency
+	float clk2_Phase = 0.f;			 // holds the phase of CLK2
+	float clk2_Gate_Len = 50.f;		 // CLK2 Gate length in %
+	float clk2_Gate_Duration = 0.f;	 // CLK2 Gate duration
+	float clk2_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
+	float clk2_Swing_Amount = 0.f;	 // Amount of Swing to apply
+	float clk2_Swing_value = 0.f;	 // Amount of swing to apply
+	float clk2_Gate_Voltage = 0.f;	 // Output voltage for CLK2 Gate
+
+	bool clk3_Gate_Started = false;	 // Toggle to see if we started a new CLK3 gate
+	float clk3_Divider = 1.f;		 // current CLK3 Divider param
+	float clk3_Divider_Mapped = 1.f; // current CLK3 Divider param mapped to actual divider factor
+	float clk3_Divider_Old = 1.f;	 // Old CLK3 Divider
+	float clk3_Freq = 2.f;			 // current CLK3 Frequency
+	float clk3_Phase = 0.f;			 // holds the phase of CLK3
+	float clk3_Gate_Len = 50.f;		 // CLK3 Gate length in %
+	float clk3_Gate_Duration = 0.f;	 // CLK3 Gate duration
+	float clk3_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
+	float clk3_Swing_Amount = 0.f;	 // Amount of Swing to apply
+	float clk3_Swing_value = 0.f;	 // Amount of swing to apply
+	float clk3_Gate_Voltage = 0.f;	 // Output voltage for CLK3 Gate
+
+	bool clk4_Gate_Started = false;	 // Toggle to see if we started a new CLK4 gate
+	float clk4_Divider = 1.f;		 // current CLK4 Divider param
+	float clk4_Divider_Mapped = 1.f; // current CLK4 Divider param mapped to actual divider factor
+	float clk4_Divider_Old = 1.f;	 // Old CLK4 Divider
+	float clk4_Freq = 2.f;			 // current CLK4 Frequency
+	float clk4_Phase = 0.f;			 // holds the phase of CLK4
+	float clk4_Gate_Len = 50.f;		 // CLK4 Gate length in %
+	float clk4_Gate_Duration = 0.f;	 // CLK4 Gate duration
+	float clk4_Phase_Shift = 0.f;	 // Phase shift / delay of the pulse
+	float clk4_Swing_Amount = 0.f;	 // Amount of Swing to apply
+	float clk4_Swing_value = 0.f;	 // Amount of swing to apply
+	float clk4_Gate_Voltage = 0.f;	 // Output voltage for CLK4 Gate
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
-	// phase_shift is used to delay/swing the pulse, pulse_width is a %%
-	float STS_My_Pulse(float phase, float phase_shift, float swing_value, float pulse_width, bool dbg = false)
+	// phase_shift is used to delay/swing, swing_value is a small (<5%) phase shift on top of the phase modulation, pulse_width is a %%
+	float STS_My_Pulse(float phase, float phase_shift, float swing_value, float pulse_width)
+	{
+		float local_phase;
+
+		// Displace by phase shift, map into 0..1. Note that phase_shift can be negative in this code
+		local_phase = (phase + phase_shift + swing_value) * 100.f;
+		if (local_phase < 0.f)
+			local_phase += 100.f;
+		if (local_phase > 100.f)
+			local_phase -= 100.f;
+
+		if (local_phase < pulse_width)
+			return 10.f;
+		else
+			return 0.f;
+	}
+
+	// DEBUG version of STS_My_Pulse
+	float STS_My_Pulse_DBG(float phase, float phase_shift, float swing_value, float pulse_width)
 	{
 		float local_phase, ret_val;
 
@@ -130,8 +227,7 @@ struct Ticker : Module
 			ret_val = 10.f;
 		else
 			ret_val = 0.f;
-		if (dbg)
-			INFO("RET = %f , LOCAL_PHASE = %f, phase=%f, phase_shift = %f, swing_value = %f, pulse_width = %f", ret_val, local_phase, phase, phase_shift, swing_value, pulse_width);
+		INFO("RET = %f , LOCAL_PHASE = %f, phase=%f, phase_shift = %f, swing_value = %f, pulse_width = %f", ret_val, local_phase, phase, phase_shift, swing_value, pulse_width);
 		return ret_val;
 	}
 
@@ -147,16 +243,37 @@ struct Ticker : Module
 		clk1_Phase_Shift = 0.f;
 		clk1_Swing_Amount = 0.f;
 		clk1_Swing_value = 0.f;
+		clk2_Phase = 0.f;
+		clk2_Phase_Shift = 0.f;
+		clk2_Swing_Amount = 0.f;
+		clk2_Swing_value = 0.f;
+		clk3_Phase = 0.f;
+		clk3_Phase_Shift = 0.f;
+		clk3_Swing_Amount = 0.f;
+		clk3_Swing_value = 0.f;
+		clk4_Phase = 0.f;
+		clk4_Phase_Shift = 0.f;
+		clk4_Swing_Amount = 0.f;
+		clk4_Swing_value = 0.f;
 
 		// Reset some other vars
 		msr_TrgState = false;
 		msr_GateState = false;
 		clk1_TrgState = false;
 		clk1_GateState = false;
+		clk2_TrgState = false;
+		clk2_GateState = false;
+		clk3_TrgState = false;
+		clk3_GateState = false;
+		clk4_TrgState = false;
+		clk4_GateState = false;
 		runPulseState = false;
 		resetPulseState = false;
 		msr_Gate_Started = false;
 		clk1_Gate_Started = false;
+		clk2_Gate_Started = false;
+		clk3_Gate_Started = false;
+		clk4_Gate_Started = false;
 
 		// Reset all triggers and gates
 		resetPulse.reset();
@@ -165,6 +282,12 @@ struct Ticker : Module
 		msr_TrgPulse.reset();
 		clk1_GatePulse.reset();
 		clk1_TrgPulse.reset();
+		clk2_GatePulse.reset();
+		clk2_TrgPulse.reset();
+		clk3_GatePulse.reset();
+		clk3_TrgPulse.reset();
+		clk4_GatePulse.reset();
+		clk4_TrgPulse.reset();
 
 		// Reset all outputs & lights
 		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
@@ -213,6 +336,48 @@ struct Ticker : Module
 		configOutput(CLK1_GATE_OUTPUT, "Clock 1 Gate");
 		configOutput(CLK1_GATE_OUTPUT, "Clock 1 Trigger");
 
+		// Clock 2 Params
+		configParam(CLK2_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		paramQuantities[CLK2_DIV_PARAM]->snapEnabled = true;
+		configParam(CLK2_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
+		configParam(CLK2_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
+		configParam(CLK2_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
+		// Clock 2 Inputs
+		configInput(CLK2_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
+		configInput(CLK2_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
+		configInput(CLK2_SWING_IN_INPUT, "Swing Amount Voltage (0..10V)");
+		// Clock 2 Outputs
+		configOutput(CLK2_GATE_OUTPUT, "Clock 2 Gate");
+		configOutput(CLK2_GATE_OUTPUT, "Clock 2 Trigger");
+
+		// Clock 3 Params
+		configParam(CLK3_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		paramQuantities[CLK3_DIV_PARAM]->snapEnabled = true;
+		configParam(CLK3_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
+		configParam(CLK3_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
+		configParam(CLK3_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
+		// Clock 3 Inputs
+		configInput(CLK3_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
+		configInput(CLK3_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
+		configInput(CLK3_SWING_IN_INPUT, "Swing Amount Voltage (0..10V)");
+		// Clock 3 Outputs
+		configOutput(CLK3_GATE_OUTPUT, "Clock 3 Gate");
+		configOutput(CLK3_GATE_OUTPUT, "Clock 3 Trigger");
+
+		// Clock 4 Params
+		configParam(CLK4_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		paramQuantities[CLK4_DIV_PARAM]->snapEnabled = true;
+		configParam(CLK4_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
+		configParam(CLK4_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
+		configParam(CLK4_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
+		// Clock 4 Inputs
+		configInput(CLK4_PHASE_IN_INPUT, "Phase shift Voltage (0..10V)");
+		configInput(CLK4_GATE_LEN_IN_INPUT, "Gate Length Voltage (0..10V)");
+		configInput(CLK4_SWING_IN_INPUT, "Swing Amount Voltage (0..10V)");
+		// Clock 4 Outputs
+		configOutput(CLK4_GATE_OUTPUT, "Clock 4 Gate");
+		configOutput(CLK4_GATE_OUTPUT, "Clock 4 Trigger");
+
 		onReset();
 	}
 
@@ -234,6 +399,9 @@ struct Ticker : Module
 			msr_BPM_Old = msr_BPM;
 			msr_Phase = 0.f;
 			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 		}
 		// Gate Length Data = 10V mapped to range MIN/MAX_GATE_LEN%
 		if (inputs[MSR_GATE_LEN_IN_INPUT].isConnected())
@@ -258,9 +426,9 @@ struct Ticker : Module
 		else
 			clk1_Phase_Shift = params[CLK1_PHASE_PARAM].getValue();
 
-		// Gate Length Data = 10V mapped to range 1-99%
+		// Gate Length Data = 10V mapped to range 5-95%
 		if (inputs[CLK1_GATE_LEN_IN_INPUT].isConnected())
-			clk1_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * inputs[MSR_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
+			clk1_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * inputs[CLK1_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
 		else
 			clk1_Gate_Len = (int)params[CLK1_GATE_LEN_PARAM].getValue();
 
@@ -270,11 +438,98 @@ struct Ticker : Module
 		else
 			clk1_Swing_Amount = (int)params[CLK1_SWING_PARAM].getValue();
 
+		// Clock 2
+		// Divider data
+		clk2_Divider = params[CLK2_DIV_PARAM].getValue();
+
+		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
+		if (clk2_Divider != clk2_Divider_Old)
+		{
+			clk2_Divider_Old = clk2_Divider;
+			msr_Phase = 0.f;
+			clk2_Phase = 0.f;
+		}
+		// Phase data, 0..10V mapped to 0..1
+		if (inputs[CLK2_PHASE_IN_INPUT].isConnected())
+			clk2_Phase_Shift = inputs[CLK2_PHASE_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk2_Phase_Shift = params[CLK2_PHASE_PARAM].getValue();
+
+		// Gate Length Data = 10V mapped to range 5-95%
+		if (inputs[CLK2_GATE_LEN_IN_INPUT].isConnected())
+			clk2_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * inputs[CLK2_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk2_Gate_Len = (int)params[CLK2_GATE_LEN_PARAM].getValue();
+
+		// Swing Amount Data = 10V mapped to a 5% range
+		if (inputs[CLK2_SWING_IN_INPUT].isConnected())
+			clk2_Swing_Amount = inputs[CLK2_SWING_IN_INPUT].getVoltage() * 0.5f;
+		else
+			clk2_Swing_Amount = (int)params[CLK2_SWING_PARAM].getValue();
+
+		// Clock 3
+		// Divider data
+		clk3_Divider = params[CLK3_DIV_PARAM].getValue();
+
+		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
+		if (clk3_Divider != clk3_Divider_Old)
+		{
+			clk3_Divider_Old = clk3_Divider;
+			msr_Phase = 0.f;
+			clk3_Phase = 0.f;
+		}
+		// Phase data, 0..10V mapped to 0..1
+		if (inputs[CLK3_PHASE_IN_INPUT].isConnected())
+			clk3_Phase_Shift = inputs[CLK3_PHASE_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk3_Phase_Shift = params[CLK3_PHASE_PARAM].getValue();
+
+		// Gate Length Data = 10V mapped to range 5-95%
+		if (inputs[CLK3_GATE_LEN_IN_INPUT].isConnected())
+			clk3_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * inputs[CLK3_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk3_Gate_Len = (int)params[CLK3_GATE_LEN_PARAM].getValue();
+
+		// Swing Amount Data = 10V mapped to a 5% range
+		if (inputs[CLK3_SWING_IN_INPUT].isConnected())
+			clk3_Swing_Amount = inputs[CLK3_SWING_IN_INPUT].getVoltage() * 0.5f;
+		else
+			clk3_Swing_Amount = (int)params[CLK3_SWING_PARAM].getValue();
+
+		// Clock 4
+		// Divider data
+		clk2_Divider = params[CLK4_DIV_PARAM].getValue();
+
+		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
+		if (clk4_Divider != clk4_Divider_Old)
+		{
+			clk4_Divider_Old = clk4_Divider;
+			msr_Phase = 0.f;
+			clk4_Phase = 0.f;
+		}
+		// Phase data, 0..10V mapped to 0..1
+		if (inputs[CLK4_PHASE_IN_INPUT].isConnected())
+			clk4_Phase_Shift = inputs[CLK4_PHASE_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk4_Phase_Shift = params[CLK4_PHASE_PARAM].getValue();
+
+		// Gate Length Data = 10V mapped to range 5-95%
+		if (inputs[CLK4_GATE_LEN_IN_INPUT].isConnected())
+			clk4_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * inputs[CLK4_GATE_LEN_IN_INPUT].getVoltage() * 0.1f;
+		else
+			clk4_Gate_Len = (int)params[CLK4_GATE_LEN_PARAM].getValue();
+
+		// Swing Amount Data = 10V mapped to a 5% range
+		if (inputs[CLK4_SWING_IN_INPUT].isConnected())
+			clk4_Swing_Amount = inputs[CLK4_SWING_IN_INPUT].getVoltage() * 0.5f;
+		else
+			clk4_Swing_Amount = (int)params[CLK4_SWING_PARAM].getValue();
+
 		// PROCESSING OF ALL INPUT STARTS HERE
 		//
 		// Compute Master Clock Frequency and derive the individual clocks
 		msr_Freq = msr_BPM * One_Hz;
-		clk1_Freq = msr_Freq * clk1_Divider_Mapped;
+		clk1_Freq = clk2_Freq = clk3_Freq = clk4_Freq = msr_Freq * clk1_Divider_Mapped;
 
 		// Was Run pressed or a pulse received on Run In?
 		runButtonTriggered = runButtonTrigger.process(params[MSR_RUN_BTN_PARAM].getValue());
@@ -303,6 +558,9 @@ struct Ticker : Module
 			is_Running = false;
 			msr_Phase = 0.f;
 			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 		}
 		// Check if the reset pulse should be sent, and if so, send it out
 		resetPulseState = resetPulse.process(args.sampleTime);
@@ -320,11 +578,21 @@ struct Ticker : Module
 			clk1_Phase += clk1_Freq * args.sampleTime;
 			if (clk1_Phase >= 1.f)
 				clk1_Phase -= 1.f;
+			clk2_Phase += clk2_Freq * args.sampleTime;
+			if (clk2_Phase >= 1.f)
+				clk2_Phase -= 1.f;
+			clk3_Phase += clk3_Freq * args.sampleTime;
+			if (clk3_Phase >= 1.f)
+				clk3_Phase -= 1.f;
+			clk4_Phase += clk4_Freq * args.sampleTime;
+			if (clk4_Phase >= 1.f)
+				clk4_Phase -= 1.f;
 
+			// Master Clock
 			// Compute the duration of the master gate
 			msr_Gate_Duration = msr_Gate_Len / (msr_Freq * 100.f);
 			// compute the Master Clock signal, which has no swing/phase shift
-			msr_Gate_Voltage = STS_My_Pulse(msr_Phase, 0.f, 0.f, msr_Gate_Len, false);
+			msr_Gate_Voltage = STS_My_Pulse(msr_Phase, 0.f, 0.f, msr_Gate_Len);
 			// Start the master clock trigger, if the new pulse started
 			if (msr_Gate_Voltage > 0.f && !msr_Gate_Started)
 			{
@@ -339,14 +607,18 @@ struct Ticker : Module
 			// Check the master trigger & gate pulse
 			msr_TrgState = msr_TrgPulse.process(args.sampleTime);
 			msr_GateState = msr_GatePulse.process(args.sampleTime);
-			// Output the master gate & trigger
+
+			// Output the master gate & trigger & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage((msr_GateState) ? 10.f : 0.f);
 			outputs[MSR_TRIGGER_OUTPUT].setVoltage((msr_TrgState) ? 10.f : 0.f);
+			lights[MSR_PULSE_LIGHT].setBrightnessSmooth(msr_Gate_Voltage > 0.f, args.sampleTime);
+			lights[MSR_RUN_LIGHT].setBrightness(1.f);
 
+			// Clock 1
 			// Compute the duration of the CLK1 gate
 			clk1_Gate_Duration = clk1_Gate_Len / (clk1_Freq * 100.f);
 			// Compute the derived clocks as per the pulse width, phase and random swing amount
-			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len, true);
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len);
 			// Are we outputting a new CLK1 gate and not waiting for the previous one?
 			if (clk1_Gate_Voltage > 0.0f && !clk1_Gate_Started)
 			{
@@ -367,14 +639,40 @@ struct Ticker : Module
 				clk1_Gate_Started = false;
 			}
 
-			// Output the CLK1 gate & trigger
+			// Output the CLK1 gate & trigger & lights
 			outputs[CLK1_GATE_OUTPUT].setVoltage((clk1_GateState) ? 10.f : 0.f);
 			outputs[CLK1_TRIGGER_OUTPUT].setVoltage((clk1_TrgState) ? 10.f : 0.f);
-
-			// Toggle the lights. The smaller the delta time, the slower the fade
-			lights[MSR_PULSE_LIGHT].setBrightnessSmooth(msr_Gate_Voltage > 0.f, args.sampleTime);
 			lights[CLK1_PULSE_LIGHT].setBrightnessSmooth(clk1_Gate_Voltage > 0.f, args.sampleTime);
-			lights[MSR_RUN_LIGHT].setBrightness(1.f);
+
+			// Clock 2
+			// Compute the duration of the CLK2 gate
+			clk2_Gate_Duration = clk2_Gate_Len / (clk2_Freq * 100.f);
+			// Compute the derived clocks as per the pulse width, phase and random swing amount
+			clk2_Gate_Voltage = STS_My_Pulse(clk2_Phase, clk2_Phase_Shift, clk2_Swing_value, clk2_Gate_Len);
+			// Are we outputting a new CLK2 gate and not waiting for the previous one?
+			if (clk2_Gate_Voltage > 0.0f && !clk2_Gate_Started)
+			{
+				clk2_Gate_Started = true;
+				clk2_TrgPulse.trigger(1e-3f);
+				clk2_GatePulse.trigger(clk2_Gate_Duration);
+			}
+
+			// Check the CLK2 trigger & gate pulse
+			clk2_TrgState = clk2_TrgPulse.process(args.sampleTime);
+			clk2_GateState = clk2_GatePulse.process(args.sampleTime);
+
+			// If gate is running (gate pulse may be over) & wait finished, recompute swing
+			if (clk2_Gate_Started && clk2_Phase > SWING_PHASE_TO_WAIT && !clk2_GateState)
+			{
+				// Recompute a new swing value as part of a cycle
+				clk2_Swing_value = (1.f - 2.f * rack::random::uniform()) * clk2_Swing_Amount * 0.01;
+				clk2_Gate_Started = false;
+			}
+
+			// Output the CLK2 gate & trigger & lights
+			outputs[CLK2_GATE_OUTPUT].setVoltage((clk2_GateState) ? 10.f : 0.f);
+			outputs[CLK2_TRIGGER_OUTPUT].setVoltage((clk2_TrgState) ? 10.f : 0.f);
+			lights[CLK2_PULSE_LIGHT].setBrightnessSmooth(clk2_Gate_Voltage > 0.f, args.sampleTime);
 		}
 		else // Not running
 		{
@@ -406,7 +704,9 @@ struct Ticker_BPM_Display : BPM_Display
 	}
 };
 
-struct Ticker_CLK1_Div_Display : CLK1_Div_Display
+// Clock 1..4 Display structure. This should be refactored in a much easier way...for the future...
+
+struct Ticker_CLK1_Div_Display : CLK_Div_Display
 {
 	Ticker *module;
 
@@ -732,6 +1032,984 @@ struct Ticker_CLK1_Div_Display : CLK1_Div_Display
 	}
 };
 
+struct Ticker_CLK2_Div_Display : CLK_Div_Display
+{
+	Ticker *module;
+
+	// Icky code to map the param steps to specific divider or multiplier intervals
+	void step() override
+	{
+		int clk_Divider = 1;
+		if (module)
+		{
+			clk_Divider = (int)module->clk2_Divider;
+
+			switch (clk_Divider)
+			{
+			case 0:
+				module->clk2_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 1:
+				module->clk2_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 2:
+				module->clk2_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 3:
+				module->clk2_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 4:
+				module->clk2_Divider_Mapped = 1.f / 92.f;
+				text = string::f("/ 92 . 0");
+				break;
+			case 5:
+				module->clk2_Divider_Mapped = 1.f / 88.f;
+				text = string::f("/ 88 . 0");
+				break;
+			case 6:
+				module->clk2_Divider_Mapped = 1.f / 84.f;
+				text = string::f("/ 84 . 0");
+				break;
+			case 7:
+				module->clk2_Divider_Mapped = 1.f / 80.f;
+				text = string::f("/ 80 . 0");
+				break;
+			case 8:
+				module->clk2_Divider_Mapped = 1.f / 76.f;
+				text = string::f("/ 76 . 0");
+				break;
+			case 9:
+				module->clk2_Divider_Mapped = 1.f / 72.f;
+				text = string::f("/ 72 . 0");
+				break;
+			case 10:
+				module->clk2_Divider_Mapped = 1.f / 68.f;
+				text = string::f("/ 68 . 0");
+				break;
+			case 11:
+				module->clk2_Divider_Mapped = 1.f / 64.f;
+				text = string::f("/ 64 . 0");
+				break;
+			case 12:
+				module->clk2_Divider_Mapped = 1.f / 60.f;
+				text = string::f("/ 60 . 0");
+				break;
+			case 13:
+				module->clk2_Divider_Mapped = 1.f / 56.f;
+				text = string::f("/ 56 . 0");
+				break;
+			case 14:
+				module->clk2_Divider_Mapped = 1.f / 52.f;
+				text = string::f("/ 52 . 0");
+				break;
+			case 15:
+				module->clk2_Divider_Mapped = 1.f / 48.f;
+				text = string::f("/ 48 . 0");
+				break;
+			case 16:
+				module->clk2_Divider_Mapped = 1.f / 44.f;
+				text = string::f("/ 44 . 0");
+				break;
+			case 17:
+				module->clk2_Divider_Mapped = 1.f / 40.f;
+				text = string::f("/ 40 . 0");
+				break;
+			case 18:
+				module->clk2_Divider_Mapped = 1.f / 36.f;
+				text = string::f("/ 36 . 0");
+				break;
+			case 19:
+				module->clk2_Divider_Mapped = 1.f / 32.f;
+				text = string::f("/ 32 . 0");
+				break;
+			case 20:
+				module->clk2_Divider_Mapped = 1.f / 28.f;
+				text = string::f("/ 28 . 0");
+				break;
+			case 21:
+				module->clk2_Divider_Mapped = 1.f / 24.f;
+				text = string::f("/ 24 . 0");
+				break;
+			case 22:
+				module->clk2_Divider_Mapped = 1.f / 20.f;
+				text = string::f("/ 20 . 0");
+				break;
+			case 23:
+				module->clk2_Divider_Mapped = 1.f / 18.f;
+				text = string::f("/ 18 . 0");
+				break;
+			case 24:
+				module->clk2_Divider_Mapped = 1.f / 16.f;
+				text = string::f("/ 16 . 0");
+				break;
+			case 25:
+				module->clk2_Divider_Mapped = 1.f / 12.f;
+				text = string::f("/ 12 . 0");
+				break;
+			case 26:
+				module->clk2_Divider_Mapped = 1.f / 10.f;
+				text = string::f("/ 10 . 0");
+				break;
+			case 27:
+				module->clk2_Divider_Mapped = 1.f / 9.f;
+				text = string::f("/ 9 . 0");
+				break;
+			case 28:
+				module->clk2_Divider_Mapped = 1.f / 8.f;
+				text = string::f("/ 8 . 0");
+				break;
+			case 29:
+				module->clk2_Divider_Mapped = 1.f / 7.f;
+				text = string::f("/ 7 . 0");
+				break;
+			case 30:
+				module->clk2_Divider_Mapped = 1.f / 6.f;
+				text = string::f("/ 6 . 0");
+				break;
+			case 31:
+				module->clk2_Divider_Mapped = 1.f / 5.f;
+				text = string::f("/ 5 . 0");
+				break;
+			case 32:
+				module->clk2_Divider_Mapped = 1.f / 4.f;
+				text = string::f("/ 4 . 0");
+				break;
+			case 33:
+				module->clk2_Divider_Mapped = 1.f / 3.5f;
+				text = string::f("/ 3 . 5");
+				break;
+			case 34:
+				module->clk2_Divider_Mapped = 1.f / 3.f;
+				text = string::f("/ 3 . 0");
+				break;
+			case 35:
+				module->clk2_Divider_Mapped = 1.f / 2.5f;
+				text = string::f("/ 2 . 5");
+				break;
+			case 36:
+				module->clk2_Divider_Mapped = 1.f / 2.f;
+				text = string::f("/ 2 . 0");
+				break;
+			case 37:
+				module->clk2_Divider_Mapped = 1.f / 1.5f;
+				text = string::f("/ 1 . 5");
+				break;
+			case 38:
+				module->clk2_Divider_Mapped = 1.f / 1.333333f;
+				text = string::f("/ 1 . 33");
+				break;
+			case 39:
+				module->clk2_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			case 40:
+				module->clk2_Divider_Mapped = 1.333333f;
+				text = string::f("x 1 . 33");
+				break;
+			case 41:
+				module->clk2_Divider_Mapped = 1.5f;
+				text = string::f("x 1 . 5");
+				break;
+			case 42:
+				module->clk2_Divider_Mapped = 2.f;
+				text = string::f("x 2 . 0");
+				break;
+			case 43:
+				module->clk2_Divider_Mapped = 2.5f;
+				text = string::f("x 2 . 5");
+				break;
+			case 44:
+				module->clk2_Divider_Mapped = 3.f;
+				text = string::f("x 3 . 0");
+				break;
+			case 45:
+				module->clk2_Divider_Mapped = 3.5f;
+				text = string::f("x 3 . 5");
+				break;
+			case 46:
+				module->clk2_Divider_Mapped = 4.f;
+				text = string::f("x 4 . 0");
+				break;
+			case 47:
+				module->clk2_Divider_Mapped = 5.f;
+				text = string::f("x 5 . 0");
+				break;
+			case 48:
+				module->clk2_Divider_Mapped = 6.f;
+				text = string::f("x 6 . 0");
+				break;
+			case 49:
+				module->clk2_Divider_Mapped = 7.f;
+				text = string::f("x 7 . 0");
+				break;
+			case 50:
+				module->clk2_Divider_Mapped = 8.f;
+				text = string::f("x 8 . 0");
+				break;
+			case 51:
+				module->clk2_Divider_Mapped = 9.f;
+				text = string::f("x 9 . 0");
+				break;
+			case 52:
+				module->clk2_Divider_Mapped = 10.f;
+				text = string::f("x 10 . 0");
+				break;
+			case 53:
+				module->clk2_Divider_Mapped = 12.f;
+				text = string::f("x 12 . 0");
+				break;
+			case 54:
+				module->clk2_Divider_Mapped = 16.f;
+				text = string::f("x 16 . 0");
+				break;
+			case 55:
+				module->clk2_Divider_Mapped = 20.f;
+				text = string::f("x 20 . 0");
+				break;
+			case 56:
+				module->clk2_Divider_Mapped = 24.f;
+				text = string::f("x 24 . 0");
+				break;
+			case 57:
+				module->clk2_Divider_Mapped = 28.f;
+				text = string::f("x 28 . 0");
+				break;
+			case 58:
+				module->clk2_Divider_Mapped = 32.f;
+				text = string::f("x 32 . 0");
+				break;
+			case 59:
+				module->clk2_Divider_Mapped = 36.f;
+				text = string::f("x 36 . 0");
+				break;
+			case 60:
+				module->clk2_Divider_Mapped = 40.f;
+				text = string::f("x 40 . 0");
+				break;
+			case 61:
+				module->clk2_Divider_Mapped = 44.f;
+				text = string::f("x 44 . 0");
+				break;
+			case 62:
+				module->clk2_Divider_Mapped = 48.f;
+				text = string::f("x 48 . 0");
+				break;
+			case 63:
+				module->clk2_Divider_Mapped = 52.f;
+				text = string::f("x 52 . 0");
+				break;
+			case 64:
+				module->clk2_Divider_Mapped = 56.f;
+				text = string::f("x 56 . 0");
+				break;
+			case 65:
+				module->clk2_Divider_Mapped = 60.f;
+				text = string::f("x 60 . 0");
+				break;
+			case 66:
+				module->clk2_Divider_Mapped = 64.f;
+				text = string::f("x 64 . 0");
+				break;
+			case 67:
+				module->clk2_Divider_Mapped = 68.f;
+				text = string::f("x 68 . 0");
+				break;
+			case 68:
+				module->clk2_Divider_Mapped = 72.f;
+				text = string::f("x 72 . 0");
+				break;
+			case 69:
+				module->clk2_Divider_Mapped = 76.f;
+				text = string::f("x 76 . 0");
+				break;
+			case 70:
+				module->clk2_Divider_Mapped = 80.f;
+				text = string::f("x 80 . 0");
+				break;
+			case 71:
+				module->clk2_Divider_Mapped = 84.f;
+				text = string::f("x 84 . 0");
+				break;
+			case 72:
+				module->clk2_Divider_Mapped = 88.f;
+				text = string::f("x 88 . 0");
+				break;
+			case 73:
+				module->clk2_Divider_Mapped = 92.f;
+				text = string::f("x 92 . 0");
+				break;
+			case 74:
+				module->clk2_Divider_Mapped = 96.f;
+				text = string::f("x 96 . 0");
+				break;
+
+			default:
+				module->clk2_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			}
+		}
+		else
+			text = string::f("x 2 . 0");
+	}
+};
+
+struct Ticker_CLK3_Div_Display : CLK_Div_Display
+{
+	Ticker *module;
+
+	// Icky code to map the param steps to specific divider or multiplier intervals
+	void step() override
+	{
+		int clk_Divider = 1;
+		if (module)
+		{
+			clk_Divider = (int)module->clk3_Divider;
+
+			switch (clk_Divider)
+			{
+			case 0:
+				module->clk3_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 1:
+				module->clk3_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 2:
+				module->clk3_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 3:
+				module->clk3_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 4:
+				module->clk3_Divider_Mapped = 1.f / 92.f;
+				text = string::f("/ 92 . 0");
+				break;
+			case 5:
+				module->clk3_Divider_Mapped = 1.f / 88.f;
+				text = string::f("/ 88 . 0");
+				break;
+			case 6:
+				module->clk3_Divider_Mapped = 1.f / 84.f;
+				text = string::f("/ 84 . 0");
+				break;
+			case 7:
+				module->clk3_Divider_Mapped = 1.f / 80.f;
+				text = string::f("/ 80 . 0");
+				break;
+			case 8:
+				module->clk3_Divider_Mapped = 1.f / 76.f;
+				text = string::f("/ 76 . 0");
+				break;
+			case 9:
+				module->clk3_Divider_Mapped = 1.f / 72.f;
+				text = string::f("/ 72 . 0");
+				break;
+			case 10:
+				module->clk3_Divider_Mapped = 1.f / 68.f;
+				text = string::f("/ 68 . 0");
+				break;
+			case 11:
+				module->clk3_Divider_Mapped = 1.f / 64.f;
+				text = string::f("/ 64 . 0");
+				break;
+			case 12:
+				module->clk3_Divider_Mapped = 1.f / 60.f;
+				text = string::f("/ 60 . 0");
+				break;
+			case 13:
+				module->clk3_Divider_Mapped = 1.f / 56.f;
+				text = string::f("/ 56 . 0");
+				break;
+			case 14:
+				module->clk3_Divider_Mapped = 1.f / 52.f;
+				text = string::f("/ 52 . 0");
+				break;
+			case 15:
+				module->clk3_Divider_Mapped = 1.f / 48.f;
+				text = string::f("/ 48 . 0");
+				break;
+			case 16:
+				module->clk3_Divider_Mapped = 1.f / 44.f;
+				text = string::f("/ 44 . 0");
+				break;
+			case 17:
+				module->clk3_Divider_Mapped = 1.f / 40.f;
+				text = string::f("/ 40 . 0");
+				break;
+			case 18:
+				module->clk3_Divider_Mapped = 1.f / 36.f;
+				text = string::f("/ 36 . 0");
+				break;
+			case 19:
+				module->clk3_Divider_Mapped = 1.f / 32.f;
+				text = string::f("/ 32 . 0");
+				break;
+			case 20:
+				module->clk3_Divider_Mapped = 1.f / 28.f;
+				text = string::f("/ 28 . 0");
+				break;
+			case 21:
+				module->clk3_Divider_Mapped = 1.f / 24.f;
+				text = string::f("/ 24 . 0");
+				break;
+			case 22:
+				module->clk3_Divider_Mapped = 1.f / 20.f;
+				text = string::f("/ 20 . 0");
+				break;
+			case 23:
+				module->clk3_Divider_Mapped = 1.f / 18.f;
+				text = string::f("/ 18 . 0");
+				break;
+			case 24:
+				module->clk3_Divider_Mapped = 1.f / 16.f;
+				text = string::f("/ 16 . 0");
+				break;
+			case 25:
+				module->clk3_Divider_Mapped = 1.f / 12.f;
+				text = string::f("/ 12 . 0");
+				break;
+			case 26:
+				module->clk3_Divider_Mapped = 1.f / 10.f;
+				text = string::f("/ 10 . 0");
+				break;
+			case 27:
+				module->clk3_Divider_Mapped = 1.f / 9.f;
+				text = string::f("/ 9 . 0");
+				break;
+			case 28:
+				module->clk3_Divider_Mapped = 1.f / 8.f;
+				text = string::f("/ 8 . 0");
+				break;
+			case 29:
+				module->clk3_Divider_Mapped = 1.f / 7.f;
+				text = string::f("/ 7 . 0");
+				break;
+			case 30:
+				module->clk3_Divider_Mapped = 1.f / 6.f;
+				text = string::f("/ 6 . 0");
+				break;
+			case 31:
+				module->clk3_Divider_Mapped = 1.f / 5.f;
+				text = string::f("/ 5 . 0");
+				break;
+			case 32:
+				module->clk3_Divider_Mapped = 1.f / 4.f;
+				text = string::f("/ 4 . 0");
+				break;
+			case 33:
+				module->clk3_Divider_Mapped = 1.f / 3.5f;
+				text = string::f("/ 3 . 5");
+				break;
+			case 34:
+				module->clk3_Divider_Mapped = 1.f / 3.f;
+				text = string::f("/ 3 . 0");
+				break;
+			case 35:
+				module->clk3_Divider_Mapped = 1.f / 2.5f;
+				text = string::f("/ 2 . 5");
+				break;
+			case 36:
+				module->clk3_Divider_Mapped = 1.f / 2.f;
+				text = string::f("/ 2 . 0");
+				break;
+			case 37:
+				module->clk3_Divider_Mapped = 1.f / 1.5f;
+				text = string::f("/ 1 . 5");
+				break;
+			case 38:
+				module->clk3_Divider_Mapped = 1.f / 1.333333f;
+				text = string::f("/ 1 . 33");
+				break;
+			case 39:
+				module->clk3_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			case 40:
+				module->clk3_Divider_Mapped = 1.333333f;
+				text = string::f("x 1 . 33");
+				break;
+			case 41:
+				module->clk3_Divider_Mapped = 1.5f;
+				text = string::f("x 1 . 5");
+				break;
+			case 42:
+				module->clk3_Divider_Mapped = 2.f;
+				text = string::f("x 2 . 0");
+				break;
+			case 43:
+				module->clk3_Divider_Mapped = 2.5f;
+				text = string::f("x 2 . 5");
+				break;
+			case 44:
+				module->clk3_Divider_Mapped = 3.f;
+				text = string::f("x 3 . 0");
+				break;
+			case 45:
+				module->clk3_Divider_Mapped = 3.5f;
+				text = string::f("x 3 . 5");
+				break;
+			case 46:
+				module->clk3_Divider_Mapped = 4.f;
+				text = string::f("x 4 . 0");
+				break;
+			case 47:
+				module->clk3_Divider_Mapped = 5.f;
+				text = string::f("x 5 . 0");
+				break;
+			case 48:
+				module->clk3_Divider_Mapped = 6.f;
+				text = string::f("x 6 . 0");
+				break;
+			case 49:
+				module->clk3_Divider_Mapped = 7.f;
+				text = string::f("x 7 . 0");
+				break;
+			case 50:
+				module->clk3_Divider_Mapped = 8.f;
+				text = string::f("x 8 . 0");
+				break;
+			case 51:
+				module->clk3_Divider_Mapped = 9.f;
+				text = string::f("x 9 . 0");
+				break;
+			case 52:
+				module->clk3_Divider_Mapped = 10.f;
+				text = string::f("x 10 . 0");
+				break;
+			case 53:
+				module->clk3_Divider_Mapped = 12.f;
+				text = string::f("x 12 . 0");
+				break;
+			case 54:
+				module->clk3_Divider_Mapped = 16.f;
+				text = string::f("x 16 . 0");
+				break;
+			case 55:
+				module->clk3_Divider_Mapped = 20.f;
+				text = string::f("x 20 . 0");
+				break;
+			case 56:
+				module->clk3_Divider_Mapped = 24.f;
+				text = string::f("x 24 . 0");
+				break;
+			case 57:
+				module->clk3_Divider_Mapped = 28.f;
+				text = string::f("x 28 . 0");
+				break;
+			case 58:
+				module->clk3_Divider_Mapped = 32.f;
+				text = string::f("x 32 . 0");
+				break;
+			case 59:
+				module->clk3_Divider_Mapped = 36.f;
+				text = string::f("x 36 . 0");
+				break;
+			case 60:
+				module->clk3_Divider_Mapped = 40.f;
+				text = string::f("x 40 . 0");
+				break;
+			case 61:
+				module->clk3_Divider_Mapped = 44.f;
+				text = string::f("x 44 . 0");
+				break;
+			case 62:
+				module->clk3_Divider_Mapped = 48.f;
+				text = string::f("x 48 . 0");
+				break;
+			case 63:
+				module->clk3_Divider_Mapped = 52.f;
+				text = string::f("x 52 . 0");
+				break;
+			case 64:
+				module->clk3_Divider_Mapped = 56.f;
+				text = string::f("x 56 . 0");
+				break;
+			case 65:
+				module->clk3_Divider_Mapped = 60.f;
+				text = string::f("x 60 . 0");
+				break;
+			case 66:
+				module->clk3_Divider_Mapped = 64.f;
+				text = string::f("x 64 . 0");
+				break;
+			case 67:
+				module->clk3_Divider_Mapped = 68.f;
+				text = string::f("x 68 . 0");
+				break;
+			case 68:
+				module->clk3_Divider_Mapped = 72.f;
+				text = string::f("x 72 . 0");
+				break;
+			case 69:
+				module->clk3_Divider_Mapped = 76.f;
+				text = string::f("x 76 . 0");
+				break;
+			case 70:
+				module->clk3_Divider_Mapped = 80.f;
+				text = string::f("x 80 . 0");
+				break;
+			case 71:
+				module->clk3_Divider_Mapped = 84.f;
+				text = string::f("x 84 . 0");
+				break;
+			case 72:
+				module->clk3_Divider_Mapped = 88.f;
+				text = string::f("x 88 . 0");
+				break;
+			case 73:
+				module->clk3_Divider_Mapped = 92.f;
+				text = string::f("x 92 . 0");
+				break;
+			case 74:
+				module->clk3_Divider_Mapped = 96.f;
+				text = string::f("x 96 . 0");
+				break;
+
+			default:
+				module->clk3_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			}
+		}
+		else
+			text = string::f("x 2 . 0");
+	}
+};
+
+struct Ticker_CLK4_Div_Display : CLK_Div_Display
+{
+	Ticker *module;
+
+	// Icky code to map the param steps to specific divider or multiplier intervals
+	void step() override
+	{
+		int clk_Divider = 1;
+		if (module)
+		{
+			clk_Divider = (int)module->clk4_Divider;
+
+			switch (clk_Divider)
+			{
+			case 0:
+				module->clk4_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 1:
+				module->clk4_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 2:
+				module->clk4_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 3:
+				module->clk4_Divider_Mapped = 1.f / 96.f;
+				text = string::f("/ 96 . 0");
+				break;
+			case 4:
+				module->clk4_Divider_Mapped = 1.f / 92.f;
+				text = string::f("/ 92 . 0");
+				break;
+			case 5:
+				module->clk4_Divider_Mapped = 1.f / 88.f;
+				text = string::f("/ 88 . 0");
+				break;
+			case 6:
+				module->clk4_Divider_Mapped = 1.f / 84.f;
+				text = string::f("/ 84 . 0");
+				break;
+			case 7:
+				module->clk4_Divider_Mapped = 1.f / 80.f;
+				text = string::f("/ 80 . 0");
+				break;
+			case 8:
+				module->clk4_Divider_Mapped = 1.f / 76.f;
+				text = string::f("/ 76 . 0");
+				break;
+			case 9:
+				module->clk4_Divider_Mapped = 1.f / 72.f;
+				text = string::f("/ 72 . 0");
+				break;
+			case 10:
+				module->clk4_Divider_Mapped = 1.f / 68.f;
+				text = string::f("/ 68 . 0");
+				break;
+			case 11:
+				module->clk4_Divider_Mapped = 1.f / 64.f;
+				text = string::f("/ 64 . 0");
+				break;
+			case 12:
+				module->clk4_Divider_Mapped = 1.f / 60.f;
+				text = string::f("/ 60 . 0");
+				break;
+			case 13:
+				module->clk4_Divider_Mapped = 1.f / 56.f;
+				text = string::f("/ 56 . 0");
+				break;
+			case 14:
+				module->clk4_Divider_Mapped = 1.f / 52.f;
+				text = string::f("/ 52 . 0");
+				break;
+			case 15:
+				module->clk4_Divider_Mapped = 1.f / 48.f;
+				text = string::f("/ 48 . 0");
+				break;
+			case 16:
+				module->clk4_Divider_Mapped = 1.f / 44.f;
+				text = string::f("/ 44 . 0");
+				break;
+			case 17:
+				module->clk4_Divider_Mapped = 1.f / 40.f;
+				text = string::f("/ 40 . 0");
+				break;
+			case 18:
+				module->clk4_Divider_Mapped = 1.f / 36.f;
+				text = string::f("/ 36 . 0");
+				break;
+			case 19:
+				module->clk4_Divider_Mapped = 1.f / 32.f;
+				text = string::f("/ 32 . 0");
+				break;
+			case 20:
+				module->clk4_Divider_Mapped = 1.f / 28.f;
+				text = string::f("/ 28 . 0");
+				break;
+			case 21:
+				module->clk4_Divider_Mapped = 1.f / 24.f;
+				text = string::f("/ 24 . 0");
+				break;
+			case 22:
+				module->clk4_Divider_Mapped = 1.f / 20.f;
+				text = string::f("/ 20 . 0");
+				break;
+			case 23:
+				module->clk4_Divider_Mapped = 1.f / 18.f;
+				text = string::f("/ 18 . 0");
+				break;
+			case 24:
+				module->clk4_Divider_Mapped = 1.f / 16.f;
+				text = string::f("/ 16 . 0");
+				break;
+			case 25:
+				module->clk4_Divider_Mapped = 1.f / 12.f;
+				text = string::f("/ 12 . 0");
+				break;
+			case 26:
+				module->clk4_Divider_Mapped = 1.f / 10.f;
+				text = string::f("/ 10 . 0");
+				break;
+			case 27:
+				module->clk4_Divider_Mapped = 1.f / 9.f;
+				text = string::f("/ 9 . 0");
+				break;
+			case 28:
+				module->clk4_Divider_Mapped = 1.f / 8.f;
+				text = string::f("/ 8 . 0");
+				break;
+			case 29:
+				module->clk4_Divider_Mapped = 1.f / 7.f;
+				text = string::f("/ 7 . 0");
+				break;
+			case 30:
+				module->clk4_Divider_Mapped = 1.f / 6.f;
+				text = string::f("/ 6 . 0");
+				break;
+			case 31:
+				module->clk4_Divider_Mapped = 1.f / 5.f;
+				text = string::f("/ 5 . 0");
+				break;
+			case 32:
+				module->clk4_Divider_Mapped = 1.f / 4.f;
+				text = string::f("/ 4 . 0");
+				break;
+			case 33:
+				module->clk4_Divider_Mapped = 1.f / 3.5f;
+				text = string::f("/ 3 . 5");
+				break;
+			case 34:
+				module->clk4_Divider_Mapped = 1.f / 3.f;
+				text = string::f("/ 3 . 0");
+				break;
+			case 35:
+				module->clk4_Divider_Mapped = 1.f / 2.5f;
+				text = string::f("/ 2 . 5");
+				break;
+			case 36:
+				module->clk4_Divider_Mapped = 1.f / 2.f;
+				text = string::f("/ 2 . 0");
+				break;
+			case 37:
+				module->clk4_Divider_Mapped = 1.f / 1.5f;
+				text = string::f("/ 1 . 5");
+				break;
+			case 38:
+				module->clk4_Divider_Mapped = 1.f / 1.333333f;
+				text = string::f("/ 1 . 33");
+				break;
+			case 39:
+				module->clk4_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			case 40:
+				module->clk4_Divider_Mapped = 1.333333f;
+				text = string::f("x 1 . 33");
+				break;
+			case 41:
+				module->clk4_Divider_Mapped = 1.5f;
+				text = string::f("x 1 . 5");
+				break;
+			case 42:
+				module->clk4_Divider_Mapped = 2.f;
+				text = string::f("x 2 . 0");
+				break;
+			case 43:
+				module->clk4_Divider_Mapped = 2.5f;
+				text = string::f("x 2 . 5");
+				break;
+			case 44:
+				module->clk4_Divider_Mapped = 3.f;
+				text = string::f("x 3 . 0");
+				break;
+			case 45:
+				module->clk4_Divider_Mapped = 3.5f;
+				text = string::f("x 3 . 5");
+				break;
+			case 46:
+				module->clk4_Divider_Mapped = 4.f;
+				text = string::f("x 4 . 0");
+				break;
+			case 47:
+				module->clk4_Divider_Mapped = 5.f;
+				text = string::f("x 5 . 0");
+				break;
+			case 48:
+				module->clk4_Divider_Mapped = 6.f;
+				text = string::f("x 6 . 0");
+				break;
+			case 49:
+				module->clk4_Divider_Mapped = 7.f;
+				text = string::f("x 7 . 0");
+				break;
+			case 50:
+				module->clk4_Divider_Mapped = 8.f;
+				text = string::f("x 8 . 0");
+				break;
+			case 51:
+				module->clk4_Divider_Mapped = 9.f;
+				text = string::f("x 9 . 0");
+				break;
+			case 52:
+				module->clk4_Divider_Mapped = 10.f;
+				text = string::f("x 10 . 0");
+				break;
+			case 53:
+				module->clk4_Divider_Mapped = 12.f;
+				text = string::f("x 12 . 0");
+				break;
+			case 54:
+				module->clk4_Divider_Mapped = 16.f;
+				text = string::f("x 16 . 0");
+				break;
+			case 55:
+				module->clk4_Divider_Mapped = 20.f;
+				text = string::f("x 20 . 0");
+				break;
+			case 56:
+				module->clk4_Divider_Mapped = 24.f;
+				text = string::f("x 24 . 0");
+				break;
+			case 57:
+				module->clk4_Divider_Mapped = 28.f;
+				text = string::f("x 28 . 0");
+				break;
+			case 58:
+				module->clk4_Divider_Mapped = 32.f;
+				text = string::f("x 32 . 0");
+				break;
+			case 59:
+				module->clk4_Divider_Mapped = 36.f;
+				text = string::f("x 36 . 0");
+				break;
+			case 60:
+				module->clk4_Divider_Mapped = 40.f;
+				text = string::f("x 40 . 0");
+				break;
+			case 61:
+				module->clk4_Divider_Mapped = 44.f;
+				text = string::f("x 44 . 0");
+				break;
+			case 62:
+				module->clk4_Divider_Mapped = 48.f;
+				text = string::f("x 48 . 0");
+				break;
+			case 63:
+				module->clk4_Divider_Mapped = 52.f;
+				text = string::f("x 52 . 0");
+				break;
+			case 64:
+				module->clk4_Divider_Mapped = 56.f;
+				text = string::f("x 56 . 0");
+				break;
+			case 65:
+				module->clk4_Divider_Mapped = 60.f;
+				text = string::f("x 60 . 0");
+				break;
+			case 66:
+				module->clk4_Divider_Mapped = 64.f;
+				text = string::f("x 64 . 0");
+				break;
+			case 67:
+				module->clk4_Divider_Mapped = 68.f;
+				text = string::f("x 68 . 0");
+				break;
+			case 68:
+				module->clk4_Divider_Mapped = 72.f;
+				text = string::f("x 72 . 0");
+				break;
+			case 69:
+				module->clk4_Divider_Mapped = 76.f;
+				text = string::f("x 76 . 0");
+				break;
+			case 70:
+				module->clk4_Divider_Mapped = 80.f;
+				text = string::f("x 80 . 0");
+				break;
+			case 71:
+				module->clk4_Divider_Mapped = 84.f;
+				text = string::f("x 84 . 0");
+				break;
+			case 72:
+				module->clk4_Divider_Mapped = 88.f;
+				text = string::f("x 88 . 0");
+				break;
+			case 73:
+				module->clk4_Divider_Mapped = 92.f;
+				text = string::f("x 92 . 0");
+				break;
+			case 74:
+				module->clk4_Divider_Mapped = 96.f;
+				text = string::f("x 96 . 0");
+				break;
+
+			default:
+				module->clk4_Divider_Mapped = 1.f;
+				text = string::f("x 1 . 0");
+				break;
+			}
+		}
+		else
+			text = string::f("x 2 . 0");
+	}
+};
+
 struct TickerWidget : ModuleWidget
 {
 	TickerWidget(Ticker *module)
@@ -774,28 +2052,103 @@ struct TickerWidget : ModuleWidget
 
 		// Clock 1 Panel
 		// Divider
-		Ticker_CLK1_Div_Display *CLK1_Div_display = createWidget<Ticker_CLK1_Div_Display>(mm2px(Vec(5.0, 60.0)));
+		Ticker_CLK1_Div_Display *CLK1_Div_display = createWidget<Ticker_CLK1_Div_Display>(mm2px(Vec(5.0, 43.0)));
 		CLK1_Div_display->box.size = mm2px(Vec(19.0, 8.0));
 		CLK1_Div_display->module = module;
 		addChild(CLK1_Div_display);
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 63.5)), module, Ticker::CLK1_DIV_PARAM));
-		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 63.5)), module, Ticker::CLK1_PULSE_LIGHT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 46.5)), module, Ticker::CLK1_DIV_PARAM));
+		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 46.5)), module, Ticker::CLK1_PULSE_LIGHT));
 
 		// Phase shift
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(40.0, 63.5)), module, Ticker::CLK1_PHASE_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(49.5, 63.5)), module, Ticker::CLK1_PHASE_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(40.0, 46.5)), module, Ticker::CLK1_PHASE_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(49.5, 46.5)), module, Ticker::CLK1_PHASE_IN_INPUT));
 
 		// Gate Length
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 63.5)), module, Ticker::CLK1_GATE_LEN_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 63.5)), module, Ticker::CLK1_GATE_LEN_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 46.5)), module, Ticker::CLK1_GATE_LEN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 46.5)), module, Ticker::CLK1_GATE_LEN_IN_INPUT));
 
 		// Swing Amount
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 63.5)), module, Ticker::CLK1_SWING_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 63.5)), module, Ticker::CLK1_SWING_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 46.5)), module, Ticker::CLK1_SWING_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 46.5)), module, Ticker::CLK1_SWING_IN_INPUT));
 
 		// Outputs
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(108.0, 63.5)), module, Ticker::CLK1_GATE_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.0, 63.5)), module, Ticker::CLK1_TRIGGER_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(108.0, 46.5)), module, Ticker::CLK1_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.0, 46.5)), module, Ticker::CLK1_TRIGGER_OUTPUT));
+
+		// Clock 2 Panel
+		// Divider
+		Ticker_CLK2_Div_Display *CLK2_Div_display = createWidget<Ticker_CLK2_Div_Display>(mm2px(Vec(5.0, 60.0)));
+		CLK2_Div_display->box.size = mm2px(Vec(19.0, 8.0));
+		CLK2_Div_display->module = module;
+		addChild(CLK2_Div_display);
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 63.5)), module, Ticker::CLK2_DIV_PARAM));
+		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 63.5)), module, Ticker::CLK2_PULSE_LIGHT));
+
+		// Phase shift
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(40.0, 63.5)), module, Ticker::CLK2_PHASE_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(49.5, 63.5)), module, Ticker::CLK2_PHASE_IN_INPUT));
+
+		// Gate Length
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 63.5)), module, Ticker::CLK2_GATE_LEN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 63.5)), module, Ticker::CLK2_GATE_LEN_IN_INPUT));
+
+		// Swing Amount
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 63.5)), module, Ticker::CLK2_SWING_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 63.5)), module, Ticker::CLK2_SWING_IN_INPUT));
+
+		// Outputs
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(108.0, 63.5)), module, Ticker::CLK2_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.0, 63.5)), module, Ticker::CLK2_TRIGGER_OUTPUT));
+
+		// Clock 3 Panel
+		// Divider
+		Ticker_CLK3_Div_Display *CLK3_Div_display = createWidget<Ticker_CLK3_Div_Display>(mm2px(Vec(5.0, 77.0)));
+		CLK3_Div_display->box.size = mm2px(Vec(19.0, 8.0));
+		CLK3_Div_display->module = module;
+		addChild(CLK3_Div_display);
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 80.5)), module, Ticker::CLK3_DIV_PARAM));
+		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 80.5)), module, Ticker::CLK3_PULSE_LIGHT));
+
+		// Phase shift
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(40.0, 80.5)), module, Ticker::CLK3_PHASE_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(49.5, 80.5)), module, Ticker::CLK3_PHASE_IN_INPUT));
+
+		// Gate Length
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 80.5)), module, Ticker::CLK3_GATE_LEN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 80.5)), module, Ticker::CLK3_GATE_LEN_IN_INPUT));
+
+		// Swing Amount
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 80.5)), module, Ticker::CLK3_SWING_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 80.5)), module, Ticker::CLK3_SWING_IN_INPUT));
+
+		// Outputs
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(108.0, 80.5)), module, Ticker::CLK3_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.0, 80.5)), module, Ticker::CLK3_TRIGGER_OUTPUT));
+
+		// Clock 4 Panel
+		// Divider
+		Ticker_CLK4_Div_Display *CLK4_Div_display = createWidget<Ticker_CLK4_Div_Display>(mm2px(Vec(5.0, 94.0)));
+		CLK4_Div_display->box.size = mm2px(Vec(19.0, 8.0));
+		CLK4_Div_display->module = module;
+		addChild(CLK4_Div_display);
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(29.5, 97.5)), module, Ticker::CLK4_DIV_PARAM));
+		addChild(createLightCentered<SmallSimpleLight<STSYellowLight>>(mm2px(Vec(29.5, 97.5)), module, Ticker::CLK4_PULSE_LIGHT));
+
+		// Phase shift
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(40.0, 97.5)), module, Ticker::CLK4_PHASE_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(49.5, 97.5)), module, Ticker::CLK4_PHASE_IN_INPUT));
+
+		// Gate Length
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.5, 97.5)), module, Ticker::CLK4_GATE_LEN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 97.5)), module, Ticker::CLK4_GATE_LEN_IN_INPUT));
+
+		// Swing Amount
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(85.0, 97.5)), module, Ticker::CLK4_SWING_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(94.5, 97.5)), module, Ticker::CLK4_SWING_IN_INPUT));
+
+		// Outputs
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(108.0, 97.5)), module, Ticker::CLK4_GATE_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.0, 97.5)), module, Ticker::CLK4_TRIGGER_OUTPUT));
 	}
 };
 

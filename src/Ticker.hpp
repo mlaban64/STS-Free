@@ -66,9 +66,9 @@ struct BPM_Display : DigitalDisplay
 	}
 };
 
-struct CLK1_Div_Display : DigitalDisplay
+struct CLK_Div_Display : DigitalDisplay
 {
-	CLK1_Div_Display()
+	CLK_Div_Display()
 	{
 		fontPath = std::string(asset::plugin(pluginInstance, "res/fonts/DSEG14Modern-Regular.ttf"));
 		textPos = Vec(53.0, 19.0);
