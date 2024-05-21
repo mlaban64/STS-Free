@@ -417,8 +417,7 @@ struct Ticker : Module
 		if (clk1_Divider != clk1_Divider_Old)
 		{
 			clk1_Divider_Old = clk1_Divider;
-			msr_Phase = 0.f;
-			clk1_Phase = 0.f;
+			clk1_Phase = msr_Phase;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK1_PHASE_IN_INPUT].isConnected())
@@ -446,8 +445,7 @@ struct Ticker : Module
 		if (clk2_Divider != clk2_Divider_Old)
 		{
 			clk2_Divider_Old = clk2_Divider;
-			msr_Phase = 0.f;
-			clk2_Phase = 0.f;
+			clk2_Phase = msr_Phase;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK2_PHASE_IN_INPUT].isConnected())
@@ -475,8 +473,7 @@ struct Ticker : Module
 		if (clk3_Divider != clk3_Divider_Old)
 		{
 			clk3_Divider_Old = clk3_Divider;
-			msr_Phase = 0.f;
-			clk3_Phase = 0.f;
+			clk3_Phase = msr_Phase;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK3_PHASE_IN_INPUT].isConnected())
@@ -498,14 +495,13 @@ struct Ticker : Module
 
 		// Clock 4
 		// Divider data
-		clk2_Divider = params[CLK4_DIV_PARAM].getValue();
+		clk4_Divider = params[CLK4_DIV_PARAM].getValue();
 
 		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
 		if (clk4_Divider != clk4_Divider_Old)
 		{
 			clk4_Divider_Old = clk4_Divider;
-			msr_Phase = 0.f;
-			clk4_Phase = 0.f;
+			clk4_Phase = msr_Phase;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK4_PHASE_IN_INPUT].isConnected())
@@ -529,7 +525,10 @@ struct Ticker : Module
 		//
 		// Compute Master Clock Frequency and derive the individual clocks
 		msr_Freq = msr_BPM * One_Hz;
-		clk1_Freq = clk2_Freq = clk3_Freq = clk4_Freq = msr_Freq * clk1_Divider_Mapped;
+		clk1_Freq = msr_Freq * clk1_Divider_Mapped;
+		clk2_Freq = msr_Freq * clk2_Divider_Mapped;
+		clk3_Freq = msr_Freq * clk3_Divider_Mapped;
+		clk4_Freq = msr_Freq * clk4_Divider_Mapped;
 
 		// Was Run pressed or a pulse received on Run In?
 		runButtonTriggered = runButtonTrigger.process(params[MSR_RUN_BTN_PARAM].getValue());
@@ -631,7 +630,7 @@ struct Ticker : Module
 			clk1_TrgState = clk1_TrgPulse.process(args.sampleTime);
 			clk1_GateState = clk1_GatePulse.process(args.sampleTime);
 
-			// If gate is running (gate pulse may be over) & wait finished, recompute swing
+			// If gate is running (gate pulse itself should be over) & wait finished, recompute swing
 			if (clk1_Gate_Started && clk1_Phase > SWING_PHASE_TO_WAIT && !clk1_GateState)
 			{
 				// Recompute a new swing value as part of a cycle
@@ -661,7 +660,7 @@ struct Ticker : Module
 			clk2_TrgState = clk2_TrgPulse.process(args.sampleTime);
 			clk2_GateState = clk2_GatePulse.process(args.sampleTime);
 
-			// If gate is running (gate pulse may be over) & wait finished, recompute swing
+			// If gate is running (gate pulse itself should be over) & wait finished, recompute swing
 			if (clk2_Gate_Started && clk2_Phase > SWING_PHASE_TO_WAIT && !clk2_GateState)
 			{
 				// Recompute a new swing value as part of a cycle
@@ -673,18 +672,87 @@ struct Ticker : Module
 			outputs[CLK2_GATE_OUTPUT].setVoltage((clk2_GateState) ? 10.f : 0.f);
 			outputs[CLK2_TRIGGER_OUTPUT].setVoltage((clk2_TrgState) ? 10.f : 0.f);
 			lights[CLK2_PULSE_LIGHT].setBrightnessSmooth(clk2_Gate_Voltage > 0.f, args.sampleTime);
+
+			// Clock 3
+			// Compute the duration of the CLK3 gate
+			clk3_Gate_Duration = clk3_Gate_Len / (clk3_Freq * 100.f);
+			// Compute the derived clocks as per the pulse width, phase and random swing amount
+			clk3_Gate_Voltage = STS_My_Pulse(clk3_Phase, clk3_Phase_Shift, clk3_Swing_value, clk3_Gate_Len);
+			// Are we outputting a new CLK3 gate and not waiting for the previous one?
+			if (clk3_Gate_Voltage > 0.0f && !clk3_Gate_Started)
+			{
+				clk3_Gate_Started = true;
+				clk3_TrgPulse.trigger(1e-3f);
+				clk3_GatePulse.trigger(clk3_Gate_Duration);
+			}
+
+			// Check the CLK3 trigger & gate pulse
+			clk3_TrgState = clk3_TrgPulse.process(args.sampleTime);
+			clk3_GateState = clk3_GatePulse.process(args.sampleTime);
+
+			// If gate is running (gate pulse itself should be over) & wait finished, recompute swing
+			if (clk3_Gate_Started && clk3_Phase > SWING_PHASE_TO_WAIT && !clk3_GateState)
+			{
+				// Recompute a new swing value as part of a cycle
+				clk3_Swing_value = (1.f - 2.f * rack::random::uniform()) * clk3_Swing_Amount * 0.01;
+				clk3_Gate_Started = false;
+			}
+
+			// Output the CLK3 gate & trigger & lights
+			outputs[CLK3_GATE_OUTPUT].setVoltage((clk3_GateState) ? 10.f : 0.f);
+			outputs[CLK3_TRIGGER_OUTPUT].setVoltage((clk3_TrgState) ? 10.f : 0.f);
+			lights[CLK3_PULSE_LIGHT].setBrightnessSmooth(clk3_Gate_Voltage > 0.f, args.sampleTime);
+
+			// Clock 4
+			// Compute the duration of the CLK4 gate
+			clk4_Gate_Duration = clk4_Gate_Len / (clk2_Freq * 100.f);
+			// Compute the derived clocks as per the pulse width, phase and random swing amount
+			clk4_Gate_Voltage = STS_My_Pulse(clk4_Phase, clk4_Phase_Shift, clk4_Swing_value, clk4_Gate_Len);
+			// Are we outputting a new CLK4 gate and not waiting for the previous one?
+			if (clk4_Gate_Voltage > 0.0f && !clk4_Gate_Started)
+			{
+				clk4_Gate_Started = true;
+				clk4_TrgPulse.trigger(1e-3f);
+				clk4_GatePulse.trigger(clk4_Gate_Duration);
+			}
+
+			// Check the CLK4 trigger & gate pulse
+			clk4_TrgState = clk4_TrgPulse.process(args.sampleTime);
+			clk4_GateState = clk4_GatePulse.process(args.sampleTime);
+
+			// If gate is running (gate pulse itself should be over) & wait finished, recompute swing
+			if (clk4_Gate_Started && clk4_Phase > SWING_PHASE_TO_WAIT && !clk4_GateState)
+			{
+				// Recompute a new swing value as part of a cycle
+				clk4_Swing_value = (1.f - 2.f * rack::random::uniform()) * clk4_Swing_Amount * 0.01;
+				clk4_Gate_Started = false;
+			}
+
+			// Output the CLK4 gate & trigger & lights
+			outputs[CLK4_GATE_OUTPUT].setVoltage((clk4_GateState) ? 10.f : 0.f);
+			outputs[CLK4_TRIGGER_OUTPUT].setVoltage((clk4_TrgState) ? 10.f : 0.f);
+			lights[CLK4_PULSE_LIGHT].setBrightnessSmooth(clk4_Gate_Voltage > 0.f, args.sampleTime);
 		}
 		else // Not running
 		{
 			// Set phase to 0.0 to avoid the first pulse to be too short/quick
 			msr_Phase = 0.f;
-			clk1_Phase = 0.f;
 			msr_Gate_Started = false;
+			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 			clk1_Gate_Started = false;
+			clk2_Gate_Started = false;
+			clk3_Gate_Started = false;
+			clk4_Gate_Started = false;
 
 			// Reset all outputs & lights
 			outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
 			outputs[CLK1_GATE_OUTPUT].setVoltage(0.f);
+			outputs[CLK2_GATE_OUTPUT].setVoltage(0.f);
+			outputs[CLK3_GATE_OUTPUT].setVoltage(0.f);
+			outputs[CLK4_GATE_OUTPUT].setVoltage(0.f);
 
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
 			lights[MSR_PULSE_LIGHT].setBrightness(0.f);
