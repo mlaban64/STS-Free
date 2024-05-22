@@ -141,9 +141,9 @@ struct Ticker : Module
 	float msr_Gate_Voltage;		   // Output voltage for Master Gate
 
 	bool clk1_Gate_Started = false;	 // Toggle to see if we started a new CLK1 gate
-	float clk1_Divider = 1.f;		 // current CLK1 Divider param
+	float clk1_Divider = 39.f;		 // current CLK1 Divider param
 	float clk1_Divider_Mapped = 1.f; // current CLK1 Divider param mapped to actual divider factor
-	float clk1_Divider_Old = 1.f;	 // Old CLK1 Divider
+	float clk1_Divider_Old = 39.f;	 // Old CLK1 Divider
 	float clk1_Freq = 2.f;			 // current CLK1 Frequency
 	float clk1_Phase = 0.f;			 // holds the phase of CLK1
 	float clk1_Gate_Len = 50.f;		 // CLK1 Gate length in %
@@ -154,9 +154,9 @@ struct Ticker : Module
 	float clk1_Gate_Voltage = 0.f;	 // Output voltage for CLK1 Gate
 
 	bool clk2_Gate_Started = false;	 // Toggle to see if we started a new CLK2 gate
-	float clk2_Divider = 1.f;		 // current CLK2 Divider param
+	float clk2_Divider = 39.f;		 // current CLK2 Divider param
 	float clk2_Divider_Mapped = 1.f; // current CLK2 Divider param mapped to actual divider factor
-	float clk2_Divider_Old = 1.f;	 // Old CLK2 Divider
+	float clk2_Divider_Old = 39.f;	 // Old CLK2 Divider
 	float clk2_Freq = 2.f;			 // current CLK2 Frequency
 	float clk2_Phase = 0.f;			 // holds the phase of CLK2
 	float clk2_Gate_Len = 50.f;		 // CLK2 Gate length in %
@@ -167,9 +167,9 @@ struct Ticker : Module
 	float clk2_Gate_Voltage = 0.f;	 // Output voltage for CLK2 Gate
 
 	bool clk3_Gate_Started = false;	 // Toggle to see if we started a new CLK3 gate
-	float clk3_Divider = 1.f;		 // current CLK3 Divider param
+	float clk3_Divider = 39.f;		 // current CLK3 Divider param
 	float clk3_Divider_Mapped = 1.f; // current CLK3 Divider param mapped to actual divider factor
-	float clk3_Divider_Old = 1.f;	 // Old CLK3 Divider
+	float clk3_Divider_Old = 39.f;	 // Old CLK3 Divider
 	float clk3_Freq = 2.f;			 // current CLK3 Frequency
 	float clk3_Phase = 0.f;			 // holds the phase of CLK3
 	float clk3_Gate_Len = 50.f;		 // CLK3 Gate length in %
@@ -180,9 +180,9 @@ struct Ticker : Module
 	float clk3_Gate_Voltage = 0.f;	 // Output voltage for CLK3 Gate
 
 	bool clk4_Gate_Started = false;	 // Toggle to see if we started a new CLK4 gate
-	float clk4_Divider = 1.f;		 // current CLK4 Divider param
+	float clk4_Divider = 39.f;		 // current CLK4 Divider param
 	float clk4_Divider_Mapped = 1.f; // current CLK4 Divider param mapped to actual divider factor
-	float clk4_Divider_Old = 1.f;	 // Old CLK4 Divider
+	float clk4_Divider_Old = 39.f;	 // Old CLK4 Divider
 	float clk4_Freq = 2.f;			 // current CLK4 Frequency
 	float clk4_Phase = 0.f;			 // holds the phase of CLK4
 	float clk4_Gate_Len = 50.f;		 // CLK4 Gate length in %
@@ -212,7 +212,7 @@ struct Ticker : Module
 	}
 
 	// DEBUG version of STS_My_Pulse
-	float STS_My_Pulse_DBG(float phase, float phase_shift, float swing_value, float pulse_width)
+	float STS_My_Pulse_DBG(const char *txt, float phase, float phase_shift, float swing_value, float pulse_width)
 	{
 		float local_phase, ret_val;
 
@@ -227,7 +227,7 @@ struct Ticker : Module
 			ret_val = 10.f;
 		else
 			ret_val = 0.f;
-		INFO("RET = %f , LOCAL_PHASE = %f, phase=%f, phase_shift = %f, swing_value = %f, pulse_width = %f", ret_val, local_phase, phase, phase_shift, swing_value, pulse_width);
+		INFO("%s: RET = %f , LOCAL_PHASE = %f, phase=%f, phase_shift = %f, swing_value = %f, pulse_width = %f", txt, ret_val, local_phase, phase, phase_shift, swing_value, pulse_width);
 		return ret_val;
 	}
 
@@ -236,7 +236,14 @@ struct Ticker : Module
 	{
 		// Set defaults
 		msr_BPM = msr_BPM_Old = 120;
-		clk1_Divider = clk1_Divider_Old = 2.f;
+		clk1_Divider = clk1_Divider_Old = 39.f;
+		clk2_Divider = clk2_Divider_Old = 39.f;
+		clk3_Divider = clk3_Divider_Old = 39.f;
+		clk4_Divider = clk4_Divider_Old = 39.f;
+		clk1_Divider_Mapped = 1.f;
+		clk2_Divider_Mapped = 1.f;
+		clk3_Divider_Mapped = 1.f;
+		clk4_Divider_Mapped = 1.f;
 		is_Running = false;
 		msr_Phase = 0.f;
 		clk1_Phase = 0.f;
@@ -417,7 +424,12 @@ struct Ticker : Module
 		if (clk1_Divider != clk1_Divider_Old)
 		{
 			clk1_Divider_Old = clk1_Divider;
-			clk1_Phase = msr_Phase;
+			msr_Phase = 0.f;
+			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
+			INFO("Resetting all phases: CLK1 Div = %f, CLK1_Mapped = %f", clk1_Divider, clk1_Divider_Mapped);
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK1_PHASE_IN_INPUT].isConnected())
@@ -591,7 +603,7 @@ struct Ticker : Module
 			// Compute the duration of the master gate
 			msr_Gate_Duration = msr_Gate_Len / (msr_Freq * 100.f);
 			// compute the Master Clock signal, which has no swing/phase shift
-			msr_Gate_Voltage = STS_My_Pulse(msr_Phase, 0.f, 0.f, msr_Gate_Len);
+			msr_Gate_Voltage = STS_My_Pulse_DBG("MASTER :", msr_Phase, 0.f, 0.f, msr_Gate_Len);
 			// Start the master clock trigger, if the new pulse started
 			if (msr_Gate_Voltage > 0.f && !msr_Gate_Started)
 			{
@@ -617,7 +629,7 @@ struct Ticker : Module
 			// Compute the duration of the CLK1 gate
 			clk1_Gate_Duration = clk1_Gate_Len / (clk1_Freq * 100.f);
 			// Compute the derived clocks as per the pulse width, phase and random swing amount
-			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len);
+			clk1_Gate_Voltage = STS_My_Pulse_DBG("CLOCK 1:", clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len);
 			// Are we outputting a new CLK1 gate and not waiting for the previous one?
 			if (clk1_Gate_Voltage > 0.0f && !clk1_Gate_Started)
 			{
@@ -630,7 +642,7 @@ struct Ticker : Module
 			clk1_TrgState = clk1_TrgPulse.process(args.sampleTime);
 			clk1_GateState = clk1_GatePulse.process(args.sampleTime);
 
-			// If gate is running (gate pulse itself should be over) & wait finished, recompute swing
+			// If gate is running (gate pulse itself should be over) & wait finished and swing amount > 0, recompute swing
 			if (clk1_Gate_Started && clk1_Phase > SWING_PHASE_TO_WAIT && !clk1_GateState)
 			{
 				// Recompute a new swing value as part of a cycle
