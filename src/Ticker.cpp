@@ -141,9 +141,9 @@ struct Ticker : Module
 	float msr_Gate_Voltage;		   // Output voltage for Master Gate
 
 	bool clk1_Gate_Started = false;	 // Toggle to see if we started a new CLK1 gate
-	float clk1_Divider = 39.f;		 // current CLK1 Divider param
+	int clk1_Divider = 36;			 // current CLK1 Divider param
+	int clk1_Divider_Old = 36;		 // Old CLK1 Divider
 	float clk1_Divider_Mapped = 1.f; // current CLK1 Divider param mapped to actual divider factor
-	float clk1_Divider_Old = 39.f;	 // Old CLK1 Divider
 	float clk1_Freq = 2.f;			 // current CLK1 Frequency
 	float clk1_Phase = 0.f;			 // holds the phase of CLK1
 	float clk1_Gate_Len = 50.f;		 // CLK1 Gate length in %
@@ -154,9 +154,9 @@ struct Ticker : Module
 	float clk1_Gate_Voltage = 0.f;	 // Output voltage for CLK1 Gate
 
 	bool clk2_Gate_Started = false;	 // Toggle to see if we started a new CLK2 gate
-	float clk2_Divider = 39.f;		 // current CLK2 Divider param
+	int clk2_Divider = 36;			 // current CLK2 Divider param
+	int clk2_Divider_Old = 36;		 // Old CLK2 Divider
 	float clk2_Divider_Mapped = 1.f; // current CLK2 Divider param mapped to actual divider factor
-	float clk2_Divider_Old = 39.f;	 // Old CLK2 Divider
 	float clk2_Freq = 2.f;			 // current CLK2 Frequency
 	float clk2_Phase = 0.f;			 // holds the phase of CLK2
 	float clk2_Gate_Len = 50.f;		 // CLK2 Gate length in %
@@ -167,9 +167,9 @@ struct Ticker : Module
 	float clk2_Gate_Voltage = 0.f;	 // Output voltage for CLK2 Gate
 
 	bool clk3_Gate_Started = false;	 // Toggle to see if we started a new CLK3 gate
-	float clk3_Divider = 39.f;		 // current CLK3 Divider param
+	int clk3_Divider = 36;			 // current CLK3 Divider param
+	int clk3_Divider_Old = 36;		 // Old CLK3 Divider
 	float clk3_Divider_Mapped = 1.f; // current CLK3 Divider param mapped to actual divider factor
-	float clk3_Divider_Old = 39.f;	 // Old CLK3 Divider
 	float clk3_Freq = 2.f;			 // current CLK3 Frequency
 	float clk3_Phase = 0.f;			 // holds the phase of CLK3
 	float clk3_Gate_Len = 50.f;		 // CLK3 Gate length in %
@@ -180,9 +180,9 @@ struct Ticker : Module
 	float clk3_Gate_Voltage = 0.f;	 // Output voltage for CLK3 Gate
 
 	bool clk4_Gate_Started = false;	 // Toggle to see if we started a new CLK4 gate
-	float clk4_Divider = 39.f;		 // current CLK4 Divider param
+	int clk4_Divider = 36;			 // current CLK4 Divider param
+	int clk4_Divider_Old = 36;		 // Old CLK4 Divider
 	float clk4_Divider_Mapped = 1.f; // current CLK4 Divider param mapped to actual divider factor
-	float clk4_Divider_Old = 39.f;	 // Old CLK4 Divider
 	float clk4_Freq = 2.f;			 // current CLK4 Frequency
 	float clk4_Phase = 0.f;			 // holds the phase of CLK4
 	float clk4_Gate_Len = 50.f;		 // CLK4 Gate length in %
@@ -236,10 +236,14 @@ struct Ticker : Module
 	{
 		// Set defaults
 		msr_BPM = msr_BPM_Old = 120;
-		clk1_Divider = clk1_Divider_Old = 39.f;
-		clk2_Divider = clk2_Divider_Old = 39.f;
-		clk3_Divider = clk3_Divider_Old = 39.f;
-		clk4_Divider = clk4_Divider_Old = 39.f;
+		clk1_Divider = 36;
+		clk1_Divider_Old = 36;
+		clk2_Divider = 36;
+		clk2_Divider_Old = 36;
+		clk3_Divider = 36;
+		clk3_Divider_Old = 36;
+		clk4_Divider = 36;
+		clk4_Divider_Old = 36;
 		clk1_Divider_Mapped = 1.f;
 		clk2_Divider_Mapped = 1.f;
 		clk3_Divider_Mapped = 1.f;
@@ -330,7 +334,7 @@ struct Ticker : Module
 		configOutput(MSR_RUN_OUTPUT, "Run Out");
 
 		// Clock 1 Params
-		configParam(CLK1_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		configParam(CLK1_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
 		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK1_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK1_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
@@ -344,7 +348,7 @@ struct Ticker : Module
 		configOutput(CLK1_GATE_OUTPUT, "Clock 1 Trigger");
 
 		// Clock 2 Params
-		configParam(CLK2_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		configParam(CLK2_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
 		paramQuantities[CLK2_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK2_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK2_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
@@ -358,7 +362,7 @@ struct Ticker : Module
 		configOutput(CLK2_GATE_OUTPUT, "Clock 2 Trigger");
 
 		// Clock 3 Params
-		configParam(CLK3_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		configParam(CLK3_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
 		paramQuantities[CLK3_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK3_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK3_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
@@ -372,7 +376,7 @@ struct Ticker : Module
 		configOutput(CLK3_GATE_OUTPUT, "Clock 3 Trigger");
 
 		// Clock 4 Params
-		configParam(CLK4_DIV_PARAM, 0.f, 74.f, 39.f, "Divider", "");
+		configParam(CLK4_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
 		paramQuantities[CLK4_DIV_PARAM]->snapEnabled = true;
 		configParam(CLK4_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK4_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
@@ -418,7 +422,8 @@ struct Ticker : Module
 
 		// Clock 1
 		// Divider data
-		clk1_Divider = params[CLK1_DIV_PARAM].getValue();
+		clk1_Divider = (int)params[CLK1_DIV_PARAM].getValue();
+		clk1_Divider_Mapped = div_to_factor[clk1_Divider];
 
 		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
 		if (clk1_Divider != clk1_Divider_Old)
@@ -429,7 +434,6 @@ struct Ticker : Module
 			clk2_Phase = 0.f;
 			clk3_Phase = 0.f;
 			clk4_Phase = 0.f;
-			INFO("Resetting all phases: CLK1 Div = %f, CLK1_Mapped = %f", clk1_Divider, clk1_Divider_Mapped);
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK1_PHASE_IN_INPUT].isConnected())
@@ -451,13 +455,18 @@ struct Ticker : Module
 
 		// Clock 2
 		// Divider data
-		clk2_Divider = params[CLK2_DIV_PARAM].getValue();
+		clk2_Divider = (int)params[CLK2_DIV_PARAM].getValue();
+		clk2_Divider_Mapped = div_to_factor[clk2_Divider];
 
 		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
 		if (clk2_Divider != clk2_Divider_Old)
 		{
 			clk2_Divider_Old = clk2_Divider;
-			clk2_Phase = msr_Phase;
+			msr_Phase = 0.f;
+			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK2_PHASE_IN_INPUT].isConnected())
@@ -479,13 +488,18 @@ struct Ticker : Module
 
 		// Clock 3
 		// Divider data
-		clk3_Divider = params[CLK3_DIV_PARAM].getValue();
+		clk3_Divider = (int)params[CLK3_DIV_PARAM].getValue();
+		clk3_Divider_Mapped = div_to_factor[clk3_Divider];
 
 		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
 		if (clk3_Divider != clk3_Divider_Old)
 		{
 			clk3_Divider_Old = clk3_Divider;
-			clk3_Phase = msr_Phase;
+			msr_Phase = 0.f;
+			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK3_PHASE_IN_INPUT].isConnected())
@@ -507,13 +521,18 @@ struct Ticker : Module
 
 		// Clock 4
 		// Divider data
-		clk4_Divider = params[CLK4_DIV_PARAM].getValue();
+		clk4_Divider = (int)params[CLK4_DIV_PARAM].getValue();
+		clk4_Divider_Mapped = div_to_factor[clk4_Divider];
 
 		// Did we change the Divider setting? If so, reset the phase as per the master clock and recompute the factor
 		if (clk4_Divider != clk4_Divider_Old)
 		{
 			clk4_Divider_Old = clk4_Divider;
-			clk4_Phase = msr_Phase;
+			msr_Phase = 0.f;
+			clk1_Phase = 0.f;
+			clk2_Phase = 0.f;
+			clk3_Phase = 0.f;
+			clk4_Phase = 0.f;
 		}
 		// Phase data, 0..10V mapped to 0..1
 		if (inputs[CLK4_PHASE_IN_INPUT].isConnected())
@@ -603,7 +622,7 @@ struct Ticker : Module
 			// Compute the duration of the master gate
 			msr_Gate_Duration = msr_Gate_Len / (msr_Freq * 100.f);
 			// compute the Master Clock signal, which has no swing/phase shift
-			msr_Gate_Voltage = STS_My_Pulse_DBG("MASTER :", msr_Phase, 0.f, 0.f, msr_Gate_Len);
+			msr_Gate_Voltage = STS_My_Pulse(msr_Phase, 0.f, 0.f, msr_Gate_Len);
 			// Start the master clock trigger, if the new pulse started
 			if (msr_Gate_Voltage > 0.f && !msr_Gate_Started)
 			{
@@ -629,7 +648,7 @@ struct Ticker : Module
 			// Compute the duration of the CLK1 gate
 			clk1_Gate_Duration = clk1_Gate_Len / (clk1_Freq * 100.f);
 			// Compute the derived clocks as per the pulse width, phase and random swing amount
-			clk1_Gate_Voltage = STS_My_Pulse_DBG("CLOCK 1:", clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len);
+			clk1_Gate_Voltage = STS_My_Pulse(clk1_Phase, clk1_Phase_Shift, clk1_Swing_value, clk1_Gate_Len);
 			// Are we outputting a new CLK1 gate and not waiting for the previous one?
 			if (clk1_Gate_Voltage > 0.0f && !clk1_Gate_Started)
 			{
@@ -768,6 +787,10 @@ struct Ticker : Module
 
 			lights[MSR_RUN_LIGHT].setBrightness(0.f);
 			lights[MSR_PULSE_LIGHT].setBrightness(0.f);
+			lights[CLK1_PULSE_LIGHT].setBrightness(0.f);
+			lights[CLK2_PULSE_LIGHT].setBrightness(0.f);
+			lights[CLK3_PULSE_LIGHT].setBrightness(0.f);
+			lights[CLK4_PULSE_LIGHT].setBrightness(0.f);
 		}
 	}
 };
@@ -793,322 +816,10 @@ struct Ticker_CLK1_Div_Display : CLK_Div_Display
 	// Icky code to map the param steps to specific divider or multiplier intervals
 	void step() override
 	{
-		int clk_Divider = 1;
+		int clk_Divider = 38;
 		if (module)
-		{
-			clk_Divider = (int)module->clk1_Divider;
-
-			switch (clk_Divider)
-			{
-			case 0:
-				module->clk1_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 1:
-				module->clk1_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 2:
-				module->clk1_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 3:
-				module->clk1_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 4:
-				module->clk1_Divider_Mapped = 1.f / 92.f;
-				text = string::f("/ 92 . 0");
-				break;
-			case 5:
-				module->clk1_Divider_Mapped = 1.f / 88.f;
-				text = string::f("/ 88 . 0");
-				break;
-			case 6:
-				module->clk1_Divider_Mapped = 1.f / 84.f;
-				text = string::f("/ 84 . 0");
-				break;
-			case 7:
-				module->clk1_Divider_Mapped = 1.f / 80.f;
-				text = string::f("/ 80 . 0");
-				break;
-			case 8:
-				module->clk1_Divider_Mapped = 1.f / 76.f;
-				text = string::f("/ 76 . 0");
-				break;
-			case 9:
-				module->clk1_Divider_Mapped = 1.f / 72.f;
-				text = string::f("/ 72 . 0");
-				break;
-			case 10:
-				module->clk1_Divider_Mapped = 1.f / 68.f;
-				text = string::f("/ 68 . 0");
-				break;
-			case 11:
-				module->clk1_Divider_Mapped = 1.f / 64.f;
-				text = string::f("/ 64 . 0");
-				break;
-			case 12:
-				module->clk1_Divider_Mapped = 1.f / 60.f;
-				text = string::f("/ 60 . 0");
-				break;
-			case 13:
-				module->clk1_Divider_Mapped = 1.f / 56.f;
-				text = string::f("/ 56 . 0");
-				break;
-			case 14:
-				module->clk1_Divider_Mapped = 1.f / 52.f;
-				text = string::f("/ 52 . 0");
-				break;
-			case 15:
-				module->clk1_Divider_Mapped = 1.f / 48.f;
-				text = string::f("/ 48 . 0");
-				break;
-			case 16:
-				module->clk1_Divider_Mapped = 1.f / 44.f;
-				text = string::f("/ 44 . 0");
-				break;
-			case 17:
-				module->clk1_Divider_Mapped = 1.f / 40.f;
-				text = string::f("/ 40 . 0");
-				break;
-			case 18:
-				module->clk1_Divider_Mapped = 1.f / 36.f;
-				text = string::f("/ 36 . 0");
-				break;
-			case 19:
-				module->clk1_Divider_Mapped = 1.f / 32.f;
-				text = string::f("/ 32 . 0");
-				break;
-			case 20:
-				module->clk1_Divider_Mapped = 1.f / 28.f;
-				text = string::f("/ 28 . 0");
-				break;
-			case 21:
-				module->clk1_Divider_Mapped = 1.f / 24.f;
-				text = string::f("/ 24 . 0");
-				break;
-			case 22:
-				module->clk1_Divider_Mapped = 1.f / 20.f;
-				text = string::f("/ 20 . 0");
-				break;
-			case 23:
-				module->clk1_Divider_Mapped = 1.f / 18.f;
-				text = string::f("/ 18 . 0");
-				break;
-			case 24:
-				module->clk1_Divider_Mapped = 1.f / 16.f;
-				text = string::f("/ 16 . 0");
-				break;
-			case 25:
-				module->clk1_Divider_Mapped = 1.f / 12.f;
-				text = string::f("/ 12 . 0");
-				break;
-			case 26:
-				module->clk1_Divider_Mapped = 1.f / 10.f;
-				text = string::f("/ 10 . 0");
-				break;
-			case 27:
-				module->clk1_Divider_Mapped = 1.f / 9.f;
-				text = string::f("/ 9 . 0");
-				break;
-			case 28:
-				module->clk1_Divider_Mapped = 1.f / 8.f;
-				text = string::f("/ 8 . 0");
-				break;
-			case 29:
-				module->clk1_Divider_Mapped = 1.f / 7.f;
-				text = string::f("/ 7 . 0");
-				break;
-			case 30:
-				module->clk1_Divider_Mapped = 1.f / 6.f;
-				text = string::f("/ 6 . 0");
-				break;
-			case 31:
-				module->clk1_Divider_Mapped = 1.f / 5.f;
-				text = string::f("/ 5 . 0");
-				break;
-			case 32:
-				module->clk1_Divider_Mapped = 1.f / 4.f;
-				text = string::f("/ 4 . 0");
-				break;
-			case 33:
-				module->clk1_Divider_Mapped = 1.f / 3.5f;
-				text = string::f("/ 3 . 5");
-				break;
-			case 34:
-				module->clk1_Divider_Mapped = 1.f / 3.f;
-				text = string::f("/ 3 . 0");
-				break;
-			case 35:
-				module->clk1_Divider_Mapped = 1.f / 2.5f;
-				text = string::f("/ 2 . 5");
-				break;
-			case 36:
-				module->clk1_Divider_Mapped = 1.f / 2.f;
-				text = string::f("/ 2 . 0");
-				break;
-			case 37:
-				module->clk1_Divider_Mapped = 1.f / 1.5f;
-				text = string::f("/ 1 . 5");
-				break;
-			case 38:
-				module->clk1_Divider_Mapped = 1.f / 1.333333f;
-				text = string::f("/ 1 . 33");
-				break;
-			case 39:
-				module->clk1_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			case 40:
-				module->clk1_Divider_Mapped = 1.333333f;
-				text = string::f("x 1 . 33");
-				break;
-			case 41:
-				module->clk1_Divider_Mapped = 1.5f;
-				text = string::f("x 1 . 5");
-				break;
-			case 42:
-				module->clk1_Divider_Mapped = 2.f;
-				text = string::f("x 2 . 0");
-				break;
-			case 43:
-				module->clk1_Divider_Mapped = 2.5f;
-				text = string::f("x 2 . 5");
-				break;
-			case 44:
-				module->clk1_Divider_Mapped = 3.f;
-				text = string::f("x 3 . 0");
-				break;
-			case 45:
-				module->clk1_Divider_Mapped = 3.5f;
-				text = string::f("x 3 . 5");
-				break;
-			case 46:
-				module->clk1_Divider_Mapped = 4.f;
-				text = string::f("x 4 . 0");
-				break;
-			case 47:
-				module->clk1_Divider_Mapped = 5.f;
-				text = string::f("x 5 . 0");
-				break;
-			case 48:
-				module->clk1_Divider_Mapped = 6.f;
-				text = string::f("x 6 . 0");
-				break;
-			case 49:
-				module->clk1_Divider_Mapped = 7.f;
-				text = string::f("x 7 . 0");
-				break;
-			case 50:
-				module->clk1_Divider_Mapped = 8.f;
-				text = string::f("x 8 . 0");
-				break;
-			case 51:
-				module->clk1_Divider_Mapped = 9.f;
-				text = string::f("x 9 . 0");
-				break;
-			case 52:
-				module->clk1_Divider_Mapped = 10.f;
-				text = string::f("x 10 . 0");
-				break;
-			case 53:
-				module->clk1_Divider_Mapped = 12.f;
-				text = string::f("x 12 . 0");
-				break;
-			case 54:
-				module->clk1_Divider_Mapped = 16.f;
-				text = string::f("x 16 . 0");
-				break;
-			case 55:
-				module->clk1_Divider_Mapped = 20.f;
-				text = string::f("x 20 . 0");
-				break;
-			case 56:
-				module->clk1_Divider_Mapped = 24.f;
-				text = string::f("x 24 . 0");
-				break;
-			case 57:
-				module->clk1_Divider_Mapped = 28.f;
-				text = string::f("x 28 . 0");
-				break;
-			case 58:
-				module->clk1_Divider_Mapped = 32.f;
-				text = string::f("x 32 . 0");
-				break;
-			case 59:
-				module->clk1_Divider_Mapped = 36.f;
-				text = string::f("x 36 . 0");
-				break;
-			case 60:
-				module->clk1_Divider_Mapped = 40.f;
-				text = string::f("x 40 . 0");
-				break;
-			case 61:
-				module->clk1_Divider_Mapped = 44.f;
-				text = string::f("x 44 . 0");
-				break;
-			case 62:
-				module->clk1_Divider_Mapped = 48.f;
-				text = string::f("x 48 . 0");
-				break;
-			case 63:
-				module->clk1_Divider_Mapped = 52.f;
-				text = string::f("x 52 . 0");
-				break;
-			case 64:
-				module->clk1_Divider_Mapped = 56.f;
-				text = string::f("x 56 . 0");
-				break;
-			case 65:
-				module->clk1_Divider_Mapped = 60.f;
-				text = string::f("x 60 . 0");
-				break;
-			case 66:
-				module->clk1_Divider_Mapped = 64.f;
-				text = string::f("x 64 . 0");
-				break;
-			case 67:
-				module->clk1_Divider_Mapped = 68.f;
-				text = string::f("x 68 . 0");
-				break;
-			case 68:
-				module->clk1_Divider_Mapped = 72.f;
-				text = string::f("x 72 . 0");
-				break;
-			case 69:
-				module->clk1_Divider_Mapped = 76.f;
-				text = string::f("x 76 . 0");
-				break;
-			case 70:
-				module->clk1_Divider_Mapped = 80.f;
-				text = string::f("x 80 . 0");
-				break;
-			case 71:
-				module->clk1_Divider_Mapped = 84.f;
-				text = string::f("x 84 . 0");
-				break;
-			case 72:
-				module->clk1_Divider_Mapped = 88.f;
-				text = string::f("x 88 . 0");
-				break;
-			case 73:
-				module->clk1_Divider_Mapped = 92.f;
-				text = string::f("x 92 . 0");
-				break;
-			case 74:
-				module->clk1_Divider_Mapped = 96.f;
-				text = string::f("x 96 . 0");
-				break;
-
-			default:
-				module->clk1_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			}
-		}
-		else
-			text = string::f("x 2 . 0");
+			clk_Divider = module->clk1_Divider;
+		text = div_to_text[clk_Divider];
 	}
 };
 
@@ -1119,322 +830,10 @@ struct Ticker_CLK2_Div_Display : CLK_Div_Display
 	// Icky code to map the param steps to specific divider or multiplier intervals
 	void step() override
 	{
-		int clk_Divider = 1;
+		int clk_Divider = 38;
 		if (module)
-		{
-			clk_Divider = (int)module->clk2_Divider;
-
-			switch (clk_Divider)
-			{
-			case 0:
-				module->clk2_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 1:
-				module->clk2_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 2:
-				module->clk2_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 3:
-				module->clk2_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 4:
-				module->clk2_Divider_Mapped = 1.f / 92.f;
-				text = string::f("/ 92 . 0");
-				break;
-			case 5:
-				module->clk2_Divider_Mapped = 1.f / 88.f;
-				text = string::f("/ 88 . 0");
-				break;
-			case 6:
-				module->clk2_Divider_Mapped = 1.f / 84.f;
-				text = string::f("/ 84 . 0");
-				break;
-			case 7:
-				module->clk2_Divider_Mapped = 1.f / 80.f;
-				text = string::f("/ 80 . 0");
-				break;
-			case 8:
-				module->clk2_Divider_Mapped = 1.f / 76.f;
-				text = string::f("/ 76 . 0");
-				break;
-			case 9:
-				module->clk2_Divider_Mapped = 1.f / 72.f;
-				text = string::f("/ 72 . 0");
-				break;
-			case 10:
-				module->clk2_Divider_Mapped = 1.f / 68.f;
-				text = string::f("/ 68 . 0");
-				break;
-			case 11:
-				module->clk2_Divider_Mapped = 1.f / 64.f;
-				text = string::f("/ 64 . 0");
-				break;
-			case 12:
-				module->clk2_Divider_Mapped = 1.f / 60.f;
-				text = string::f("/ 60 . 0");
-				break;
-			case 13:
-				module->clk2_Divider_Mapped = 1.f / 56.f;
-				text = string::f("/ 56 . 0");
-				break;
-			case 14:
-				module->clk2_Divider_Mapped = 1.f / 52.f;
-				text = string::f("/ 52 . 0");
-				break;
-			case 15:
-				module->clk2_Divider_Mapped = 1.f / 48.f;
-				text = string::f("/ 48 . 0");
-				break;
-			case 16:
-				module->clk2_Divider_Mapped = 1.f / 44.f;
-				text = string::f("/ 44 . 0");
-				break;
-			case 17:
-				module->clk2_Divider_Mapped = 1.f / 40.f;
-				text = string::f("/ 40 . 0");
-				break;
-			case 18:
-				module->clk2_Divider_Mapped = 1.f / 36.f;
-				text = string::f("/ 36 . 0");
-				break;
-			case 19:
-				module->clk2_Divider_Mapped = 1.f / 32.f;
-				text = string::f("/ 32 . 0");
-				break;
-			case 20:
-				module->clk2_Divider_Mapped = 1.f / 28.f;
-				text = string::f("/ 28 . 0");
-				break;
-			case 21:
-				module->clk2_Divider_Mapped = 1.f / 24.f;
-				text = string::f("/ 24 . 0");
-				break;
-			case 22:
-				module->clk2_Divider_Mapped = 1.f / 20.f;
-				text = string::f("/ 20 . 0");
-				break;
-			case 23:
-				module->clk2_Divider_Mapped = 1.f / 18.f;
-				text = string::f("/ 18 . 0");
-				break;
-			case 24:
-				module->clk2_Divider_Mapped = 1.f / 16.f;
-				text = string::f("/ 16 . 0");
-				break;
-			case 25:
-				module->clk2_Divider_Mapped = 1.f / 12.f;
-				text = string::f("/ 12 . 0");
-				break;
-			case 26:
-				module->clk2_Divider_Mapped = 1.f / 10.f;
-				text = string::f("/ 10 . 0");
-				break;
-			case 27:
-				module->clk2_Divider_Mapped = 1.f / 9.f;
-				text = string::f("/ 9 . 0");
-				break;
-			case 28:
-				module->clk2_Divider_Mapped = 1.f / 8.f;
-				text = string::f("/ 8 . 0");
-				break;
-			case 29:
-				module->clk2_Divider_Mapped = 1.f / 7.f;
-				text = string::f("/ 7 . 0");
-				break;
-			case 30:
-				module->clk2_Divider_Mapped = 1.f / 6.f;
-				text = string::f("/ 6 . 0");
-				break;
-			case 31:
-				module->clk2_Divider_Mapped = 1.f / 5.f;
-				text = string::f("/ 5 . 0");
-				break;
-			case 32:
-				module->clk2_Divider_Mapped = 1.f / 4.f;
-				text = string::f("/ 4 . 0");
-				break;
-			case 33:
-				module->clk2_Divider_Mapped = 1.f / 3.5f;
-				text = string::f("/ 3 . 5");
-				break;
-			case 34:
-				module->clk2_Divider_Mapped = 1.f / 3.f;
-				text = string::f("/ 3 . 0");
-				break;
-			case 35:
-				module->clk2_Divider_Mapped = 1.f / 2.5f;
-				text = string::f("/ 2 . 5");
-				break;
-			case 36:
-				module->clk2_Divider_Mapped = 1.f / 2.f;
-				text = string::f("/ 2 . 0");
-				break;
-			case 37:
-				module->clk2_Divider_Mapped = 1.f / 1.5f;
-				text = string::f("/ 1 . 5");
-				break;
-			case 38:
-				module->clk2_Divider_Mapped = 1.f / 1.333333f;
-				text = string::f("/ 1 . 33");
-				break;
-			case 39:
-				module->clk2_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			case 40:
-				module->clk2_Divider_Mapped = 1.333333f;
-				text = string::f("x 1 . 33");
-				break;
-			case 41:
-				module->clk2_Divider_Mapped = 1.5f;
-				text = string::f("x 1 . 5");
-				break;
-			case 42:
-				module->clk2_Divider_Mapped = 2.f;
-				text = string::f("x 2 . 0");
-				break;
-			case 43:
-				module->clk2_Divider_Mapped = 2.5f;
-				text = string::f("x 2 . 5");
-				break;
-			case 44:
-				module->clk2_Divider_Mapped = 3.f;
-				text = string::f("x 3 . 0");
-				break;
-			case 45:
-				module->clk2_Divider_Mapped = 3.5f;
-				text = string::f("x 3 . 5");
-				break;
-			case 46:
-				module->clk2_Divider_Mapped = 4.f;
-				text = string::f("x 4 . 0");
-				break;
-			case 47:
-				module->clk2_Divider_Mapped = 5.f;
-				text = string::f("x 5 . 0");
-				break;
-			case 48:
-				module->clk2_Divider_Mapped = 6.f;
-				text = string::f("x 6 . 0");
-				break;
-			case 49:
-				module->clk2_Divider_Mapped = 7.f;
-				text = string::f("x 7 . 0");
-				break;
-			case 50:
-				module->clk2_Divider_Mapped = 8.f;
-				text = string::f("x 8 . 0");
-				break;
-			case 51:
-				module->clk2_Divider_Mapped = 9.f;
-				text = string::f("x 9 . 0");
-				break;
-			case 52:
-				module->clk2_Divider_Mapped = 10.f;
-				text = string::f("x 10 . 0");
-				break;
-			case 53:
-				module->clk2_Divider_Mapped = 12.f;
-				text = string::f("x 12 . 0");
-				break;
-			case 54:
-				module->clk2_Divider_Mapped = 16.f;
-				text = string::f("x 16 . 0");
-				break;
-			case 55:
-				module->clk2_Divider_Mapped = 20.f;
-				text = string::f("x 20 . 0");
-				break;
-			case 56:
-				module->clk2_Divider_Mapped = 24.f;
-				text = string::f("x 24 . 0");
-				break;
-			case 57:
-				module->clk2_Divider_Mapped = 28.f;
-				text = string::f("x 28 . 0");
-				break;
-			case 58:
-				module->clk2_Divider_Mapped = 32.f;
-				text = string::f("x 32 . 0");
-				break;
-			case 59:
-				module->clk2_Divider_Mapped = 36.f;
-				text = string::f("x 36 . 0");
-				break;
-			case 60:
-				module->clk2_Divider_Mapped = 40.f;
-				text = string::f("x 40 . 0");
-				break;
-			case 61:
-				module->clk2_Divider_Mapped = 44.f;
-				text = string::f("x 44 . 0");
-				break;
-			case 62:
-				module->clk2_Divider_Mapped = 48.f;
-				text = string::f("x 48 . 0");
-				break;
-			case 63:
-				module->clk2_Divider_Mapped = 52.f;
-				text = string::f("x 52 . 0");
-				break;
-			case 64:
-				module->clk2_Divider_Mapped = 56.f;
-				text = string::f("x 56 . 0");
-				break;
-			case 65:
-				module->clk2_Divider_Mapped = 60.f;
-				text = string::f("x 60 . 0");
-				break;
-			case 66:
-				module->clk2_Divider_Mapped = 64.f;
-				text = string::f("x 64 . 0");
-				break;
-			case 67:
-				module->clk2_Divider_Mapped = 68.f;
-				text = string::f("x 68 . 0");
-				break;
-			case 68:
-				module->clk2_Divider_Mapped = 72.f;
-				text = string::f("x 72 . 0");
-				break;
-			case 69:
-				module->clk2_Divider_Mapped = 76.f;
-				text = string::f("x 76 . 0");
-				break;
-			case 70:
-				module->clk2_Divider_Mapped = 80.f;
-				text = string::f("x 80 . 0");
-				break;
-			case 71:
-				module->clk2_Divider_Mapped = 84.f;
-				text = string::f("x 84 . 0");
-				break;
-			case 72:
-				module->clk2_Divider_Mapped = 88.f;
-				text = string::f("x 88 . 0");
-				break;
-			case 73:
-				module->clk2_Divider_Mapped = 92.f;
-				text = string::f("x 92 . 0");
-				break;
-			case 74:
-				module->clk2_Divider_Mapped = 96.f;
-				text = string::f("x 96 . 0");
-				break;
-
-			default:
-				module->clk2_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			}
-		}
-		else
-			text = string::f("x 2 . 0");
+			clk_Divider = module->clk2_Divider;
+		text = div_to_text[clk_Divider];
 	}
 };
 
@@ -1445,322 +844,10 @@ struct Ticker_CLK3_Div_Display : CLK_Div_Display
 	// Icky code to map the param steps to specific divider or multiplier intervals
 	void step() override
 	{
-		int clk_Divider = 1;
+		int clk_Divider = 38;
 		if (module)
-		{
-			clk_Divider = (int)module->clk3_Divider;
-
-			switch (clk_Divider)
-			{
-			case 0:
-				module->clk3_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 1:
-				module->clk3_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 2:
-				module->clk3_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 3:
-				module->clk3_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 4:
-				module->clk3_Divider_Mapped = 1.f / 92.f;
-				text = string::f("/ 92 . 0");
-				break;
-			case 5:
-				module->clk3_Divider_Mapped = 1.f / 88.f;
-				text = string::f("/ 88 . 0");
-				break;
-			case 6:
-				module->clk3_Divider_Mapped = 1.f / 84.f;
-				text = string::f("/ 84 . 0");
-				break;
-			case 7:
-				module->clk3_Divider_Mapped = 1.f / 80.f;
-				text = string::f("/ 80 . 0");
-				break;
-			case 8:
-				module->clk3_Divider_Mapped = 1.f / 76.f;
-				text = string::f("/ 76 . 0");
-				break;
-			case 9:
-				module->clk3_Divider_Mapped = 1.f / 72.f;
-				text = string::f("/ 72 . 0");
-				break;
-			case 10:
-				module->clk3_Divider_Mapped = 1.f / 68.f;
-				text = string::f("/ 68 . 0");
-				break;
-			case 11:
-				module->clk3_Divider_Mapped = 1.f / 64.f;
-				text = string::f("/ 64 . 0");
-				break;
-			case 12:
-				module->clk3_Divider_Mapped = 1.f / 60.f;
-				text = string::f("/ 60 . 0");
-				break;
-			case 13:
-				module->clk3_Divider_Mapped = 1.f / 56.f;
-				text = string::f("/ 56 . 0");
-				break;
-			case 14:
-				module->clk3_Divider_Mapped = 1.f / 52.f;
-				text = string::f("/ 52 . 0");
-				break;
-			case 15:
-				module->clk3_Divider_Mapped = 1.f / 48.f;
-				text = string::f("/ 48 . 0");
-				break;
-			case 16:
-				module->clk3_Divider_Mapped = 1.f / 44.f;
-				text = string::f("/ 44 . 0");
-				break;
-			case 17:
-				module->clk3_Divider_Mapped = 1.f / 40.f;
-				text = string::f("/ 40 . 0");
-				break;
-			case 18:
-				module->clk3_Divider_Mapped = 1.f / 36.f;
-				text = string::f("/ 36 . 0");
-				break;
-			case 19:
-				module->clk3_Divider_Mapped = 1.f / 32.f;
-				text = string::f("/ 32 . 0");
-				break;
-			case 20:
-				module->clk3_Divider_Mapped = 1.f / 28.f;
-				text = string::f("/ 28 . 0");
-				break;
-			case 21:
-				module->clk3_Divider_Mapped = 1.f / 24.f;
-				text = string::f("/ 24 . 0");
-				break;
-			case 22:
-				module->clk3_Divider_Mapped = 1.f / 20.f;
-				text = string::f("/ 20 . 0");
-				break;
-			case 23:
-				module->clk3_Divider_Mapped = 1.f / 18.f;
-				text = string::f("/ 18 . 0");
-				break;
-			case 24:
-				module->clk3_Divider_Mapped = 1.f / 16.f;
-				text = string::f("/ 16 . 0");
-				break;
-			case 25:
-				module->clk3_Divider_Mapped = 1.f / 12.f;
-				text = string::f("/ 12 . 0");
-				break;
-			case 26:
-				module->clk3_Divider_Mapped = 1.f / 10.f;
-				text = string::f("/ 10 . 0");
-				break;
-			case 27:
-				module->clk3_Divider_Mapped = 1.f / 9.f;
-				text = string::f("/ 9 . 0");
-				break;
-			case 28:
-				module->clk3_Divider_Mapped = 1.f / 8.f;
-				text = string::f("/ 8 . 0");
-				break;
-			case 29:
-				module->clk3_Divider_Mapped = 1.f / 7.f;
-				text = string::f("/ 7 . 0");
-				break;
-			case 30:
-				module->clk3_Divider_Mapped = 1.f / 6.f;
-				text = string::f("/ 6 . 0");
-				break;
-			case 31:
-				module->clk3_Divider_Mapped = 1.f / 5.f;
-				text = string::f("/ 5 . 0");
-				break;
-			case 32:
-				module->clk3_Divider_Mapped = 1.f / 4.f;
-				text = string::f("/ 4 . 0");
-				break;
-			case 33:
-				module->clk3_Divider_Mapped = 1.f / 3.5f;
-				text = string::f("/ 3 . 5");
-				break;
-			case 34:
-				module->clk3_Divider_Mapped = 1.f / 3.f;
-				text = string::f("/ 3 . 0");
-				break;
-			case 35:
-				module->clk3_Divider_Mapped = 1.f / 2.5f;
-				text = string::f("/ 2 . 5");
-				break;
-			case 36:
-				module->clk3_Divider_Mapped = 1.f / 2.f;
-				text = string::f("/ 2 . 0");
-				break;
-			case 37:
-				module->clk3_Divider_Mapped = 1.f / 1.5f;
-				text = string::f("/ 1 . 5");
-				break;
-			case 38:
-				module->clk3_Divider_Mapped = 1.f / 1.333333f;
-				text = string::f("/ 1 . 33");
-				break;
-			case 39:
-				module->clk3_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			case 40:
-				module->clk3_Divider_Mapped = 1.333333f;
-				text = string::f("x 1 . 33");
-				break;
-			case 41:
-				module->clk3_Divider_Mapped = 1.5f;
-				text = string::f("x 1 . 5");
-				break;
-			case 42:
-				module->clk3_Divider_Mapped = 2.f;
-				text = string::f("x 2 . 0");
-				break;
-			case 43:
-				module->clk3_Divider_Mapped = 2.5f;
-				text = string::f("x 2 . 5");
-				break;
-			case 44:
-				module->clk3_Divider_Mapped = 3.f;
-				text = string::f("x 3 . 0");
-				break;
-			case 45:
-				module->clk3_Divider_Mapped = 3.5f;
-				text = string::f("x 3 . 5");
-				break;
-			case 46:
-				module->clk3_Divider_Mapped = 4.f;
-				text = string::f("x 4 . 0");
-				break;
-			case 47:
-				module->clk3_Divider_Mapped = 5.f;
-				text = string::f("x 5 . 0");
-				break;
-			case 48:
-				module->clk3_Divider_Mapped = 6.f;
-				text = string::f("x 6 . 0");
-				break;
-			case 49:
-				module->clk3_Divider_Mapped = 7.f;
-				text = string::f("x 7 . 0");
-				break;
-			case 50:
-				module->clk3_Divider_Mapped = 8.f;
-				text = string::f("x 8 . 0");
-				break;
-			case 51:
-				module->clk3_Divider_Mapped = 9.f;
-				text = string::f("x 9 . 0");
-				break;
-			case 52:
-				module->clk3_Divider_Mapped = 10.f;
-				text = string::f("x 10 . 0");
-				break;
-			case 53:
-				module->clk3_Divider_Mapped = 12.f;
-				text = string::f("x 12 . 0");
-				break;
-			case 54:
-				module->clk3_Divider_Mapped = 16.f;
-				text = string::f("x 16 . 0");
-				break;
-			case 55:
-				module->clk3_Divider_Mapped = 20.f;
-				text = string::f("x 20 . 0");
-				break;
-			case 56:
-				module->clk3_Divider_Mapped = 24.f;
-				text = string::f("x 24 . 0");
-				break;
-			case 57:
-				module->clk3_Divider_Mapped = 28.f;
-				text = string::f("x 28 . 0");
-				break;
-			case 58:
-				module->clk3_Divider_Mapped = 32.f;
-				text = string::f("x 32 . 0");
-				break;
-			case 59:
-				module->clk3_Divider_Mapped = 36.f;
-				text = string::f("x 36 . 0");
-				break;
-			case 60:
-				module->clk3_Divider_Mapped = 40.f;
-				text = string::f("x 40 . 0");
-				break;
-			case 61:
-				module->clk3_Divider_Mapped = 44.f;
-				text = string::f("x 44 . 0");
-				break;
-			case 62:
-				module->clk3_Divider_Mapped = 48.f;
-				text = string::f("x 48 . 0");
-				break;
-			case 63:
-				module->clk3_Divider_Mapped = 52.f;
-				text = string::f("x 52 . 0");
-				break;
-			case 64:
-				module->clk3_Divider_Mapped = 56.f;
-				text = string::f("x 56 . 0");
-				break;
-			case 65:
-				module->clk3_Divider_Mapped = 60.f;
-				text = string::f("x 60 . 0");
-				break;
-			case 66:
-				module->clk3_Divider_Mapped = 64.f;
-				text = string::f("x 64 . 0");
-				break;
-			case 67:
-				module->clk3_Divider_Mapped = 68.f;
-				text = string::f("x 68 . 0");
-				break;
-			case 68:
-				module->clk3_Divider_Mapped = 72.f;
-				text = string::f("x 72 . 0");
-				break;
-			case 69:
-				module->clk3_Divider_Mapped = 76.f;
-				text = string::f("x 76 . 0");
-				break;
-			case 70:
-				module->clk3_Divider_Mapped = 80.f;
-				text = string::f("x 80 . 0");
-				break;
-			case 71:
-				module->clk3_Divider_Mapped = 84.f;
-				text = string::f("x 84 . 0");
-				break;
-			case 72:
-				module->clk3_Divider_Mapped = 88.f;
-				text = string::f("x 88 . 0");
-				break;
-			case 73:
-				module->clk3_Divider_Mapped = 92.f;
-				text = string::f("x 92 . 0");
-				break;
-			case 74:
-				module->clk3_Divider_Mapped = 96.f;
-				text = string::f("x 96 . 0");
-				break;
-
-			default:
-				module->clk3_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			}
-		}
-		else
-			text = string::f("x 2 . 0");
+			clk_Divider = module->clk3_Divider;
+		text = div_to_text[clk_Divider];
 	}
 };
 
@@ -1771,322 +858,10 @@ struct Ticker_CLK4_Div_Display : CLK_Div_Display
 	// Icky code to map the param steps to specific divider or multiplier intervals
 	void step() override
 	{
-		int clk_Divider = 1;
+		int clk_Divider = 38;
 		if (module)
-		{
-			clk_Divider = (int)module->clk4_Divider;
-
-			switch (clk_Divider)
-			{
-			case 0:
-				module->clk4_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 1:
-				module->clk4_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 2:
-				module->clk4_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 3:
-				module->clk4_Divider_Mapped = 1.f / 96.f;
-				text = string::f("/ 96 . 0");
-				break;
-			case 4:
-				module->clk4_Divider_Mapped = 1.f / 92.f;
-				text = string::f("/ 92 . 0");
-				break;
-			case 5:
-				module->clk4_Divider_Mapped = 1.f / 88.f;
-				text = string::f("/ 88 . 0");
-				break;
-			case 6:
-				module->clk4_Divider_Mapped = 1.f / 84.f;
-				text = string::f("/ 84 . 0");
-				break;
-			case 7:
-				module->clk4_Divider_Mapped = 1.f / 80.f;
-				text = string::f("/ 80 . 0");
-				break;
-			case 8:
-				module->clk4_Divider_Mapped = 1.f / 76.f;
-				text = string::f("/ 76 . 0");
-				break;
-			case 9:
-				module->clk4_Divider_Mapped = 1.f / 72.f;
-				text = string::f("/ 72 . 0");
-				break;
-			case 10:
-				module->clk4_Divider_Mapped = 1.f / 68.f;
-				text = string::f("/ 68 . 0");
-				break;
-			case 11:
-				module->clk4_Divider_Mapped = 1.f / 64.f;
-				text = string::f("/ 64 . 0");
-				break;
-			case 12:
-				module->clk4_Divider_Mapped = 1.f / 60.f;
-				text = string::f("/ 60 . 0");
-				break;
-			case 13:
-				module->clk4_Divider_Mapped = 1.f / 56.f;
-				text = string::f("/ 56 . 0");
-				break;
-			case 14:
-				module->clk4_Divider_Mapped = 1.f / 52.f;
-				text = string::f("/ 52 . 0");
-				break;
-			case 15:
-				module->clk4_Divider_Mapped = 1.f / 48.f;
-				text = string::f("/ 48 . 0");
-				break;
-			case 16:
-				module->clk4_Divider_Mapped = 1.f / 44.f;
-				text = string::f("/ 44 . 0");
-				break;
-			case 17:
-				module->clk4_Divider_Mapped = 1.f / 40.f;
-				text = string::f("/ 40 . 0");
-				break;
-			case 18:
-				module->clk4_Divider_Mapped = 1.f / 36.f;
-				text = string::f("/ 36 . 0");
-				break;
-			case 19:
-				module->clk4_Divider_Mapped = 1.f / 32.f;
-				text = string::f("/ 32 . 0");
-				break;
-			case 20:
-				module->clk4_Divider_Mapped = 1.f / 28.f;
-				text = string::f("/ 28 . 0");
-				break;
-			case 21:
-				module->clk4_Divider_Mapped = 1.f / 24.f;
-				text = string::f("/ 24 . 0");
-				break;
-			case 22:
-				module->clk4_Divider_Mapped = 1.f / 20.f;
-				text = string::f("/ 20 . 0");
-				break;
-			case 23:
-				module->clk4_Divider_Mapped = 1.f / 18.f;
-				text = string::f("/ 18 . 0");
-				break;
-			case 24:
-				module->clk4_Divider_Mapped = 1.f / 16.f;
-				text = string::f("/ 16 . 0");
-				break;
-			case 25:
-				module->clk4_Divider_Mapped = 1.f / 12.f;
-				text = string::f("/ 12 . 0");
-				break;
-			case 26:
-				module->clk4_Divider_Mapped = 1.f / 10.f;
-				text = string::f("/ 10 . 0");
-				break;
-			case 27:
-				module->clk4_Divider_Mapped = 1.f / 9.f;
-				text = string::f("/ 9 . 0");
-				break;
-			case 28:
-				module->clk4_Divider_Mapped = 1.f / 8.f;
-				text = string::f("/ 8 . 0");
-				break;
-			case 29:
-				module->clk4_Divider_Mapped = 1.f / 7.f;
-				text = string::f("/ 7 . 0");
-				break;
-			case 30:
-				module->clk4_Divider_Mapped = 1.f / 6.f;
-				text = string::f("/ 6 . 0");
-				break;
-			case 31:
-				module->clk4_Divider_Mapped = 1.f / 5.f;
-				text = string::f("/ 5 . 0");
-				break;
-			case 32:
-				module->clk4_Divider_Mapped = 1.f / 4.f;
-				text = string::f("/ 4 . 0");
-				break;
-			case 33:
-				module->clk4_Divider_Mapped = 1.f / 3.5f;
-				text = string::f("/ 3 . 5");
-				break;
-			case 34:
-				module->clk4_Divider_Mapped = 1.f / 3.f;
-				text = string::f("/ 3 . 0");
-				break;
-			case 35:
-				module->clk4_Divider_Mapped = 1.f / 2.5f;
-				text = string::f("/ 2 . 5");
-				break;
-			case 36:
-				module->clk4_Divider_Mapped = 1.f / 2.f;
-				text = string::f("/ 2 . 0");
-				break;
-			case 37:
-				module->clk4_Divider_Mapped = 1.f / 1.5f;
-				text = string::f("/ 1 . 5");
-				break;
-			case 38:
-				module->clk4_Divider_Mapped = 1.f / 1.333333f;
-				text = string::f("/ 1 . 33");
-				break;
-			case 39:
-				module->clk4_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			case 40:
-				module->clk4_Divider_Mapped = 1.333333f;
-				text = string::f("x 1 . 33");
-				break;
-			case 41:
-				module->clk4_Divider_Mapped = 1.5f;
-				text = string::f("x 1 . 5");
-				break;
-			case 42:
-				module->clk4_Divider_Mapped = 2.f;
-				text = string::f("x 2 . 0");
-				break;
-			case 43:
-				module->clk4_Divider_Mapped = 2.5f;
-				text = string::f("x 2 . 5");
-				break;
-			case 44:
-				module->clk4_Divider_Mapped = 3.f;
-				text = string::f("x 3 . 0");
-				break;
-			case 45:
-				module->clk4_Divider_Mapped = 3.5f;
-				text = string::f("x 3 . 5");
-				break;
-			case 46:
-				module->clk4_Divider_Mapped = 4.f;
-				text = string::f("x 4 . 0");
-				break;
-			case 47:
-				module->clk4_Divider_Mapped = 5.f;
-				text = string::f("x 5 . 0");
-				break;
-			case 48:
-				module->clk4_Divider_Mapped = 6.f;
-				text = string::f("x 6 . 0");
-				break;
-			case 49:
-				module->clk4_Divider_Mapped = 7.f;
-				text = string::f("x 7 . 0");
-				break;
-			case 50:
-				module->clk4_Divider_Mapped = 8.f;
-				text = string::f("x 8 . 0");
-				break;
-			case 51:
-				module->clk4_Divider_Mapped = 9.f;
-				text = string::f("x 9 . 0");
-				break;
-			case 52:
-				module->clk4_Divider_Mapped = 10.f;
-				text = string::f("x 10 . 0");
-				break;
-			case 53:
-				module->clk4_Divider_Mapped = 12.f;
-				text = string::f("x 12 . 0");
-				break;
-			case 54:
-				module->clk4_Divider_Mapped = 16.f;
-				text = string::f("x 16 . 0");
-				break;
-			case 55:
-				module->clk4_Divider_Mapped = 20.f;
-				text = string::f("x 20 . 0");
-				break;
-			case 56:
-				module->clk4_Divider_Mapped = 24.f;
-				text = string::f("x 24 . 0");
-				break;
-			case 57:
-				module->clk4_Divider_Mapped = 28.f;
-				text = string::f("x 28 . 0");
-				break;
-			case 58:
-				module->clk4_Divider_Mapped = 32.f;
-				text = string::f("x 32 . 0");
-				break;
-			case 59:
-				module->clk4_Divider_Mapped = 36.f;
-				text = string::f("x 36 . 0");
-				break;
-			case 60:
-				module->clk4_Divider_Mapped = 40.f;
-				text = string::f("x 40 . 0");
-				break;
-			case 61:
-				module->clk4_Divider_Mapped = 44.f;
-				text = string::f("x 44 . 0");
-				break;
-			case 62:
-				module->clk4_Divider_Mapped = 48.f;
-				text = string::f("x 48 . 0");
-				break;
-			case 63:
-				module->clk4_Divider_Mapped = 52.f;
-				text = string::f("x 52 . 0");
-				break;
-			case 64:
-				module->clk4_Divider_Mapped = 56.f;
-				text = string::f("x 56 . 0");
-				break;
-			case 65:
-				module->clk4_Divider_Mapped = 60.f;
-				text = string::f("x 60 . 0");
-				break;
-			case 66:
-				module->clk4_Divider_Mapped = 64.f;
-				text = string::f("x 64 . 0");
-				break;
-			case 67:
-				module->clk4_Divider_Mapped = 68.f;
-				text = string::f("x 68 . 0");
-				break;
-			case 68:
-				module->clk4_Divider_Mapped = 72.f;
-				text = string::f("x 72 . 0");
-				break;
-			case 69:
-				module->clk4_Divider_Mapped = 76.f;
-				text = string::f("x 76 . 0");
-				break;
-			case 70:
-				module->clk4_Divider_Mapped = 80.f;
-				text = string::f("x 80 . 0");
-				break;
-			case 71:
-				module->clk4_Divider_Mapped = 84.f;
-				text = string::f("x 84 . 0");
-				break;
-			case 72:
-				module->clk4_Divider_Mapped = 88.f;
-				text = string::f("x 88 . 0");
-				break;
-			case 73:
-				module->clk4_Divider_Mapped = 92.f;
-				text = string::f("x 92 . 0");
-				break;
-			case 74:
-				module->clk4_Divider_Mapped = 96.f;
-				text = string::f("x 96 . 0");
-				break;
-
-			default:
-				module->clk4_Divider_Mapped = 1.f;
-				text = string::f("x 1 . 0");
-				break;
-			}
-		}
-		else
-			text = string::f("x 2 . 0");
+			clk_Divider = module->clk4_Divider;
+		text = div_to_text[clk_Divider];
 	}
 };
 
