@@ -736,7 +736,7 @@ struct Ticker : Module
 
 			// Clock 4
 			// Compute the duration of the CLK4 gate
-			clk4_Gate_Duration = clk4_Gate_Len / (clk2_Freq * 100.f);
+			clk4_Gate_Duration = clk4_Gate_Len / (clk4_Freq * 100.f);
 			// Compute the derived clocks as per the pulse width, phase and random swing amount
 			clk4_Gate_Voltage = STS_My_Pulse(clk4_Phase, clk4_Phase_Shift, clk4_Swing_value, clk4_Gate_Len);
 			// Are we outputting a new CLK4 gate and not waiting for the previous one?

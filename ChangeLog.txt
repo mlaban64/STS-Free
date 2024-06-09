@@ -1,5 +1,19 @@
 # Changelog VCV-Rack STS Free bundle
 
+05-JUN-2024
+-----------
+2.3.0 Release
+- Fixed CLK4 issue in Ticker (code was using CLK2 Frequency)
+- Base Spiquencer module
+
+23-MAY-2024
+-----------
+2.2.0 Release
+- Release Candidate
+- Final version of Ticker
+- Output panels made darker
+- Some general refactoring
+
 22-APR-2024
 -----------
 2.2.0 Release

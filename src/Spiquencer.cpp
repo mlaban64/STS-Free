@@ -1,8 +1,11 @@
 #include "plugin.hpp"
+#include "sts-base.hpp"
+#include <math.h>
 
-
-struct Spiquencer : Module {
-	enum ParamId {
+struct Spiquencer : Module
+{
+	enum ParamId
+	{
 		V_11_PARAM,
 		V_21_PARAM,
 		V_22_PARAM,
@@ -41,17 +44,19 @@ struct Spiquencer : Module {
 		V_88_PARAM,
 		PARAMS_LEN
 	};
-	enum InputId {
-		RUN_IN_INPUT,
-		CLK_IN_INPUT,
+	enum InputId
+	{
+		GATE_IN_INPUT,
+		RESET_IN_INPUT,
 		INPUTS_LEN
 	};
-	enum OutputId {
+	enum OutputId
+	{
 		V_OUT_OUTPUT,
-		GATE_OUT_OUTPUT,
 		OUTPUTS_LEN
 	};
-	enum LightId {
+	enum LightId
+	{
 		LGT_11_LIGHT,
 		LGT_21_LIGHT,
 		LGT_22_LIGHT,
@@ -91,57 +96,161 @@ struct Spiquencer : Module {
 		LIGHTS_LEN
 	};
 
-	Spiquencer() {
-		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(V_11_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_21_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_22_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_31_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_32_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_33_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_41_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_42_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_43_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_44_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_51_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_52_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_53_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_54_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_55_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_61_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_62_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_63_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_64_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_65_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_66_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_71_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_72_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_73_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_74_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_75_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_76_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_77_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_81_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_82_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_83_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_84_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_85_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_86_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_87_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(V_88_PARAM, 0.f, 1.f, 0.f, "");
-		configInput(RUN_IN_INPUT, "");
-		configInput(CLK_IN_INPUT, "");
-		configOutput(V_OUT_OUTPUT, "");
-		configOutput(GATE_OUT_OUTPUT, "");
+	// Some class-wide parameters
+
+	// Matrix to map col & row to a param number. -1 means param is not part of grid
+	int mapRowColtoParam[8][8] = {
+		{0, -1, -1, -1, -1, -1, -1, -1},
+		{1, 2, -1, -1, -1, -1, -1, -1},
+		{3, 4, 5, -1, -1, -1, -1, -1},
+		{6, 7, 8, 9, -1, -1, -1, -1},
+		{10, 11, 12, 13, 14, -1, -1, -1},
+		{15, 16, 17, 18, 19, 20, -1, -1},
+		{21, 22, 23, 24, 25, 26, 27, -1},
+		{28, 29, 30, 31, 32, 33, 34, 35}};
+
+	int curParam = 0;	 // current index in param mapping
+	int oldParam = 0;	 // old index in param mapping
+	int curSpikeRow = 0; // current row of spike that is sent to output
+	int curSpikeCol = 0; // current spike within row that is sent to output
+
+	int rootNote = 0;	 // Root Note as per the menu
+	int rootScale = 0;	 // Scale selected
+	int oldRootNote = 0; // To detect a change in note & scale
+	int oldRootScale = 0;
+
+	// Triggers to detect an external gate or reset signal
+	dsp::SchmittTrigger gateTrigger;
+	dsp::SchmittTrigger resetTrigger;
+
+	bool gateTriggered = false;
+	bool resetTriggered = false;
+
+	// This is an Initialize, not a received Reset
+
+	void onReset() override
+	{
+		// Reset the triggers
+		gateTrigger.reset();
+		resetTrigger.reset();
+		// Reset the lights
+		lights[curParam].setBrightness(0.f);
+		lights[oldParam].setBrightness(0.f);
+		// Reset the grid
+		curParam = 0;
+		oldParam = 0;
 	}
 
-	void process(const ProcessArgs& args) override {
+	Spiquencer()
+	{
+		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
+		configParam(V_11_PARAM, -5.f, 5.f, 0.f, "V/Oct 1-1");
+		configParam(V_21_PARAM, -5.f, 5.f, 0.f, "V/Oct 2-1");
+		configParam(V_22_PARAM, -5.f, 5.f, 0.f, "V/Oct 2-2");
+		configParam(V_31_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-1");
+		configParam(V_32_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-2");
+		configParam(V_33_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-3");
+		configParam(V_41_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-1");
+		configParam(V_42_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-2");
+		configParam(V_43_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-3");
+		configParam(V_44_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-4");
+		configParam(V_51_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-1");
+		configParam(V_52_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-2");
+		configParam(V_53_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-3");
+		configParam(V_54_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-4");
+		configParam(V_55_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-5");
+		configParam(V_61_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-1");
+		configParam(V_62_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-2");
+		configParam(V_63_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-3");
+		configParam(V_64_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-4");
+		configParam(V_65_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-5");
+		configParam(V_66_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-6");
+		configParam(V_71_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-1");
+		configParam(V_72_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-2");
+		configParam(V_73_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-3");
+		configParam(V_74_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-4");
+		configParam(V_75_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-5");
+		configParam(V_76_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-6");
+		configParam(V_77_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-7");
+		configParam(V_81_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-1");
+		configParam(V_82_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-2");
+		configParam(V_83_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-3");
+		configParam(V_84_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-4");
+		configParam(V_85_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-5");
+		configParam(V_86_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-6");
+		configParam(V_87_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-7");
+		configParam(V_88_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-8");
+		configInput(GATE_IN_INPUT, "");
+		configInput(RESET_IN_INPUT, "");
+		configOutput(V_OUT_OUTPUT, "");
+
+		onReset();
+	}
+
+	void process(const ProcessArgs &args) override
+	{
+		float stepVoltage;
+		// Was a pulse received on Gate In?
+		gateTriggered = gateTrigger.process(inputs[GATE_IN_INPUT].getVoltage(), 0.1f, 2.f);
+
+		// Yes, so proceed to the next step
+		if (gateTriggered)
+		{
+			// switch off prev step light
+			lights[oldParam].setBrightness(0.f);
+			oldParam = curParam;
+
+			// read current param and copy it to output
+			stepVoltage = params[curParam].getValue();
+			outputs[V_OUT_OUTPUT].setVoltage(stepVoltage);
+			lights[curParam].setBrightnessSmooth(gateTriggered, 0.25f * args.sampleTime);
+
+			// Prepare for the next step
+			curSpikeRow += 1;
+			if (curSpikeRow > 7)
+			{
+				curSpikeRow = 0;
+				curSpikeCol = 0;
+				curParam = 0;
+			}
+			else
+			{
+				// If RND > 0.5, move column one right, else remain the same
+				if (rack::random::uniform() > 0.5f)
+					curSpikeCol += 1;
+				curParam = mapRowColtoParam[curSpikeRow][curSpikeCol];
+			}
+		}
+		else
+			lights[curParam].setBrightness(0.f);
+	}
+
+	json_t *dataToJson() override
+	{
+		json_t *rootJ = json_object();
+
+		json_object_set_new(rootJ, "Root Note", json_integer(rootNote));
+		json_object_set_new(rootJ, "Scale", json_integer(rootScale));
+
+		return rootJ;
+	}
+
+	void dataFromJson(json_t *rootJ) override
+	{
+		json_t *brootNoteJ = json_object_get(rootJ, "Root Note");
+		json_t *rootScaleJ = json_object_get(rootJ, "Scale");
+
+		if (brootNoteJ)
+			rootNote = json_integer_value(brootNoteJ);
+		if (rootScaleJ)
+			rootScale = json_integer_value(rootScaleJ);
 	}
 };
 
-
-struct SpiquencerWidget : ModuleWidget {
-	SpiquencerWidget(Spiquencer* module) {
+struct SpiquencerWidget : ModuleWidget
+{
+	SpiquencerWidget(Spiquencer *module)
+	{
 		setModule(module);
 		setPanel(createPanel(asset::plugin(pluginInstance, "res/Spiquencer.svg")));
 
@@ -150,6 +259,7 @@ struct SpiquencerWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
+		// Params
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(51.162, 17.58)), module, Spiquencer::V_11_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(46.536, 24.981)), module, Spiquencer::V_21_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(56.104, 24.981)), module, Spiquencer::V_22_PARAM));
@@ -187,50 +297,61 @@ struct SpiquencerWidget : ModuleWidget {
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.965, 70.139)), module, Spiquencer::V_87_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.534, 70.139)), module, Spiquencer::V_88_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.332, 105.706)), module, Spiquencer::RUN_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(27.225, 105.542)), module, Spiquencer::CLK_IN_INPUT));
+		// Inputs
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 105.0)), module, Spiquencer::GATE_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(21.0, 105.0)), module, Spiquencer::RESET_IN_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(62.931, 105.778)), module, Spiquencer::V_OUT_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45.421, 106.1)), module, Spiquencer::GATE_OUT_OUTPUT));
+		// Outputs
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(63.0, 105.0)), module, Spiquencer::V_OUT_OUTPUT));
 
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(51.156, 17.58)), module, Spiquencer::LGT_11_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(46.529, 24.981)), module, Spiquencer::LGT_21_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(56.098, 24.981)), module, Spiquencer::LGT_22_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(41.613, 32.585)), module, Spiquencer::LGT_31_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(51.181, 32.585)), module, Spiquencer::LGT_32_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(60.75, 32.585)), module, Spiquencer::LGT_33_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(36.824, 40.019)), module, Spiquencer::LGT_41_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(46.392, 40.019)), module, Spiquencer::LGT_42_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(55.961, 40.019)), module, Spiquencer::LGT_43_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(65.53, 40.019)), module, Spiquencer::LGT_44_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(32.138, 47.501)), module, Spiquencer::LGT_51_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(41.707, 47.501)), module, Spiquencer::LGT_52_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(51.275, 47.501)), module, Spiquencer::LGT_53_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(60.844, 47.501)), module, Spiquencer::LGT_54_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(70.412, 47.501)), module, Spiquencer::LGT_55_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(27.183, 55.028)), module, Spiquencer::LGT_61_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(36.752, 55.028)), module, Spiquencer::LGT_62_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(46.32, 55.028)), module, Spiquencer::LGT_63_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(55.889, 55.028)), module, Spiquencer::LGT_64_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(65.457, 55.028)), module, Spiquencer::LGT_65_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(75.026, 55.028)), module, Spiquencer::LGT_66_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(22.55, 62.606)), module, Spiquencer::LGT_71_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(32.119, 62.606)), module, Spiquencer::LGT_72_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(41.687, 62.606)), module, Spiquencer::LGT_73_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(51.256, 62.606)), module, Spiquencer::LGT_74_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(60.824, 62.606)), module, Spiquencer::LGT_75_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(70.393, 62.606)), module, Spiquencer::LGT_76_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(79.961, 62.606)), module, Spiquencer::LGT_77_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(17.547, 70.139)), module, Spiquencer::LGT_81_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(27.116, 70.139)), module, Spiquencer::LGT_82_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(36.684, 70.139)), module, Spiquencer::LGT_83_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(46.253, 70.139)), module, Spiquencer::LGT_84_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(55.821, 70.139)), module, Spiquencer::LGT_85_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(65.39, 70.139)), module, Spiquencer::LGT_86_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(74.959, 70.139)), module, Spiquencer::LGT_87_LIGHT));
-		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(84.527, 70.139)), module, Spiquencer::LGT_88_LIGHT));
+		// Lights
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.156, 17.58)), module, Spiquencer::LGT_11_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.529, 24.981)), module, Spiquencer::LGT_21_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(56.098, 24.981)), module, Spiquencer::LGT_22_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.613, 32.585)), module, Spiquencer::LGT_31_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.181, 32.585)), module, Spiquencer::LGT_32_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.75, 32.585)), module, Spiquencer::LGT_33_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.824, 40.019)), module, Spiquencer::LGT_41_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.392, 40.019)), module, Spiquencer::LGT_42_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.961, 40.019)), module, Spiquencer::LGT_43_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.53, 40.019)), module, Spiquencer::LGT_44_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(32.138, 47.501)), module, Spiquencer::LGT_51_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.707, 47.501)), module, Spiquencer::LGT_52_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.275, 47.501)), module, Spiquencer::LGT_53_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.844, 47.501)), module, Spiquencer::LGT_54_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(70.412, 47.501)), module, Spiquencer::LGT_55_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(27.183, 55.028)), module, Spiquencer::LGT_61_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.752, 55.028)), module, Spiquencer::LGT_62_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.32, 55.028)), module, Spiquencer::LGT_63_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.889, 55.028)), module, Spiquencer::LGT_64_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.457, 55.028)), module, Spiquencer::LGT_65_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(75.026, 55.028)), module, Spiquencer::LGT_66_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(22.55, 62.606)), module, Spiquencer::LGT_71_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(32.119, 62.606)), module, Spiquencer::LGT_72_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.687, 62.606)), module, Spiquencer::LGT_73_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.256, 62.606)), module, Spiquencer::LGT_74_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.824, 62.606)), module, Spiquencer::LGT_75_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(70.393, 62.606)), module, Spiquencer::LGT_76_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(79.961, 62.606)), module, Spiquencer::LGT_77_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(17.547, 70.139)), module, Spiquencer::LGT_81_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(27.116, 70.139)), module, Spiquencer::LGT_82_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.684, 70.139)), module, Spiquencer::LGT_83_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.253, 70.139)), module, Spiquencer::LGT_84_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.821, 70.139)), module, Spiquencer::LGT_85_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.39, 70.139)), module, Spiquencer::LGT_86_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(74.959, 70.139)), module, Spiquencer::LGT_87_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(84.527, 70.139)), module, Spiquencer::LGT_88_LIGHT));
+	}
+
+	void appendContextMenu(Menu *menu) override
+	{
+		Spiquencer *module = getModule<Spiquencer>();
+
+		menu->addChild(new MenuSeparator);
+
+		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
+		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Major", "Minor", "Minor Pentatonic"}, &module->rootScale));
 	}
 };
 
-
-Model* modelSpiquencer = createModel<Spiquencer, SpiquencerWidget>("Spiquencer");
+Model *modelSpiquencer = createModel<Spiquencer, SpiquencerWidget>("Spiquencer");
