@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 #include "sts-base.hpp"
+#include "notes.hpp"
 #include <math.h>
 
 struct Spiquencer : Module
@@ -109,6 +110,11 @@ struct Spiquencer : Module
 		{21, 22, 23, 24, 25, 26, 27, -1},
 		{28, 29, 30, 31, 32, 33, 34, 35}};
 
+	float scaleVoltages[3][12] = {
+		{},
+		{},
+		{}};
+
 	int curParam = 0;	 // current index in param mapping
 	int oldParam = 0;	 // old index in param mapping
 	int curSpikeRow = 0; // current row of spike that is sent to output
@@ -144,42 +150,42 @@ struct Spiquencer : Module
 	Spiquencer()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(V_11_PARAM, -5.f, 5.f, 0.f, "V/Oct 1-1");
-		configParam(V_21_PARAM, -5.f, 5.f, 0.f, "V/Oct 2-1");
-		configParam(V_22_PARAM, -5.f, 5.f, 0.f, "V/Oct 2-2");
-		configParam(V_31_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-1");
-		configParam(V_32_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-2");
-		configParam(V_33_PARAM, -5.f, 5.f, 0.f, "V/Oct 3-3");
-		configParam(V_41_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-1");
-		configParam(V_42_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-2");
-		configParam(V_43_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-3");
-		configParam(V_44_PARAM, -5.f, 5.f, 0.f, "V/Oct 4-4");
-		configParam(V_51_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-1");
-		configParam(V_52_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-2");
-		configParam(V_53_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-3");
-		configParam(V_54_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-4");
-		configParam(V_55_PARAM, -5.f, 5.f, 0.f, "V/Oct 5-5");
-		configParam(V_61_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-1");
-		configParam(V_62_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-2");
-		configParam(V_63_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-3");
-		configParam(V_64_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-4");
-		configParam(V_65_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-5");
-		configParam(V_66_PARAM, -5.f, 5.f, 0.f, "V/Oct 6-6");
-		configParam(V_71_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-1");
-		configParam(V_72_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-2");
-		configParam(V_73_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-3");
-		configParam(V_74_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-4");
-		configParam(V_75_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-5");
-		configParam(V_76_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-6");
-		configParam(V_77_PARAM, -5.f, 5.f, 0.f, "V/Oct 7-7");
-		configParam(V_81_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-1");
-		configParam(V_82_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-2");
-		configParam(V_83_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-3");
-		configParam(V_84_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-4");
-		configParam(V_85_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-5");
-		configParam(V_86_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-6");
-		configParam(V_87_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-7");
-		configParam(V_88_PARAM, -5.f, 5.f, 0.f, "V/Oct 8-8");
+		configParam(V_11_PARAM, -4.f, 6.f, 0.f, "V/Oct 1-1");
+		configParam(V_21_PARAM, -4.f, 6.f, 0.f, "V/Oct 2-1");
+		configParam(V_22_PARAM, -4.f, 6.f, 0.f, "V/Oct 2-2");
+		configParam(V_31_PARAM, -4.f, 6.f, 0.f, "V/Oct 3-1");
+		configParam(V_32_PARAM, -4.f, 6.f, 0.f, "V/Oct 3-2");
+		configParam(V_33_PARAM, -4.f, 6.f, 0.f, "V/Oct 3-3");
+		configParam(V_41_PARAM, -4.f, 6.f, 0.f, "V/Oct 4-1");
+		configParam(V_42_PARAM, -4.f, 6.f, 0.f, "V/Oct 4-2");
+		configParam(V_43_PARAM, -4.f, 6.f, 0.f, "V/Oct 4-3");
+		configParam(V_44_PARAM, -4.f, 6.f, 0.f, "V/Oct 4-4");
+		configParam(V_51_PARAM, -4.f, 6.f, 0.f, "V/Oct 5-1");
+		configParam(V_52_PARAM, -4.f, 6.f, 0.f, "V/Oct 5-2");
+		configParam(V_53_PARAM, -4.f, 6.f, 0.f, "V/Oct 5-3");
+		configParam(V_54_PARAM, -4.f, 6.f, 0.f, "V/Oct 5-4");
+		configParam(V_55_PARAM, -4.f, 6.f, 0.f, "V/Oct 5-5");
+		configParam(V_61_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-1");
+		configParam(V_62_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-2");
+		configParam(V_63_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-3");
+		configParam(V_64_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-4");
+		configParam(V_65_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-5");
+		configParam(V_66_PARAM, -4.f, 6.f, 0.f, "V/Oct 6-6");
+		configParam(V_71_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-1");
+		configParam(V_72_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-2");
+		configParam(V_73_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-3");
+		configParam(V_74_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-4");
+		configParam(V_75_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-5");
+		configParam(V_76_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-6");
+		configParam(V_77_PARAM, -4.f, 6.f, 0.f, "V/Oct 7-7");
+		configParam(V_81_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-1");
+		configParam(V_82_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-2");
+		configParam(V_83_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-3");
+		configParam(V_84_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-4");
+		configParam(V_85_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-5");
+		configParam(V_86_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-6");
+		configParam(V_87_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-7");
+		configParam(V_88_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-8");
 		configInput(GATE_IN_INPUT, "");
 		configInput(RESET_IN_INPUT, "");
 		configOutput(V_OUT_OUTPUT, "");
@@ -190,8 +196,40 @@ struct Spiquencer : Module
 	void process(const ProcessArgs &args) override
 	{
 		float stepVoltage;
+
+		// Did we change key?
+		if (rootNote != oldRootNote)
+		{
+			oldRootNote = rootNote;
+		}
+
+		// Did we change scale?
+		if (rootScale != oldRootScale)
+		{
+			oldRootScale = rootScale;
+			int row, col, step, note;
+
+			for (row = 0; row < 8; row++)
+			{
+				for (col = 0; col < 8; col++)
+				{
+					step = mapRowColtoParam[row][col];
+					if (step > -1)
+					{
+						note = (int)(12.f * rack::random::uniform());
+						params[step].setValue(C4_SCALE[note]);
+					}
+				}
+			}
+		}
+
 		// Was a pulse received on Gate In?
 		gateTriggered = gateTrigger.process(inputs[GATE_IN_INPUT].getVoltage(), 0.1f, 2.f);
+
+		// Was a pulse received on Reset In?
+		resetTriggered = resetTrigger.process(inputs[RESET_IN_INPUT].getVoltage(), 0.1f, 2.f);
+		if (resetTriggered)
+			onReset();
 
 		// Yes, so proceed to the next step
 		if (gateTriggered)
