@@ -1,3 +1,4 @@
+
 #include "plugin.hpp"
 #include "sts-base.hpp"
 #include "notes.hpp"
@@ -43,6 +44,7 @@ struct Spiquencer : Module
 		V_86_PARAM,
 		V_87_PARAM,
 		V_88_PARAM,
+		PROBABILITY,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -110,11 +112,6 @@ struct Spiquencer : Module
 		{21, 22, 23, 24, 25, 26, 27, -1},
 		{28, 29, 30, 31, 32, 33, 34, 35}};
 
-	float scaleVoltages[3][12] = {
-		{},
-		{},
-		{}};
-
 	int curParam = 0;	 // current index in param mapping
 	int oldParam = 0;	 // old index in param mapping
 	int curSpikeRow = 0; // current row of spike that is sent to output
@@ -145,6 +142,8 @@ struct Spiquencer : Module
 		// Reset the grid
 		curParam = 0;
 		oldParam = 0;
+		// Reset some params
+		params[PROBABILITY].setValue(0.f);
 	}
 
 	Spiquencer()
@@ -186,6 +185,7 @@ struct Spiquencer : Module
 		configParam(V_86_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-6");
 		configParam(V_87_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-7");
 		configParam(V_88_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-8");
+		configParam(PROBABILITY, 0.f, 1.f, 1.f, "%");
 		configInput(GATE_IN_INPUT, "");
 		configInput(RESET_IN_INPUT, "");
 		configOutput(V_OUT_OUTPUT, "");
@@ -197,17 +197,13 @@ struct Spiquencer : Module
 	{
 		float stepVoltage;
 
-		// Did we change key?
-		if (rootNote != oldRootNote)
-		{
-			oldRootNote = rootNote;
-		}
-
-		// Did we change scale?
-		if (rootScale != oldRootScale)
+		// Did we change scale or root note?
+		if ((rootScale != oldRootScale) || (rootNote != oldRootNote))
 		{
 			oldRootScale = rootScale;
-			int row, col, step, note;
+			oldRootNote = rootNote;
+
+			int row, col, step = 0, note = 0;
 
 			for (row = 0; row < 8; row++)
 			{
@@ -216,8 +212,9 @@ struct Spiquencer : Module
 					step = mapRowColtoParam[row][col];
 					if (step > -1)
 					{
-						note = (int)(12.f * rack::random::uniform());
-						params[step].setValue(C4_SCALE[note]);
+						// note = (int)(12.f * rack::random::uniform());
+						params[step].setValue(CHROMATIC_SCALES[rootNote][note]);
+						note = (note + 1) % 12;
 					}
 				}
 			}
@@ -225,6 +222,9 @@ struct Spiquencer : Module
 
 		// Was a pulse received on Gate In?
 		gateTriggered = gateTrigger.process(inputs[GATE_IN_INPUT].getVoltage(), 0.1f, 2.f);
+		// And is our probability allowing the gate to be processed?
+		if (rack::random::uniform() > params[PROBABILITY].getValue())
+			gateTriggered = false;
 
 		// Was a pulse received on Reset In?
 		resetTriggered = resetTrigger.process(inputs[RESET_IN_INPUT].getVoltage(), 0.1f, 2.f);
@@ -297,7 +297,7 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		// Params
+		// Step Params
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(51.162, 17.58)), module, Spiquencer::V_11_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(46.536, 24.981)), module, Spiquencer::V_21_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(56.104, 24.981)), module, Spiquencer::V_22_PARAM));
@@ -334,6 +334,9 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(65.397, 70.139)), module, Spiquencer::V_86_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.965, 70.139)), module, Spiquencer::V_87_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.534, 70.139)), module, Spiquencer::V_88_PARAM));
+
+		// General Params
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY));
 
 		// Inputs
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 105.0)), module, Spiquencer::GATE_IN_INPUT));

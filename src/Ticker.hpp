@@ -1,3 +1,5 @@
+#pragma once
+
 #include <rack.hpp>
 #include "sts-base.hpp"
 using namespace rack;
