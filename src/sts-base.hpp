@@ -1,9 +1,5 @@
 #pragma once
 
-#include <rack.hpp>
-
-using namespace rack;
-
 // Derived types for STS
 static const NVGcolor SCHEME_STS_BLUE = nvgRGB(0x00, 0x00, 0xff);
 static const NVGcolor SCHEME_STS_LIGHT_BLUE = nvgRGB(0x60, 0x80, 0xff);

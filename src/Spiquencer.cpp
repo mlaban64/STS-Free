@@ -44,7 +44,7 @@ struct Spiquencer : Module
 		V_86_PARAM,
 		V_87_PARAM,
 		V_88_PARAM,
-		PROBABILITY,
+		PROBABILITY_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
@@ -56,6 +56,7 @@ struct Spiquencer : Module
 	enum OutputId
 	{
 		V_OUT_OUTPUT,
+		GATE_OUT_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId
@@ -117,10 +118,12 @@ struct Spiquencer : Module
 	int curSpikeRow = 0; // current row of spike that is sent to output
 	int curSpikeCol = 0; // current spike within row that is sent to output
 
-	int rootNote = 0;	 // Root Note as per the menu
-	int rootScale = 0;	 // Scale selected
-	int oldRootNote = 0; // To detect a change in note & scale
+	int rootNote = 0;		// Root Note as per the menu
+	int rootScale = 0;		// Scale selected
+	int scaleDirection = 0; // Steps to follow scale up/down/random/...
+	int oldRootNote = 0;	// To detect a change in note & scale
 	int oldRootScale = 0;
+	int oldScaleDirection = 0;
 
 	// Triggers to detect an external gate or reset signal
 	dsp::SchmittTrigger gateTrigger;
@@ -137,13 +140,14 @@ struct Spiquencer : Module
 		gateTrigger.reset();
 		resetTrigger.reset();
 		// Reset the lights
-		lights[curParam].setBrightness(0.f);
-		lights[oldParam].setBrightness(0.f);
+		getLight(curParam).setBrightness(0.f);
+		getLight(oldParam).setBrightness(0.f);
 		// Reset the grid
 		curParam = 0;
 		oldParam = 0;
 		// Reset some params
-		params[PROBABILITY].setValue(0.f);
+		getParam(PROBABILITY_PARAM).setValue(1.f);
+		getOutput(GATE_OUT_OUTPUT).setVoltage(0.f);
 	}
 
 	Spiquencer()
@@ -185,25 +189,29 @@ struct Spiquencer : Module
 		configParam(V_86_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-6");
 		configParam(V_87_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-7");
 		configParam(V_88_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-8");
-		configParam(PROBABILITY, 0.f, 1.f, 1.f, "%");
-		configInput(GATE_IN_INPUT, "");
-		configInput(RESET_IN_INPUT, "");
-		configOutput(V_OUT_OUTPUT, "");
-
+		configParam(PROBABILITY_PARAM, 0.f, 1.f, 1.f, "probability");
+		configInput(GATE_IN_INPUT, "Gate In");
+		configInput(RESET_IN_INPUT, "Reset In");
+		configOutput(V_OUT_OUTPUT, "V/Oct Out");
+		configOutput(GATE_OUT_OUTPUT, "Gate Out");
 		onReset();
 	}
 
 	void process(const ProcessArgs &args) override
 	{
 		float stepVoltage;
+		int row, col, step = 0, note = 0, modeIndex = 0;
 
-		// Did we change scale or root note?
-		if ((rootScale != oldRootScale) || (rootNote != oldRootNote))
+		// Did we change scale, root note?, scale direction?
+		if ((rootScale != oldRootScale) || (rootNote != oldRootNote) || (scaleDirection != oldScaleDirection))
 		{
+			// Neutralize change detection
 			oldRootScale = rootScale;
 			oldRootNote = rootNote;
+			oldScaleDirection = scaleDirection;
 
-			int row, col, step = 0, note = 0;
+			// Compute the index for the modes. This may change when adding scales to the menu!
+			modeIndex = rootScale - 3;
 
 			for (row = 0; row < 8; row++)
 			{
@@ -212,36 +220,52 @@ struct Spiquencer : Module
 					step = mapRowColtoParam[row][col];
 					if (step > -1)
 					{
-						// note = (int)(12.f * rack::random::uniform());
-						params[step].setValue(CHROMATIC_SCALES[rootNote][note]);
-						note = (note + 1) % 12;
+						// Chromatic?
+						if (rootScale == 0)
+						{
+							getParam(step).setValue(CHROMATIC_SCALES[rootNote][note]);
+							note = (note + 1) % 12;
+						}
+						// Pentatonic
+						else if (rootScale == 1 || rootScale == 2)
+						{
+							;
+						}
+						else // One of the modes
+						{
+							getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note]);
+							note = (note + 1) % 8;
+						}
 					}
 				}
 			}
 		}
 
 		// Was a pulse received on Gate In?
-		gateTriggered = gateTrigger.process(inputs[GATE_IN_INPUT].getVoltage(), 0.1f, 2.f);
+		gateTriggered = gateTrigger.process(getInput(GATE_IN_INPUT).getVoltage(), 0.1f, 2.f);
 		// And is our probability allowing the gate to be processed?
-		if (rack::random::uniform() > params[PROBABILITY].getValue())
+		if (rack::random::uniform() > getParam(PROBABILITY_PARAM).getValue())
 			gateTriggered = false;
 
 		// Was a pulse received on Reset In?
-		resetTriggered = resetTrigger.process(inputs[RESET_IN_INPUT].getVoltage(), 0.1f, 2.f);
+		resetTriggered = resetTrigger.process(getInput(RESET_IN_INPUT).getVoltage(), 0.1f, 2.f);
 		if (resetTriggered)
 			onReset();
 
 		// Yes, so proceed to the next step
 		if (gateTriggered)
 		{
+			// Copy gate input to gate output
+			if (gateTrigger.isHigh())
+				getOutput(GATE_OUT_OUTPUT).setVoltage(10.f);
 			// switch off prev step light
-			lights[oldParam].setBrightness(0.f);
+			getLight(oldParam).setBrightness(0.f);
 			oldParam = curParam;
 
 			// read current param and copy it to output
-			stepVoltage = params[curParam].getValue();
-			outputs[V_OUT_OUTPUT].setVoltage(stepVoltage);
-			lights[curParam].setBrightnessSmooth(gateTriggered, 0.25f * args.sampleTime);
+			stepVoltage = getParam(curParam).getValue();
+			getOutput(V_OUT_OUTPUT).setVoltage(stepVoltage);
+			getLight(curParam).setBrightnessSmooth(gateTriggered, 0.25f * args.sampleTime);
 
 			// Prepare for the next step
 			curSpikeRow += 1;
@@ -260,7 +284,12 @@ struct Spiquencer : Module
 			}
 		}
 		else
-			lights[curParam].setBrightness(0.f);
+		{
+			// Copy gate input to gate output
+			if (!gateTrigger.isHigh())
+				getOutput(GATE_OUT_OUTPUT).setVoltage(0.f);
+			getLight(curParam).setBrightness(0.f);
+		}
 	}
 
 	json_t *dataToJson() override
@@ -269,6 +298,7 @@ struct Spiquencer : Module
 
 		json_object_set_new(rootJ, "Root Note", json_integer(rootNote));
 		json_object_set_new(rootJ, "Scale", json_integer(rootScale));
+		json_object_set_new(rootJ, "Scale Direction", json_integer(scaleDirection));
 
 		return rootJ;
 	}
@@ -277,11 +307,14 @@ struct Spiquencer : Module
 	{
 		json_t *brootNoteJ = json_object_get(rootJ, "Root Note");
 		json_t *rootScaleJ = json_object_get(rootJ, "Scale");
+		json_t *scaleDirectionJ = json_object_get(rootJ, "Scale Direction");
 
 		if (brootNoteJ)
 			rootNote = json_integer_value(brootNoteJ);
 		if (rootScaleJ)
 			rootScale = json_integer_value(rootScaleJ);
+		if (scaleDirectionJ)
+			scaleDirection = json_integer_value(scaleDirectionJ);
 	}
 };
 
@@ -336,7 +369,7 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.534, 70.139)), module, Spiquencer::V_88_PARAM));
 
 		// General Params
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY_PARAM));
 
 		// Inputs
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 105.0)), module, Spiquencer::GATE_IN_INPUT));
@@ -344,6 +377,7 @@ struct SpiquencerWidget : ModuleWidget
 
 		// Outputs
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(63.0, 105.0)), module, Spiquencer::V_OUT_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(74.0, 105.0)), module, Spiquencer::GATE_OUT_OUTPUT));
 
 		// Lights
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.156, 17.58)), module, Spiquencer::LGT_11_LIGHT));
@@ -391,7 +425,8 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Major", "Minor", "Minor Pentatonic"}, &module->rootScale));
+		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian"}, &module->rootScale));
+		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down", "Up/Down", "Random"}, &module->scaleDirection));
 	}
 };
 
