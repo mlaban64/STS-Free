@@ -3,7 +3,11 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "D:/Apps/msys64/mingw64/include/**",
+                "D:/Apps/msys64/home/mlaban/Rack-SDK/include/**",
+                "D:/Apps/msys64/home/mlaban/Rack-SDK/dep/include/**",
+				"D:/Apps/msys64/home/mlaban/Rack-Dev/STS-Lib/**"
             ],
             "defines": [
                 "_DEBUG",
