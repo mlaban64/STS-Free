@@ -42,23 +42,23 @@ struct Multiplier : Module
 	void process(const ProcessArgs &args) override
 	{
 		// Get the number of polyphonic channels from the Input, if any
-		num_Channels = inputs[IN_INPUT].getChannels();
+		num_Channels = getInput(IN_INPUT).getChannels();
 
 		// Input not connected? Do nothing...
 		if (num_Channels < 1)
 			return;
 
 		// Set the number of channels as per the number of input channels
-		outputs[OUT_1_OUTPUT].setChannels(num_Channels);
-		outputs[OUT_2_OUTPUT].setChannels(num_Channels);
-		outputs[OUT_3_OUTPUT].setChannels(num_Channels);
-		outputs[OUT_4_OUTPUT].setChannels(num_Channels);
+		getOutput(OUT_1_OUTPUT).setChannels(num_Channels);
+		getOutput(OUT_2_OUTPUT).setChannels(num_Channels);
+		getOutput(OUT_3_OUTPUT).setChannels(num_Channels);
+		getOutput(OUT_4_OUTPUT).setChannels(num_Channels);
 
 		// Copy input voltages to the four outputs
-		outputs[OUT_1_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT_2_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT_3_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
-		outputs[OUT_4_OUTPUT].writeVoltages(inputs[IN_INPUT].getVoltages());
+		getOutput(OUT_1_OUTPUT).writeVoltages(getInput(IN_INPUT).getVoltages());
+		getOutput(OUT_2_OUTPUT).writeVoltages(getInput(IN_INPUT).getVoltages());
+		getOutput(OUT_3_OUTPUT).writeVoltages(getInput(IN_INPUT).getVoltages());
+		getOutput(OUT_4_OUTPUT).writeVoltages(getInput(IN_INPUT).getVoltages());
 	}
 };
 

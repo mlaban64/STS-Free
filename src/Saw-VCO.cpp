@@ -179,24 +179,24 @@ struct Saw_VCO : Module
 		}
 
 		// Get all the values from the module UI
-		pitch_param = params[PITCH_PARAM].getValue();
-		phase_param = params[PHASE_PARAM].getValue();
-		volume_param = params[VOLUME_PARAM].getValue();
-		freq_mod_attn = params[FM_ATTN_PARAM].getValue();
-		phase_mod_attn = params[PM_ATTN_PARAM].getValue();
-		volume_mod_attn = params[VM_ATTN_PARAM].getValue();
-		freq_mod = inputs[FM_IN_INPUT].getVoltage();
-		phase_mod = inputs[PM_IN_INPUT].getVoltage();
-		volume_mod = inputs[VM_IN_INPUT].getVoltage();
+		pitch_param = getParam(PITCH_PARAM).getValue();
+		phase_param = getParam(PHASE_PARAM).getValue();
+		volume_param = getParam(VOLUME_PARAM).getValue();
+		freq_mod_attn = getParam(FM_ATTN_PARAM).getValue();
+		phase_mod_attn = getParam(PM_ATTN_PARAM).getValue();
+		volume_mod_attn = getParam(VM_ATTN_PARAM).getValue();
+		freq_mod = getInput(FM_IN_INPUT).getVoltage();
+		phase_mod = getInput(PM_IN_INPUT).getVoltage();
+		volume_mod = getInput(VM_IN_INPUT).getVoltage();
 
 		// Compute the volume output as per the controls
-		if (inputs[VM_IN_INPUT].isConnected())
+		if (getInput(VM_IN_INPUT).isConnected())
 			volume_out = volume_param + volume_mod * volume_mod_attn * VOLUME_MOD_MULTIPLIER;
 		else
 			volume_out = volume_param;
 
 		// Compute the phase shift as per the controls. Make sure it is not negative, as this may happen with modulation with a bipolar signal
-		if (inputs[PM_IN_INPUT].isConnected())
+		if (getInput(PM_IN_INPUT).isConnected())
 		{
 			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
 			if (phase_shift < 0.0f)
@@ -206,15 +206,15 @@ struct Saw_VCO : Module
 			phase_shift = phase_param;
 
 		// Is the V-In connected?
-		num_channels = inputs[V_OCT_IN_INPUT].getChannels();
+		num_channels = getInput(V_OCT_IN_INPUT).getChannels();
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
-		outputs[OUTPUT_OUTPUT].setChannels(num_channels);
+		getOutput(OUTPUT_OUTPUT).setChannels(num_channels);
 
 		if (num_channels == 0)
 		// If not, set the frequency as per the pitch parameter, using phase[0]
 		{
 			// Compute the pitch as per the controls
-			if (inputs[FM_IN_INPUT].isConnected())
+			if (getInput(FM_IN_INPUT).isConnected())
 				freq = pitch_param + pitch_param * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
 			else
 				freq = pitch_param;
@@ -232,7 +232,7 @@ struct Saw_VCO : Module
 
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
-			outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+			getOutput(OUTPUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
 		}
 		else
 		{
@@ -240,11 +240,11 @@ struct Saw_VCO : Module
 			// Loop through all input channels
 			for (idx = 0; idx < num_channels; idx++)
 			{
-				pitch = inputs[V_OCT_IN_INPUT].getVoltage(idx);
+				pitch = getInput(V_OCT_IN_INPUT).getVoltage(idx);
 				freq = pitch_param * std::pow(2.f, pitch);
 
 				// Compute the pitch as per the controls
-				if (inputs[FM_IN_INPUT].isConnected())
+				if (getInput(FM_IN_INPUT).isConnected())
 					freq = freq + freq * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
 
 				// limit the pitch if modulation takes it too extreme
@@ -260,7 +260,7 @@ struct Saw_VCO : Module
 
 				// Compute the wave via the wave table,
 				// output to the correct channel, multiplied by the output volume
-				outputs[OUTPUT_OUTPUT].setVoltage(volume_out * STS_My_Saw(phase[idx], phase_shift), idx);
+				getOutput(OUTPUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[idx], phase_shift), idx);
 			}
 		}
 	}

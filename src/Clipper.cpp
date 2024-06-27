@@ -61,24 +61,24 @@ struct Clipper : Module
 	void process(const ProcessArgs &args) override
 	{
 		// If no VC/In connected, bail out
-		if (!inputs[INPUT_INPUT].isConnected())
+		if (!getInput(INPUT_INPUT).isConnected())
 			return;
 
 		// If no Output connected, bail out
-		if (!inputs[OUTPUT_OUTPUT].isConnected())
+		if (!getOutput(OUTPUT_OUTPUT).isConnected())
 			return;
 
 		// Get all the values from the module UI
-		UTM_attn_param = params[UTM_ATTN_PARAM].getValue();
-		LTM_attn_param = params[LTM_ATTN_PARAM].getValue();
-		UTM_param = params[UPPER_THRESHOLD_PARAM].getValue();
-		LTM_param = params[LOWER__THRESHOLD_PARAM].getValue();
-		UTM_in = inputs[UTM_IN_INPUT].getVoltage();
-		LTM_in = inputs[LTM_IN_INPUT].getVoltage();
+		UTM_attn_param = getParam(UTM_ATTN_PARAM).getValue();
+		LTM_attn_param = getParam(LTM_ATTN_PARAM).getValue();
+		UTM_param = getParam(UPPER_THRESHOLD_PARAM).getValue();
+		LTM_param = getParam(LOWER__THRESHOLD_PARAM).getValue();
+		UTM_in = getInput(UTM_IN_INPUT).getVoltage();
+		LTM_in = getInput(LTM_IN_INPUT).getVoltage();
 
 		// Compute the Upper Treshold Modulation (UTM) as per the controls
 		// UTM must always be > 0, LTM must always be < 0, to avoid artifacts of self-oscillating
-		if (inputs[UTM_IN_INPUT].isConnected())
+		if (getInput(UTM_IN_INPUT).isConnected())
 		{
 			UTM_mod = UTM_attn_param * UTM_in + UTM_param;
 			if (polarity == POLARITY_BIPOLAR)
@@ -101,7 +101,7 @@ struct Clipper : Module
 		}
 
 		// Compute the Lower Treshold Modulation (UTM) as per the controls
-		if (inputs[LTM_IN_INPUT].isConnected())
+		if (getInput(LTM_IN_INPUT).isConnected())
 		{
 			LTM_mod = LTM_attn_param * LTM_in + LTM_param;
 			if (polarity == POLARITY_BIPOLAR)
@@ -124,14 +124,14 @@ struct Clipper : Module
 		}
 
 		// Is the V-In connected and polyphonic?
-		num_channels = inputs[INPUT_INPUT].getChannels();
+		num_channels = getInput(INPUT_INPUT).getChannels();
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
-		outputs[OUTPUT_OUTPUT].setChannels(num_channels);
+		getOutput(OUTPUT_OUTPUT).setChannels(num_channels);
 
 		for (idx = 0; idx < num_channels; idx++)
 		{
 			// Compute the new output voltage
-			out_Volt = inputs[INPUT_INPUT].getVoltage(idx);
+			out_Volt = getInput(INPUT_INPUT).getVoltage(idx);
 			// output to the correct channel, multiplied by the output volume
 
 			// If clip, set output to the threshold, else subtract from the threshold
@@ -150,7 +150,7 @@ struct Clipper : Module
 					out_Volt = LTM_mod - (out_Volt - LTM_mod);
 			}
 
-			outputs[OUTPUT_OUTPUT].setVoltage(out_Volt, idx);
+			getOutput(OUTPUT_OUTPUT).setVoltage(out_Volt, idx);
 		}
 		// Done, so exit
 		return;

@@ -48,16 +48,16 @@ struct Splitter : Module
 	void process(const ProcessArgs &args) override
 	{
 		// Get the number of channels from the Input, if any
-		num_Channels = inputs[POLY_IN_INPUT].getChannels();
+		num_Channels = getInput(POLY_IN_INPUT).getChannels();
 
 		// Did the number of channels change? If so, make sure all lights are out before switching them on as per the new channel count
 		// This to avoid flickering lights for no reason, every time process() is called. Also volt array is set to zero to avoid old voltages to be sent
 		if (num_Channels != old_num_Channels)
 		{
-			lights[LGT_1_OUT_LIGHT].setBrightness(0.0);
-			lights[LGT_2_OUT_LIGHT].setBrightness(0.0);
-			lights[LGT_3_OUT_LIGHT].setBrightness(0.0);
-			lights[LGT_4_OUT_LIGHT].setBrightness(0.0);
+			getLight(LGT_1_OUT_LIGHT).setBrightness(0.0);
+			getLight(LGT_2_OUT_LIGHT).setBrightness(0.0);
+			getLight(LGT_3_OUT_LIGHT).setBrightness(0.0);
+			getLight(LGT_4_OUT_LIGHT).setBrightness(0.0);
 			volt_In[0] = volt_In[1] = volt_In[2] = volt_In[3] = 0.0f;
 			old_num_Channels = num_Channels;
 		}
@@ -72,9 +72,9 @@ struct Splitter : Module
 		{
 			for (cur_Channel = 0; cur_Channel < num_Channels; cur_Channel++)
 			{
-				volt_In[cur_Channel] = inputs[POLY_IN_INPUT].getVoltage(cur_Channel);
-				outputs[cur_Channel].setVoltage(volt_In[cur_Channel]);
-				lights[cur_Channel].setBrightness(1.0);
+				volt_In[cur_Channel] = getInput(POLY_IN_INPUT).getVoltage(cur_Channel);
+				getOutput(cur_Channel).setVoltage(volt_In[cur_Channel]);
+				getLight(cur_Channel).setBrightness(1.0);
 			}
 			// Done, so return
 			return;
@@ -87,8 +87,8 @@ struct Splitter : Module
 			if (num_Channels == 2)
 			{
 				// Get the input values in the array
-				volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-				volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
+				volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+				volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
 
 				// Now sort the two values ascending
 				if (volt_In[0] > volt_In[1])
@@ -99,10 +99,10 @@ struct Splitter : Module
 				}
 
 				// Output the voltages and set the lights
-				outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-				lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-				outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-				lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
+				getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+				getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+				getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+				getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
 				// Done, so return
 				return;
 			}
@@ -110,9 +110,9 @@ struct Splitter : Module
 			if (num_Channels == 3)
 			{
 				// Get the input values in the array
-				volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-				volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
-				volt_In[2] = inputs[POLY_IN_INPUT].getVoltage(2);
+				volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+				volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
+				volt_In[2] = getInput(POLY_IN_INPUT).getVoltage(2);
 
 				// Now sort the three values ascending, using a simplified bubble sort
 				if (volt_In[0] > volt_In[1])
@@ -137,21 +137,21 @@ struct Splitter : Module
 				}
 
 				// Output the voltages and set the lights
-				outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-				lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-				outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-				lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
-				outputs[CH_3_OUT_OUTPUT].setVoltage(volt_In[2]);
-				lights[LGT_3_OUT_LIGHT].setBrightness(1.0);
+				getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+				getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+				getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+				getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
+				getOutput(CH_3_OUT_OUTPUT).setVoltage(volt_In[2]);
+				getLight(LGT_3_OUT_LIGHT).setBrightness(1.0);
 				// Done, so return
 				return;
 			}
 
 			// 4 channels remaining as last option. Get the input values in the array
-			volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-			volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
-			volt_In[2] = inputs[POLY_IN_INPUT].getVoltage(2);
-			volt_In[3] = inputs[POLY_IN_INPUT].getVoltage(3);
+			volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+			volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
+			volt_In[2] = getInput(POLY_IN_INPUT).getVoltage(2);
+			volt_In[3] = getInput(POLY_IN_INPUT).getVoltage(3);
 
 			// 4 channels, so sort the four values ascending. First sort 0 & 1, then 2 & 3 so we have two sorted mini-arrays of length 2
 			if (volt_In[0] > volt_In[1])
@@ -190,14 +190,14 @@ struct Splitter : Module
 			}
 
 			// Output the voltages and set the lights
-			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-			lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-			lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_3_OUT_OUTPUT].setVoltage(volt_In[2]);
-			lights[LGT_3_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_4_OUT_OUTPUT].setVoltage(volt_In[3]);
-			lights[LGT_4_OUT_LIGHT].setBrightness(1.0);
+			getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+			getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+			getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_3_OUT_OUTPUT).setVoltage(volt_In[2]);
+			getLight(LGT_3_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_4_OUT_OUTPUT).setVoltage(volt_In[3]);
+			getLight(LGT_4_OUT_LIGHT).setBrightness(1.0);
 			// Done, so return
 			return;
 		}
@@ -208,8 +208,8 @@ struct Splitter : Module
 		if (num_Channels == 2)
 		{
 			// Get the input values in the array
-			volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-			volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
+			volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+			volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
 
 			// Now sort the two values ascending
 			if (volt_In[0] < volt_In[1])
@@ -220,10 +220,10 @@ struct Splitter : Module
 			}
 
 			// Output the voltages and set the lights
-			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-			lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-			lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
+			getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+			getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+			getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
 			// Done, so return
 			return;
 		}
@@ -231,9 +231,9 @@ struct Splitter : Module
 		if (num_Channels == 3)
 		{
 			// Get the input values in the array
-			volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-			volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
-			volt_In[2] = inputs[POLY_IN_INPUT].getVoltage(2);
+			volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+			volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
+			volt_In[2] = getInput(POLY_IN_INPUT).getVoltage(2);
 
 			// Now sort the three values ascending, using a simplified bubble sort
 			if (volt_In[0] < volt_In[1])
@@ -257,21 +257,21 @@ struct Splitter : Module
 			}
 
 			// Output the voltages and set the lights
-			outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-			lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-			lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
-			outputs[CH_3_OUT_OUTPUT].setVoltage(volt_In[2]);
-			lights[LGT_3_OUT_LIGHT].setBrightness(1.0);
+			getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+			getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+			getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
+			getOutput(CH_3_OUT_OUTPUT).setVoltage(volt_In[2]);
+			getLight(LGT_3_OUT_LIGHT).setBrightness(1.0);
 			// Done, so return
 			return;
 		}
 
 		// 4 channels remaining as last option. Get the input values in the array
-		volt_In[0] = inputs[POLY_IN_INPUT].getVoltage(0);
-		volt_In[1] = inputs[POLY_IN_INPUT].getVoltage(1);
-		volt_In[2] = inputs[POLY_IN_INPUT].getVoltage(2);
-		volt_In[3] = inputs[POLY_IN_INPUT].getVoltage(3);
+		volt_In[0] = getInput(POLY_IN_INPUT).getVoltage(0);
+		volt_In[1] = getInput(POLY_IN_INPUT).getVoltage(1);
+		volt_In[2] = getInput(POLY_IN_INPUT).getVoltage(2);
+		volt_In[3] = getInput(POLY_IN_INPUT).getVoltage(3);
 
 		// 4 channels, so sort the four values ascending. First sort 0 & 1, then 2 & 3 so we have two sorted mini-arrays of length 2
 		if (volt_In[0] < volt_In[1])
@@ -309,14 +309,14 @@ struct Splitter : Module
 		}
 
 		// Output the voltages and set the lights
-		outputs[CH_1_OUT_OUTPUT].setVoltage(volt_In[0]);
-		lights[LGT_1_OUT_LIGHT].setBrightness(1.0);
-		outputs[CH_2_OUT_OUTPUT].setVoltage(volt_In[1]);
-		lights[LGT_2_OUT_LIGHT].setBrightness(1.0);
-		outputs[CH_3_OUT_OUTPUT].setVoltage(volt_In[2]);
-		lights[LGT_3_OUT_LIGHT].setBrightness(1.0);
-		outputs[CH_4_OUT_OUTPUT].setVoltage(volt_In[3]);
-		lights[LGT_4_OUT_LIGHT].setBrightness(1.0);
+		getOutput(CH_1_OUT_OUTPUT).setVoltage(volt_In[0]);
+		getLight(LGT_1_OUT_LIGHT).setBrightness(1.0);
+		getOutput(CH_2_OUT_OUTPUT).setVoltage(volt_In[1]);
+		getLight(LGT_2_OUT_LIGHT).setBrightness(1.0);
+		getOutput(CH_3_OUT_OUTPUT).setVoltage(volt_In[2]);
+		getLight(LGT_3_OUT_LIGHT).setBrightness(1.0);
+		getOutput(CH_4_OUT_OUTPUT).setVoltage(volt_In[3]);
+		getLight(LGT_4_OUT_LIGHT).setBrightness(1.0);
 		return;
 	}
 

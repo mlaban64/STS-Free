@@ -44,26 +44,26 @@ struct D_Octer : Module
 	{
 
 		// Get the number of channels from the Input, if any
-		num_Channels = inputs[POLY_IN_INPUT].getChannels();
+		num_Channels = getInput(POLY_IN_INPUT).getChannels();
 
 		// Input not connected? Do nothing...
 		if (num_Channels == 0)
 			return;
 
 		// Set the number of channels as per the number of input channels
-		outputs[OCTm2_OUT_OUTPUT].setChannels(num_Channels);
-		outputs[OCTm1_OUT_OUTPUT].setChannels(num_Channels);
-		outputs[OCTp1_OUT_OUTPUT].setChannels(num_Channels);
-		outputs[OCTp2_OUT_OUTPUT].setChannels(num_Channels);
+		getOutput(OCTm2_OUT_OUTPUT).setChannels(num_Channels);
+		getOutput(OCTm1_OUT_OUTPUT).setChannels(num_Channels);
+		getOutput(OCTp1_OUT_OUTPUT).setChannels(num_Channels);
+		getOutput(OCTp2_OUT_OUTPUT).setChannels(num_Channels);
 
 		// Now read each channel, transpose and send to output channels
 		for (cur_Channel = 0; cur_Channel < num_Channels; cur_Channel++)
 		{
-			volt_In = inputs[POLY_IN_INPUT].getVoltage(cur_Channel);
-			outputs[OCTm2_OUT_OUTPUT].setVoltage(volt_In - 2.0, cur_Channel);
-			outputs[OCTm1_OUT_OUTPUT].setVoltage(volt_In - 1.0, cur_Channel);
-			outputs[OCTp1_OUT_OUTPUT].setVoltage(volt_In + 1.0, cur_Channel);
-			outputs[OCTp2_OUT_OUTPUT].setVoltage(volt_In + 2.0, cur_Channel);
+			volt_In = getInput(POLY_IN_INPUT).getVoltage(cur_Channel);
+			getOutput(OCTm2_OUT_OUTPUT).setVoltage(volt_In - 2.0, cur_Channel);
+			getOutput(OCTm1_OUT_OUTPUT).setVoltage(volt_In - 1.0, cur_Channel);
+			getOutput(OCTp1_OUT_OUTPUT).setVoltage(volt_In + 1.0, cur_Channel);
+			getOutput(OCTp2_OUT_OUTPUT).setVoltage(volt_In + 2.0, cur_Channel);
 		}
 		// Done, so return
 		return;

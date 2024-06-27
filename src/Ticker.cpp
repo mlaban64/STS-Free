@@ -301,15 +301,15 @@ struct Ticker : Module
 		clk4_TrgPulse.reset();
 
 		// Reset all outputs & lights
-		outputs[MSR_GATE_OUTPUT].setVoltage(0.f);
-		outputs[MSR_TRIGGER_OUTPUT].setVoltage(0.f);
-		outputs[MSR_RESET_OUTPUT].setVoltage(0.f);
-		outputs[MSR_RUN_OUTPUT].setVoltage(0.f);
+		getOutput(MSR_GATE_OUTPUT).setVoltage(0.f);
+		getOutput(MSR_TRIGGER_OUTPUT).setVoltage(0.f);
+		getOutput(MSR_RESET_OUTPUT).setVoltage(0.f);
+		getOutput(MSR_RUN_OUTPUT).setVoltage(0.f);
 
-		lights[MSR_RESET_LIGHT].setBrightness(0.f);
-		lights[MSR_RUN_LIGHT].setBrightness(0.f);
-		lights[MSR_PULSE_LIGHT].setBrightness(0.f);
-		lights[MSR_PULSE_LIGHT].setBrightness(0.f);
+		getLight(MSR_RESET_LIGHT).setBrightness(0.f);
+		getLight(MSR_RUN_LIGHT).setBrightness(0.f);
+		getLight(MSR_PULSE_LIGHT).setBrightness(0.f);
+		getLight(MSR_PULSE_LIGHT).setBrightness(0.f);
 	}
 
 	Ticker()
@@ -335,7 +335,7 @@ struct Ticker : Module
 
 		// Clock 1 Params
 		configParam(CLK1_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
-		paramQuantities[CLK1_DIV_PARAM]->snapEnabled = true;
+		getParamQuantity(CLK1_DIV_PARAM)->snapEnabled = true;
 		configParam(CLK1_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK1_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
 		configParam(CLK1_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
@@ -349,7 +349,7 @@ struct Ticker : Module
 
 		// Clock 2 Params
 		configParam(CLK2_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
-		paramQuantities[CLK2_DIV_PARAM]->snapEnabled = true;
+		getParamQuantity(CLK2_DIV_PARAM)->snapEnabled = true;
 		configParam(CLK2_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK2_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
 		configParam(CLK2_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
@@ -363,7 +363,7 @@ struct Ticker : Module
 
 		// Clock 3 Params
 		configParam(CLK3_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
-		paramQuantities[CLK3_DIV_PARAM]->snapEnabled = true;
+		getParamQuantity(CLK3_DIV_PARAM)->snapEnabled = true;
 		configParam(CLK3_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK3_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
 		configParam(CLK3_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
@@ -377,7 +377,7 @@ struct Ticker : Module
 
 		// Clock 4 Params
 		configParam(CLK4_DIV_PARAM, 0.f, 72.f, 36.f, "Divider", "");
-		paramQuantities[CLK4_DIV_PARAM]->snapEnabled = true;
+		getParamQuantity(CLK4_DIV_PARAM)->snapEnabled = true;
 		configParam(CLK4_PHASE_PARAM, -0.5f, 0.5f, 0.f, "Phase shift", " Cycle");
 		configParam(CLK4_GATE_LEN_PARAM, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
 		configParam(CLK4_SWING_PARAM, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
