@@ -229,7 +229,8 @@ struct Spiquencer : Module
 						// Pentatonic
 						else if (rootScale == 1 || rootScale == 2)
 						{
-							;
+							getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note]);
+							note = (note + 1) % 5;
 						}
 						else // One of the modes
 						{
@@ -376,8 +377,8 @@ struct SpiquencerWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(21.0, 105.0)), module, Spiquencer::RESET_IN_INPUT));
 
 		// Outputs
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(63.0, 105.0)), module, Spiquencer::V_OUT_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(74.0, 105.0)), module, Spiquencer::GATE_OUT_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(81.0, 105.0)), module, Spiquencer::V_OUT_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(92.0, 105.0)), module, Spiquencer::GATE_OUT_OUTPUT));
 
 		// Lights
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.156, 17.58)), module, Spiquencer::LGT_11_LIGHT));
