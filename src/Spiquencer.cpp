@@ -45,12 +45,15 @@ struct Spiquencer : Module
 		V_87_PARAM,
 		V_88_PARAM,
 		PROBABILITY_PARAM,
+		TRANSPOSE_PARAM,
+		OCTAVES_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId
 	{
 		GATE_IN_INPUT,
 		RESET_IN_INPUT,
+		PROB_MOD_IN_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId
@@ -121,7 +124,11 @@ struct Spiquencer : Module
 	int rootNote = 0;		// Root Note as per the menu
 	int rootScale = 0;		// Scale selected
 	int scaleDirection = 0; // Steps to follow scale up/down/random/...
-	int oldRootNote = 0;	// To detect a change in note & scale
+	float transPose = 0.f;
+	float ocTaves = 1.f;
+	float oldTranspose = 0.f;
+	float oldOctaves = 1.f;
+	int oldRootNote = 0; // To detect a change in note & scale
 	int oldRootScale = 0;
 	int oldScaleDirection = 0;
 
@@ -131,6 +138,7 @@ struct Spiquencer : Module
 
 	bool gateTriggered = false;
 	bool resetTriggered = false;
+	bool changedParams = false;
 
 	// This is an Initialize, not a received Reset
 
@@ -153,6 +161,7 @@ struct Spiquencer : Module
 	Spiquencer()
 	{
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
+
 		configParam(V_11_PARAM, -4.f, 6.f, 0.f, "V/Oct 1-1");
 		configParam(V_21_PARAM, -4.f, 6.f, 0.f, "V/Oct 2-1");
 		configParam(V_22_PARAM, -4.f, 6.f, 0.f, "V/Oct 2-2");
@@ -189,30 +198,57 @@ struct Spiquencer : Module
 		configParam(V_86_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-6");
 		configParam(V_87_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-7");
 		configParam(V_88_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-8");
-		configParam(PROBABILITY_PARAM, 0.f, 1.f, 1.f, "probability");
+		configParam(PROBABILITY_PARAM, 0.f, 1.f, 1.f, "Probability");
+		configParam(TRANSPOSE_PARAM, -3.f, 3.f, 0.f, "Transpose");
+		getParamQuantity(TRANSPOSE_PARAM)->snapEnabled = true;
+		configParam(OCTAVES_PARAM, 1.f, 4.f, 1.f, "# of Octaves");
+		getParamQuantity(OCTAVES_PARAM)->snapEnabled = true;
+
 		configInput(GATE_IN_INPUT, "Gate In");
 		configInput(RESET_IN_INPUT, "Reset In");
+		configInput(PROB_MOD_IN_INPUT, "Probablility In");
+
 		configOutput(V_OUT_OUTPUT, "V/Oct Out");
 		configOutput(GATE_OUT_OUTPUT, "Gate Out");
+
 		onReset();
 	}
 
 	void process(const ProcessArgs &args) override
 	{
-		float stepVoltage;
-		int row, col, step = 0, note = 0, modeIndex = 0;
+		float stepVoltage, prob_mod_Input;
+		int row, col, step, oct, note, modeIndex;
+
+		// Get transposition & # of octaves
+		transPose = getParam(TRANSPOSE_PARAM).getValue();
+		ocTaves = getParam(OCTAVES_PARAM).getValue();
 
 		// Did we change scale, root note?, scale direction?
-		if ((rootScale != oldRootScale) || (rootNote != oldRootNote) || (scaleDirection != oldScaleDirection))
+		if (rootScale != oldRootScale)
+			changedParams = true;
+		else if (rootNote != oldRootNote)
+			changedParams = true;
+		else if (scaleDirection != oldScaleDirection)
+			changedParams = true;
+		else if (transPose != oldTranspose)
+			changedParams = true;
+		else if (ocTaves != oldOctaves)
+			changedParams = true;
+		if (changedParams)
 		{
 			// Neutralize change detection
 			oldRootScale = rootScale;
 			oldRootNote = rootNote;
 			oldScaleDirection = scaleDirection;
+			oldTranspose = transPose;
+			oldOctaves = ocTaves;
+			changedParams = false;
 
 			// Compute the index for the modes. This may change when adding scales to the menu!
-			modeIndex = rootScale - 3;
+			modeIndex = rootScale - 5;
 
+			note = 0;
+			oct = 0;
 			for (row = 0; row < 8; row++)
 			{
 				for (col = 0; col < 8; col++)
@@ -223,19 +259,57 @@ struct Spiquencer : Module
 						// Chromatic?
 						if (rootScale == 0)
 						{
-							getParam(step).setValue(CHROMATIC_SCALES[rootNote][note]);
-							note = (note + 1) % 12;
+							getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							note += 1;
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 11)
+							{
+								note = 0;
+								oct += 1;
+								if (oct > ocTaves)
+									oct = 0;
+							}
 						}
 						// Pentatonic
 						else if (rootScale == 1 || rootScale == 2)
 						{
-							getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note]);
-							note = (note + 1) % 5;
+							getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note] + transPose + oct);
+							note += 1;
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 4)
+							{
+								note = 0;
+								oct += 1;
+								if (oct > ocTaves)
+									oct = 0;
+							}
+						}
+						// Blues
+						else if (rootScale == 3 || rootScale == 4)
+						{
+							getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][note] + transPose + oct);
+							note += 1;
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 5)
+							{
+								note = 0;
+								oct += 1;
+								if (oct > ocTaves)
+									oct = 0;
+							}
 						}
 						else // One of the modes
 						{
-							getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note]);
-							note = (note + 1) % 8;
+							getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note] + transPose + oct);
+							note += 1;
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 7)
+							{
+								note = 0;
+								oct += 1;
+								if (oct > ocTaves)
+									oct = 0;
+							}
 						}
 					}
 				}
@@ -244,9 +318,20 @@ struct Spiquencer : Module
 
 		// Was a pulse received on Gate In?
 		gateTriggered = gateTrigger.process(getInput(GATE_IN_INPUT).getVoltage(), 0.1f, 2.f);
-		// And is our probability allowing the gate to be processed?
-		if (rack::random::uniform() > getParam(PROBABILITY_PARAM).getValue())
-			gateTriggered = false;
+		// And is our probability allowing the gate to be processed? Connected PROB_MOD_IN takes precedence above PROBABILITY
+		if (getInput(PROB_MOD_IN_INPUT).isConnected())
+		{
+			// Assume 0..10V on the PROB_MOD_IN connector, where 10V maps to probability 1, 0 or less to probability 0
+			prob_mod_Input = getInput(PROB_MOD_IN_INPUT).getVoltage() * 0.1f;
+			if (rack::random::uniform() > prob_mod_Input)
+				gateTriggered = false;
+			getParam(PROBABILITY_PARAM).setValue(prob_mod_Input);
+		}
+		else
+		{
+			if (rack::random::uniform() > getParam(PROBABILITY_PARAM).getValue())
+				gateTriggered = false;
+		}
 
 		// Was a pulse received on Reset In?
 		resetTriggered = resetTrigger.process(getInput(RESET_IN_INPUT).getVoltage(), 0.1f, 2.f);
@@ -371,10 +456,13 @@ struct SpiquencerWidget : ModuleWidget
 
 		// General Params
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY_PARAM));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(54.0, 105.0)), module, Spiquencer::TRANSPOSE_PARAM));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(65.0, 105.0)), module, Spiquencer::OCTAVES_PARAM));
 
 		// Inputs
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 105.0)), module, Spiquencer::GATE_IN_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(21.0, 105.0)), module, Spiquencer::RESET_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(43.0, 105.0)), module, Spiquencer::PROB_MOD_IN_INPUT));
 
 		// Outputs
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(81.0, 105.0)), module, Spiquencer::V_OUT_OUTPUT));
@@ -426,7 +514,7 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian"}, &module->rootScale));
+		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian"}, &module->rootScale));
 		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down", "Up/Down", "Random"}, &module->scaleDirection));
 	}
 };
