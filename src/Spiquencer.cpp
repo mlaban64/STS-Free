@@ -201,7 +201,7 @@ struct Spiquencer : Module
 		configParam(PROBABILITY_PARAM, 0.f, 1.f, 1.f, "Probability");
 		configParam(TRANSPOSE_PARAM, -3.f, 3.f, 0.f, "Transpose");
 		getParamQuantity(TRANSPOSE_PARAM)->snapEnabled = true;
-		configParam(OCTAVES_PARAM, 1.f, 4.f, 1.f, "# of Octaves");
+		configParam(OCTAVES_PARAM, 1.f, 6.f, 1.f, "# of Octaves");
 		getParamQuantity(OCTAVES_PARAM)->snapEnabled = true;
 
 		configInput(GATE_IN_INPUT, "Gate In");
@@ -248,7 +248,7 @@ struct Spiquencer : Module
 			modeIndex = rootScale - 5;
 
 			note = 0;
-			oct = 0;
+			oct = 0; // number of octaves (volts) to be added
 			for (row = 0; row < 8; row++)
 			{
 				for (col = 0; col < 8; col++)
@@ -266,7 +266,7 @@ struct Spiquencer : Module
 							{
 								note = 0;
 								oct += 1;
-								if (oct > ocTaves)
+								if (oct >= ocTaves)
 									oct = 0;
 							}
 						}
@@ -280,7 +280,7 @@ struct Spiquencer : Module
 							{
 								note = 0;
 								oct += 1;
-								if (oct > ocTaves)
+								if (oct >= ocTaves)
 									oct = 0;
 							}
 						}
@@ -294,7 +294,7 @@ struct Spiquencer : Module
 							{
 								note = 0;
 								oct += 1;
-								if (oct > ocTaves)
+								if (oct >= ocTaves)
 									oct = 0;
 							}
 						}
@@ -307,7 +307,7 @@ struct Spiquencer : Module
 							{
 								note = 0;
 								oct += 1;
-								if (oct > ocTaves)
+								if (oct >= ocTaves)
 									oct = 0;
 							}
 						}
