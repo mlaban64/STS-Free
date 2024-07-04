@@ -283,9 +283,9 @@ struct Spiquencer : Module
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+								getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note] + transPose + oct);
 							else
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][4 - note] + transPose + oct);
+								getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][4 - note] + transPose + oct);
 							note += 1;
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
@@ -302,9 +302,9 @@ struct Spiquencer : Module
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+								getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][note] + transPose + oct);
 							else
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][5 - note] + transPose + oct);
+								getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][5 - note] + transPose + oct);
 							note += 1;
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
@@ -320,9 +320,9 @@ struct Spiquencer : Module
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note] + transPose + oct);
 							else
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][7 - note] + transPose + oct);
+								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][7 - note] + transPose + oct);
 							note += 1;
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
