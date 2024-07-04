@@ -234,6 +234,9 @@ struct Spiquencer : Module
 			changedParams = true;
 		else if (ocTaves != oldOctaves)
 			changedParams = true;
+		else if (scaleDirection != oldScaleDirection)
+			changedParams = true;
+
 		if (changedParams)
 		{
 			// Neutralize change detection
@@ -259,8 +262,13 @@ struct Spiquencer : Module
 						// Chromatic?
 						if (rootScale == 0)
 						{
-							getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][11 - note] + transPose + oct);
 							note += 1;
+
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 11)
 							{
@@ -273,8 +281,13 @@ struct Spiquencer : Module
 						// Pentatonic
 						else if (rootScale == 1 || rootScale == 2)
 						{
-							getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note] + transPose + oct);
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][4 - note] + transPose + oct);
 							note += 1;
+
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 4)
 							{
@@ -287,8 +300,13 @@ struct Spiquencer : Module
 						// Blues
 						else if (rootScale == 3 || rootScale == 4)
 						{
-							getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][note] + transPose + oct);
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][5 - note] + transPose + oct);
 							note += 1;
+
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 5)
 							{
@@ -300,8 +318,13 @@ struct Spiquencer : Module
 						}
 						else // One of the modes
 						{
-							getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note] + transPose + oct);
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHROMATIC_SCALES[rootNote][7 - note] + transPose + oct);
 							note += 1;
+
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 7)
 							{
@@ -515,7 +538,7 @@ struct SpiquencerWidget : ModuleWidget
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
 		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian"}, &module->rootScale));
-		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down", "Up/Down", "Random"}, &module->scaleDirection));
+		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down"}, &module->scaleDirection));
 	}
 };
 
