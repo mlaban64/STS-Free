@@ -1,5 +1,10 @@
 # Changelog VCV-Rack STS Free bundle
 
+0(-JUL-2024
+-----------
+2.3.0 Release
+- Spiquencer release candidate
+
 05-JUN-2024
 -----------
 2.3.0 Release
