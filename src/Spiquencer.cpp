@@ -322,11 +322,11 @@ struct Spiquencer : Module
 							if (scaleDirection == 0)
 								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note] + transPose + oct);
 							else
-								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][7 - note] + transPose + oct);
+								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][6 - note] + transPose + oct);
 							note += 1;
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 7)
+							if (note > 6)
 							{
 								note = 0;
 								oct += 1;
