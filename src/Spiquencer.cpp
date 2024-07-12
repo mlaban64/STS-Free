@@ -44,6 +44,25 @@ struct Spiquencer : Module
 		V_86_PARAM,
 		V_87_PARAM,
 		V_88_PARAM,
+		V_91_PARAM,
+		V_92_PARAM,
+		V_93_PARAM,
+		V_94_PARAM,
+		V_95_PARAM,
+		V_96_PARAM,
+		V_97_PARAM,
+		V_98_PARAM,
+		V_99_PARAM,
+		V_101_PARAM,
+		V_102_PARAM,
+		V_103_PARAM,
+		V_104_PARAM,
+		V_105_PARAM,
+		V_106_PARAM,
+		V_107_PARAM,
+		V_108_PARAM,
+		V_109_PARAM,
+		V_1010_PARAM,
 		PROBABILITY_PARAM,
 		TRANSPOSE_PARAM,
 		OCTAVES_PARAM,
@@ -100,21 +119,42 @@ struct Spiquencer : Module
 		LGT_86_LIGHT,
 		LGT_87_LIGHT,
 		LGT_88_LIGHT,
+		LGT_91_LIGHT,
+		LGT_92_LIGHT,
+		LGT_93_LIGHT,
+		LGT_94_LIGHT,
+		LGT_95_LIGHT,
+		LGT_96_LIGHT,
+		LGT_97_LIGHT,
+		LGT_98_LIGHT,
+		LGT_99_LIGHT,
+		LGT_101_LIGHT,
+		LGT_102_LIGHT,
+		LGT_103_LIGHT,
+		LGT_104_LIGHT,
+		LGT_105_LIGHT,
+		LGT_106_LIGHT,
+		LGT_107_LIGHT,
+		LGT_108_LIGHT,
+		LGT_109_LIGHT,
+		LGT_1010_LIGHT,
 		LIGHTS_LEN
 	};
 
 	// Some class-wide parameters
 
 	// Matrix to map col & row to a param number. -1 means param is not part of grid
-	int mapRowColtoParam[8][8] = {
-		{0, -1, -1, -1, -1, -1, -1, -1},
-		{1, 2, -1, -1, -1, -1, -1, -1},
-		{3, 4, 5, -1, -1, -1, -1, -1},
-		{6, 7, 8, 9, -1, -1, -1, -1},
-		{10, 11, 12, 13, 14, -1, -1, -1},
-		{15, 16, 17, 18, 19, 20, -1, -1},
-		{21, 22, 23, 24, 25, 26, 27, -1},
-		{28, 29, 30, 31, 32, 33, 34, 35}};
+	int mapRowColtoParam[10][10] = {
+		{0, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+		{1, 2, -1, -1, -1, -1, -1, -1, -1, -1},
+		{3, 4, 5, -1, -1, -1, -1, -1, -1, -1},
+		{6, 7, 8, 9, -1, -1, -1, -1, -1, -1},
+		{10, 11, 12, 13, 14, -1, -1, -1, -1, -1},
+		{15, 16, 17, 18, 19, 20, -1, -1, -1, -1},
+		{21, 22, 23, 24, 25, 26, 27, -1, -1, -1},
+		{28, 29, 30, 31, 32, 33, 34, 35, -1, -1},
+		{36, 37, 38, 39, 40, 41, 42, 43, 44, -1},
+		{45, 46, 47, 48, 49, 50, 51, 52, 53, 54}};
 
 	int curParam = 0;	 // current index in param mapping
 	int oldParam = 0;	 // old index in param mapping
@@ -198,6 +238,25 @@ struct Spiquencer : Module
 		configParam(V_86_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-6");
 		configParam(V_87_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-7");
 		configParam(V_88_PARAM, -4.f, 6.f, 0.f, "V/Oct 8-8");
+		configParam(V_91_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-1");
+		configParam(V_92_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-2");
+		configParam(V_93_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-3");
+		configParam(V_94_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-4");
+		configParam(V_95_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-5");
+		configParam(V_96_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-6");
+		configParam(V_97_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-7");
+		configParam(V_98_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-8");
+		configParam(V_99_PARAM, -4.f, 6.f, 0.f, "V/Oct 9-9");
+		configParam(V_101_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-1");
+		configParam(V_102_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-2");
+		configParam(V_103_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-3");
+		configParam(V_104_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-4");
+		configParam(V_105_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-5");
+		configParam(V_106_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-6");
+		configParam(V_107_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-7");
+		configParam(V_108_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-8");
+		configParam(V_109_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-9");
+		configParam(V_1010_PARAM, -4.f, 6.f, 0.f, "V/Oct 10-10");
 		configParam(PROBABILITY_PARAM, 0.f, 1.f, 1.f, "Probability");
 		configParam(TRANSPOSE_PARAM, -3.f, 3.f, 0.f, "Transpose");
 		getParamQuantity(TRANSPOSE_PARAM)->snapEnabled = true;
@@ -252,9 +311,9 @@ struct Spiquencer : Module
 
 			note = 0;
 			oct = 0; // number of octaves (volts) to be added
-			for (row = 0; row < 8; row++)
+			for (row = 0; row < 10; row++)
 			{
-				for (col = 0; col < 8; col++)
+				for (col = 0; col < 10; col++)
 				{
 					step = mapRowColtoParam[row][col];
 					if (step > -1)
