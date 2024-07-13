@@ -437,7 +437,7 @@ struct Spiquencer : Module
 
 			// Prepare for the next step
 			curSpikeRow += 1;
-			if (curSpikeRow > 7)
+			if (curSpikeRow > 9)
 			{
 				curSpikeRow = 0;
 				curSpikeCol = 0;
@@ -499,7 +499,7 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		// Step Params
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(51.162, 17.58)), module, Spiquencer::V_11_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(51.162, 17.580)), module, Spiquencer::V_11_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(46.536, 24.981)), module, Spiquencer::V_21_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(56.104, 24.981)), module, Spiquencer::V_22_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(41.619, 32.585)), module, Spiquencer::V_31_PARAM));
@@ -512,9 +512,9 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(32.145, 47.501)), module, Spiquencer::V_51_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(41.713, 47.501)), module, Spiquencer::V_52_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(51.282, 47.501)), module, Spiquencer::V_53_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(60.85, 47.501)), module, Spiquencer::V_54_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(60.850, 47.501)), module, Spiquencer::V_54_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(70.419, 47.501)), module, Spiquencer::V_55_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(27.19, 55.028)), module, Spiquencer::V_61_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(27.190, 55.028)), module, Spiquencer::V_61_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(36.758, 55.028)), module, Spiquencer::V_62_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(46.327, 55.028)), module, Spiquencer::V_63_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(55.895, 55.028)), module, Spiquencer::V_64_PARAM));
@@ -535,6 +535,25 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(65.397, 70.139)), module, Spiquencer::V_86_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.965, 70.139)), module, Spiquencer::V_87_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.534, 70.139)), module, Spiquencer::V_88_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(12.500, 77.600)), module, Spiquencer::V_91_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(22.069, 77.600)), module, Spiquencer::V_92_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(31.637, 77.600)), module, Spiquencer::V_93_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(41.206, 77.600)), module, Spiquencer::V_94_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(50.774, 77.600)), module, Spiquencer::V_95_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(60.343, 77.600)), module, Spiquencer::V_96_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(69.911, 77.600)), module, Spiquencer::V_97_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(79.480, 77.600)), module, Spiquencer::V_98_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(89.100, 77.600)), module, Spiquencer::V_99_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(07.471, 85.100)), module, Spiquencer::V_101_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(17.040, 85.100)), module, Spiquencer::V_102_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(26.608, 85.100)), module, Spiquencer::V_103_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(36.177, 85.100)), module, Spiquencer::V_104_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(45.746, 85.100)), module, Spiquencer::V_105_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(56.314, 85.100)), module, Spiquencer::V_106_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.883, 85.100)), module, Spiquencer::V_107_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.451, 85.100)), module, Spiquencer::V_108_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.071, 85.100)), module, Spiquencer::V_109_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(94.000, 85.100)), module, Spiquencer::V_1010_PARAM));
 
 		// General Params
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY_PARAM));
@@ -551,16 +570,16 @@ struct SpiquencerWidget : ModuleWidget
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(92.0, 105.0)), module, Spiquencer::GATE_OUT_OUTPUT));
 
 		// Lights
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.156, 17.58)), module, Spiquencer::LGT_11_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.156, 17.580)), module, Spiquencer::LGT_11_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.529, 24.981)), module, Spiquencer::LGT_21_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(56.098, 24.981)), module, Spiquencer::LGT_22_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.613, 32.585)), module, Spiquencer::LGT_31_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.181, 32.585)), module, Spiquencer::LGT_32_LIGHT));
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.75, 32.585)), module, Spiquencer::LGT_33_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.750, 32.585)), module, Spiquencer::LGT_33_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.824, 40.019)), module, Spiquencer::LGT_41_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.392, 40.019)), module, Spiquencer::LGT_42_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.961, 40.019)), module, Spiquencer::LGT_43_LIGHT));
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.53, 40.019)), module, Spiquencer::LGT_44_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.530, 40.019)), module, Spiquencer::LGT_44_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(32.138, 47.501)), module, Spiquencer::LGT_51_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.707, 47.501)), module, Spiquencer::LGT_52_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.275, 47.501)), module, Spiquencer::LGT_53_LIGHT));
@@ -568,11 +587,11 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(70.412, 47.501)), module, Spiquencer::LGT_55_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(27.183, 55.028)), module, Spiquencer::LGT_61_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.752, 55.028)), module, Spiquencer::LGT_62_LIGHT));
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.32, 55.028)), module, Spiquencer::LGT_63_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.320, 55.028)), module, Spiquencer::LGT_63_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.889, 55.028)), module, Spiquencer::LGT_64_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.457, 55.028)), module, Spiquencer::LGT_65_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(75.026, 55.028)), module, Spiquencer::LGT_66_LIGHT));
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(22.55, 62.606)), module, Spiquencer::LGT_71_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(22.550, 62.606)), module, Spiquencer::LGT_71_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(32.119, 62.606)), module, Spiquencer::LGT_72_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.687, 62.606)), module, Spiquencer::LGT_73_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(51.256, 62.606)), module, Spiquencer::LGT_74_LIGHT));
@@ -584,9 +603,30 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.684, 70.139)), module, Spiquencer::LGT_83_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(46.253, 70.139)), module, Spiquencer::LGT_84_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.821, 70.139)), module, Spiquencer::LGT_85_LIGHT));
-		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.39, 70.139)), module, Spiquencer::LGT_86_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.390, 70.139)), module, Spiquencer::LGT_86_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(74.959, 70.139)), module, Spiquencer::LGT_87_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(84.527, 70.139)), module, Spiquencer::LGT_88_LIGHT));
+
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(12.493, 77.600)), module, Spiquencer::LGT_91_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(22.062, 77.600)), module, Spiquencer::LGT_92_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(31.631, 77.600)), module, Spiquencer::LGT_93_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(41.199, 77.600)), module, Spiquencer::LGT_94_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(50.768, 77.600)), module, Spiquencer::LGT_95_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(60.336, 77.600)), module, Spiquencer::LGT_96_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(69.905, 77.600)), module, Spiquencer::LGT_97_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(79.473, 77.600)), module, Spiquencer::LGT_98_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(89.093, 77.600)), module, Spiquencer::LGT_99_LIGHT));
+
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(07.465, 85.100)), module, Spiquencer::LGT_101_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(17.033, 85.100)), module, Spiquencer::LGT_102_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(26.602, 85.100)), module, Spiquencer::LGT_103_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(36.170, 85.100)), module, Spiquencer::LGT_104_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(45.739, 85.100)), module, Spiquencer::LGT_105_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(55.208, 85.100)), module, Spiquencer::LGT_106_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(64.876, 85.100)), module, Spiquencer::LGT_107_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(74.445, 85.100)), module, Spiquencer::LGT_108_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(84.065, 85.100)), module, Spiquencer::LGT_109_LIGHT));
+		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(93.993, 85.100)), module, Spiquencer::LGT_1010_LIGHT));
 	}
 
 	void appendContextMenu(Menu *menu) override

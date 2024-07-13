@@ -29,15 +29,15 @@
      inkscape:pagecheckerboard="false"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="9.481101"
-     inkscape:cx="101.99237"
-     inkscape:cy="265.05361"
+     inkscape:zoom="1.6760377"
+     inkscape:cx="203.45605"
+     inkscape:cy="266.1038"
      inkscape:window-width="1920"
      inkscape:window-height="1130"
      inkscape:window-x="-6"
      inkscape:window-y="-6"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showguides="true"
      showgrid="true">
     <inkscape:grid
@@ -307,7 +307,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="components"
-     style="display:inline">
+     style="display:none">
     <circle
        style="display:inline;fill:#0000ff"
        id="guid-295cab25-7439-4d93-9c48-580aa4943180"
@@ -962,309 +962,360 @@
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-1-9-3"
+       id="guid-6ccd9e26-a77d-4819-b8a6-6ff2aacd3758"
        cx="79.967873"
        cy="62.606415"
        inkscape:label="V_77"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title61">V/Oct Out 77</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-2-4-9"
+       id="guid-535e170c-1077-4cd8-8943-e967360e143f"
        data-name="Out0#PJ301MPort"
        cx="79.961311"
        cy="62.606415"
        inkscape:label="LGT_77"
        r="1.5">
       <title
-         id="title10-8-4-8-1-43-0-7">Light Out 1</title>
+         id="title10-8-4-8-1-43-0-7">Light Out 77</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-85-4-0"
+       id="guid-7488b28d-d7c8-4ade-8803-114675668ce1"
        cx="70.399315"
        cy="62.606415"
        inkscape:label="V_76"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title60">V/Oct Out 76</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-06-1-8"
+       id="guid-d7ce7970-c442-4a7e-8c24-b08603e18003"
        data-name="Out0#PJ301MPort"
        cx="70.392754"
        cy="62.606415"
        inkscape:label="LGT_76"
        r="1.5">
       <title
-         id="title10-8-4-8-1-4-9-9">Light Out 1</title>
+         id="title10-8-4-8-1-4-9-9">Light Out 76</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-3-2-3"
+       id="guid-efde7df0-125f-4eb0-9807-a853df89816c"
        cx="60.830769"
        cy="62.606415"
        inkscape:label="V_75"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title56">V/Oct Out 75</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1"
+       id="guid-beda83f4-2f85-48d1-b9e2-8359c7757656"
        data-name="Out0#PJ301MPort"
        cx="60.824207"
        cy="62.606415"
        inkscape:label="LGT_75"
        r="1.5">
       <title
-         id="title10-8-4-8-1-8-5-7">Light Out 1</title>
+         id="title10-8-4-8-1-8-5-7">Light Out 75</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-9-4-8"
+       id="guid-f7ba3dff-a5b1-401a-8a15-ffdaac1ad325"
        cx="51.262215"
        cy="62.606415"
        inkscape:label="V_74"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title55">V/Oct Out 74</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7"
+       id="guid-6e6bcba3-a09e-4a31-819c-eceab0a40e0c"
        data-name="Out0#PJ301MPort"
        cx="51.255653"
        cy="62.606415"
        inkscape:label="LGT_74"
        r="1.5">
       <title
-         id="title10-8-4-8-1-54-3-8">Light Out 1</title>
+         id="title10-8-4-8-1-54-3-8">Light Out 74</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-4-4-5"
+       id="guid-68a23e41-b7ee-4cb8-9398-ba336538d805"
        cx="41.693665"
        cy="62.606415"
        inkscape:label="V_73"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title54">V/Oct Out 73</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8"
+       id="guid-0398b879-6ab4-48d5-8d35-e85ca81a6ed5"
        data-name="Out0#PJ301MPort"
        cx="41.687103"
        cy="62.606415"
        inkscape:label="LGT_73"
        r="1.5">
       <title
-         id="title10-8-4-8-1-55-4-0">Light Out 1</title>
+         id="title10-8-4-8-1-55-4-0">Light Out 73</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-8-1-5"
+       id="guid-dc11fa81-242c-4959-b425-fbf4dc89ad3e"
        cx="32.125114"
        cy="62.606415"
        inkscape:label="V_72"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title53">V/Oct Out 72</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4"
+       id="guid-a631d6c8-c74a-453f-a676-8f63ffc847bf"
        data-name="Out0#PJ301MPort"
        cx="32.118553"
        cy="62.606415"
        inkscape:label="LGT_72"
        r="1.5">
       <title
-         id="title10-8-4-8-1-5-3-7">Light Out 1</title>
+         id="title10-8-4-8-1-5-3-7">Light Out 72</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-39-3"
+       id="guid-f23a5941-0c56-4696-9d2d-32218032e03d"
        cx="22.556564"
        cy="62.606415"
        inkscape:label="V_71"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title52">V/Oct Out 71</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-04-7"
+       id="guid-fd643800-eb77-4c02-b677-f6de4efc8dde"
        data-name="Out0#PJ301MPort"
        cx="22.550003"
        cy="62.606415"
        inkscape:label="LGT_71"
        r="1.5">
       <title
-         id="title10-8-4-8-1-0-8">Light Out 1</title>
+         id="title10-8-4-8-1-0-8">Light Out 71</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-85-4-0-8"
+       id="guid-513d99dc-d836-417b-95f8-4da5c4a5b0b8"
        cx="75.032433"
        cy="55.02808"
        inkscape:label="V_66"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title59">V/Oct Out 66</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-06-1-8-4"
+       id="guid-84350b58-6d17-471b-8f91-e7ee13a5e21c"
        data-name="Out0#PJ301MPort"
        cx="75.025871"
        cy="55.02808"
        inkscape:label="LGT_66"
        r="1.5">
       <title
-         id="title10-8-4-8-1-4-9-9-7">Light Out 1</title>
+         id="title10-8-4-8-1-4-9-9-7">Light Out 66</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-3-2-3-7"
+       id="guid-a942a60e-0728-47bd-bf26-aa4f3f5d4281"
        cx="65.463882"
        cy="55.02808"
        inkscape:label="V_65"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title58">V/Oct Out 65</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1-5"
+       id="guid-19c63fc0-b1c2-4cdf-9e2b-2dc3d88538f0"
        data-name="Out0#PJ301MPort"
        cx="65.457321"
        cy="55.02808"
        inkscape:label="LGT_65"
        r="1.5">
       <title
-         id="title10-8-4-8-1-8-5-7-4">Light Out 1</title>
+         id="title10-8-4-8-1-8-5-7-4">Light Out 65</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-9-4-8-9"
+       id="guid-4c9c623d-ddab-42c0-9477-a1066025b54d"
        cx="55.895329"
        cy="55.02808"
        inkscape:label="V_64"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title62">V/Oct Out 64</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7-1"
+       id="guid-48119000-f366-4b9b-bf6f-a5c3cbba7233"
        data-name="Out0#PJ301MPort"
        cx="55.888767"
        cy="55.02808"
        inkscape:label="LGT_64"
        r="1.5">
       <title
-         id="title10-8-4-8-1-54-3-8-4">Light Out 1</title>
+         id="title10-8-4-8-1-54-3-8-4">Light Out 64</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-4-4-5-5"
+       id="guid-a9ec8623-e5f7-4248-89d0-628b6404192a"
        cx="46.326778"
        cy="55.02808"
        inkscape:label="V_63"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title63">V/Oct Out 63</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8-7"
+       id="guid-57f97774-17d3-49f3-8976-d4a75a2b4f82"
        data-name="Out0#PJ301MPort"
        cx="46.320217"
        cy="55.02808"
        inkscape:label="LGT_63"
        r="1.5">
       <title
-         id="title10-8-4-8-1-55-4-0-1">Light Out 1</title>
+         id="title10-8-4-8-1-55-4-0-1">Light Out 63</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-8-1-5-8"
+       id="guid-c5b5ef47-865b-410d-a877-4d99593f37c6"
        cx="36.758228"
        cy="55.02808"
        inkscape:label="V_62"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title67">V/Oct Out 62</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4-2"
+       id="guid-22e0e51c-66ab-47bf-9f40-3dae11a986bf"
        data-name="Out0#PJ301MPort"
        cx="36.751667"
        cy="55.02808"
        inkscape:label="LGT_62"
        r="1.5">
       <title
-         id="title10-8-4-8-1-5-3-7-9">Light Out 1</title>
+         id="title10-8-4-8-1-5-3-7-9">Light Out 62</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-39-3-0"
+       id="guid-ba31494d-01fd-4e9a-ab89-134747967667"
        cx="27.189678"
        cy="55.02808"
        inkscape:label="V_61"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title68">V/Oct Out 61</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-04-7-4"
+       id="guid-463d5735-237d-4a94-91a5-d3ee8d702ef0"
        data-name="Out0#PJ301MPort"
        cx="27.183117"
        cy="55.02808"
        inkscape:label="LGT_61"
        r="1.5">
       <title
-         id="title10-8-4-8-1-0-8-5">Light Out 1</title>
+         id="title10-8-4-8-1-0-8-5">Light Out 61</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-3-2-3-2"
+       id="guid-a3ec80b9-a282-4ef8-976f-0d371ffdcc2a"
        cx="70.418915"
        cy="47.500877"
        inkscape:label="V_55"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title57">V/Oct Out 55</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-4-9-1-2"
+       id="guid-d2abc01e-a874-4b09-bbec-39f6348fdfc4"
        data-name="Out0#PJ301MPort"
        cx="70.412354"
        cy="47.500877"
        inkscape:label="LGT_55"
        r="1.5">
       <title
-         id="title10-8-4-8-1-8-5-7-7">Light Out 1</title>
+         id="title10-8-4-8-1-8-5-7-7">Light Out 55</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-9-4-8-2"
+       id="guid-44c1ce70-db57-41b6-9252-29c0631deb11"
        cx="60.850365"
        cy="47.500877"
        inkscape:label="V_54"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title64">V/Oct Out 54</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-3-7-7-9"
+       id="guid-80fc57ff-9794-44ad-8d5c-df46c3140571"
        data-name="Out0#PJ301MPort"
        cx="60.843803"
        cy="47.500877"
        inkscape:label="LGT_54"
        r="1.5">
       <title
-         id="title10-8-4-8-1-54-3-8-0">Light Out 1</title>
+         id="title10-8-4-8-1-54-3-8-0">Light Out 54</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-4-4-5-9"
+       id="guid-27531d4f-88b4-4533-a112-f4554eaa1abc"
        cx="51.281811"
        cy="47.500877"
        inkscape:label="V_53"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title65">V/Oct Out 53</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-0-7-8-4"
+       id="guid-fb663219-6e5e-4614-bcaf-44f104d91bd2"
        data-name="Out0#PJ301MPort"
        cx="51.275249"
        cy="47.500877"
        inkscape:label="LGT_53"
        r="1.5">
       <title
-         id="title10-8-4-8-1-55-4-0-4">Light Out 1</title>
+         id="title10-8-4-8-1-55-4-0-4">Light Out 53</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
-       id="path1-3-2-4-1-9-7-8-1-5-9"
+       id="guid-2527c605-ad51-413a-a70c-758ec79d61c0"
        cx="41.713264"
        cy="47.500877"
        inkscape:label="V_52"
-       r="2.5" />
+       r="2.5">
+      <title
+         id="title66">V/Oct Out 52</title>
+    </circle>
     <circle
        style="display:inline;fill:#ff00ff;fill-opacity:1"
-       id="guid-627104b8-4408-4868-bc45-a8737c1ea93c-3-4-8-4-5-6-4-5"
+       id="guid-ac4edf7f-0c57-43aa-9dc8-0ddbec810528"
        data-name="Out0#PJ301MPort"
        cx="41.706703"
        cy="47.500877"
        inkscape:label="LGT_52"
        r="1.5">
       <title
-         id="title10-8-4-8-1-5-3-7-4">Light Out 1</title>
+         id="title10-8-4-8-1-5-3-7-4">Light Out 52</title>
     </circle>
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0;stroke-miterlimit:0;stroke-opacity:1"
