@@ -276,7 +276,7 @@ struct Spiquencer : Module
 	void process(const ProcessArgs &args) override
 	{
 		float stepVoltage, prob_mod_Input;
-		int row, col, step, oct, note, modeIndex;
+		int row, col, step, oct, note, modeIndex, chordIndex;
 
 		// Get transposition & # of octaves
 		transPose = getParam(TRANSPOSE_PARAM).getValue();
@@ -308,6 +308,7 @@ struct Spiquencer : Module
 
 			// Compute the index for the modes. This may change when adding scales to the menu!
 			modeIndex = rootScale - 5;
+			chordIndex = rootScale - 12;
 
 			note = 0;
 			oct = 0; // number of octaves (volts) to be added
@@ -375,7 +376,7 @@ struct Spiquencer : Module
 									oct = 0;
 							}
 						}
-						else // One of the modes
+						else if (rootScale >= 5 && rootScale <= 11) // One of the modes
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
@@ -386,6 +387,42 @@ struct Spiquencer : Module
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 6)
+							{
+								note = 0;
+								oct += 1;
+								if (oct >= ocTaves)
+									oct = 0;
+							}
+						}
+						else if (rootScale >= 12 && rootScale <= 17) // Major, minor, diminished, augmnented, sus2, sus4 triads
+						{
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][2 - note] + transPose + oct);
+							note += 1;
+
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 2)
+							{
+								note = 0;
+								oct += 1;
+								if (oct >= ocTaves)
+									oct = 0;
+							}
+						}
+						else if (rootScale >= 18 && rootScale <= 22) // 7, maj7, min7, 6, add9
+						{
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][3 - note] + transPose + oct);
+							note += 1;
+
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 3)
 							{
 								note = 0;
 								oct += 1;
@@ -606,7 +643,6 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(65.390, 70.139)), module, Spiquencer::LGT_86_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(74.959, 70.139)), module, Spiquencer::LGT_87_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(84.527, 70.139)), module, Spiquencer::LGT_88_LIGHT));
-
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(12.493, 77.600)), module, Spiquencer::LGT_91_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(22.062, 77.600)), module, Spiquencer::LGT_92_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(31.631, 77.600)), module, Spiquencer::LGT_93_LIGHT));
@@ -616,7 +652,6 @@ struct SpiquencerWidget : ModuleWidget
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(69.905, 77.600)), module, Spiquencer::LGT_97_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(79.473, 77.600)), module, Spiquencer::LGT_98_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(89.093, 77.600)), module, Spiquencer::LGT_99_LIGHT));
-
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(07.465, 85.100)), module, Spiquencer::LGT_101_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(17.033, 85.100)), module, Spiquencer::LGT_102_LIGHT));
 		addChild(createLightCentered<SmallSimpleLight<STSRedLight>>(mm2px(Vec(26.602, 85.100)), module, Spiquencer::LGT_103_LIGHT));
@@ -636,7 +671,7 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian"}, &module->rootScale));
+		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:6", "Arp:add9"}, &module->rootScale));
 		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down"}, &module->scaleDirection));
 	}
 };
