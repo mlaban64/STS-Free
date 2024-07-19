@@ -193,6 +193,8 @@ struct Spiquencer : Module
 		// Reset the grid
 		curParam = 0;
 		oldParam = 0;
+		curSpikeCol = 0;
+		curSpikeRow = 0;
 		// Reset some params
 		getParam(PROBABILITY_PARAM).setValue(1.f);
 		getOutput(GATE_OUT_OUTPUT).setVoltage(0.f);
@@ -394,6 +396,7 @@ struct Spiquencer : Module
 									oct = 0;
 							}
 						}
+						// Triads / 3-note chords
 						else if (rootScale >= 12 && rootScale <= 17) // Major, minor, diminished, augmnented, sus2, sus4 triads
 						{
 							// Direction is up or down?
@@ -412,7 +415,8 @@ struct Spiquencer : Module
 									oct = 0;
 							}
 						}
-						else if (rootScale >= 18 && rootScale <= 22) // 7, maj7, min7, 6, add9
+						// 4-note chords
+						else if (rootScale >= 18 && rootScale <= 24) // 7, maj7, min7, maj6, min6, add9, min(add9)
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
@@ -423,6 +427,25 @@ struct Spiquencer : Module
 
 							// Note modulo scale lenght, increase octave modulo # of octaves
 							if (note > 3)
+							{
+								note = 0;
+								oct += 1;
+								if (oct >= ocTaves)
+									oct = 0;
+							}
+						}
+						// 5-note chords
+						else if (rootScale > 24) // 9, min9, ...
+						{
+							// Direction is up or down?
+							if (scaleDirection == 0)
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
+							else
+								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][4 - note] + transPose + oct);
+							note += 1;
+
+							// Note modulo scale lenght, increase octave modulo # of octaves
+							if (note > 4)
 							{
 								note = 0;
 								oct += 1;
@@ -671,7 +694,8 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:6", "Arp:add9"}, &module->rootScale));
+		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:maj6", "Arp: min6", "Arp:add9", "Arp:min(add9)"},
+												 &module->rootScale));
 		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down"}, &module->scaleDirection));
 	}
 };
