@@ -1,8 +1,43 @@
 #pragma once
 
+// Some values that can be useful
+
+#define ALL_SCALES_AND_ARPS 28 // All scales & arps
+
 // Basic semi-tone and tone
 const float SEMI_TONE = 1 / 12.f;
 const float TONE = 1 / 6.f;
+
+// Base Notes in Voltage (C4 or 0.0 V is considered the base note)
+
+const float C4_NOTE = 0.f;
+const float Db4_NOTE = 1 / 12.f;
+const float D4_NOTE = 2 / 12.f;
+const float Eb4_NOTE = 3 / 12.f;
+const float E4_NOTE = 4 / 12.f;
+const float F4_NOTE = 5 / 12.f;
+const float Gb4_NOTE = 6 / 12.f;
+const float G4_NOTE = 7 / 12.f;
+const float Ab4_NOTE = 8 / 12.f;
+const float A4_NOTE = 9 / 12.f;
+const float Bb4_NOTE = 10 / 12.f;
+const float B4_NOTE = 11 / 12.f;
+
+// Intervals
+const float MINOR_SECOND = 1 / 12.f;
+const float MAJOR_SECOND = 2 / 12.f;
+const float MINOR_THIRD = 3 / 12.f;
+const float MAJOR_THIRD = 4 / 12.f;
+const float PERFECT_FOURTH = 5 / 12.f;
+const float AUG_FOURTH = 6 / 12.f; // Diminished Fifth, tritone
+const float DIM_FIFTH = 6 / 12.f;  // Augmented fourth, tritone
+const float PERFECT_FIFTH = 7 / 12.f;
+const float AUG_FIFTH = 8 / 12.f;
+const float MINOR_SIXTH = 8 / 12.f;
+const float MAJOR_SIXTH = 9 / 12.f;
+const float MINOR_SEVENTH = 10 / 12.f;
+const float MAJOR_SEVENTH = 11 / 12.f;
+const float MAJOR_NINETH = 14 / 12.f;
 
 // Standard chromatic 12 notes scales, from C4 to B4
 const float CHROMATIC_SCALES[12][12] = {
@@ -66,37 +101,6 @@ const float CHROMATIC_SCALES[12][12] = {
 	 14 * SEMI_TONE, 15 * SEMI_TONE, 16 * SEMI_TONE,
 	 17 * SEMI_TONE, 18 * SEMI_TONE, 19 * SEMI_TONE,
 	 20 * SEMI_TONE, 21 * SEMI_TONE, 22 * SEMI_TONE}};
-
-// Base Notes in Voltage
-
-const float C4_NOTE = 0.f;
-const float Db4_NOTE = 1 / 12.f;
-const float D4_NOTE = 2 / 12.f;
-const float Eb4_NOTE = 3 / 12.f;
-const float E4_NOTE = 4 / 12.f;
-const float F4_NOTE = 5 / 12.f;
-const float Gb4_NOTE = 6 / 12.f;
-const float G4_NOTE = 7 / 12.f;
-const float Ab4_NOTE = 8 / 12.f;
-const float A4_NOTE = 9 / 12.f;
-const float Bb4_NOTE = 10 / 12.f;
-const float B4_NOTE = 11 / 12.f;
-
-// Intervals
-const float MINOR_SECOND = 1 / 12.f;
-const float MAJOR_SECOND = 2 / 12.f;
-const float MINOR_THIRD = 3 / 12.f;
-const float MAJOR_THIRD = 4 / 12.f;
-const float PERFECT_FOURTH = 5 / 12.f;
-const float AUG_FOURTH = 6 / 12.f; // Diminished Fifth, tritone
-const float DIM_FIFTH = 6 / 12.f;  // Augmented fourth, tritone
-const float PERFECT_FIFTH = 7 / 12.f;
-const float AUG_FIFTH = 8 / 12.f;
-const float MINOR_SIXTH = 8 / 12.f;
-const float MAJOR_SIXTH = 9 / 12.f;
-const float MINOR_SEVENTH = 10 / 12.f;
-const float MAJOR_SEVENTH = 11 / 12.f;
-const float MAJOR_NINETH = 14 / 12.f;
 
 // The standard modes as 8 notes scales, from C4 to B4
 const float MODES_SCALES[7][12][8] = {
@@ -394,7 +398,7 @@ const float BLUES_SCALES[2][12][6] = {
 		{B4_NOTE, B4_NOTE + MAJOR_SECOND, B4_NOTE + MINOR_THIRD, B4_NOTE + MAJOR_THIRD, B4_NOTE + PERFECT_FIFTH, B4_NOTE + MAJOR_SIXTH}}};
 
 // Chord notes
-const float CHORD_NOTES[14][12][5] = {
+const float CHORD_NOTES[16][12][5] = {
 	// Major triads
 	{
 		// C
@@ -733,6 +737,32 @@ const float CHORD_NOTES[14][12][5] = {
 		{Bb4_NOTE, Bb4_NOTE + MINOR_THIRD, Bb4_NOTE + PERFECT_FIFTH, Bb4_NOTE + MAJOR_NINETH, -1.f},
 		// B
 		{B4_NOTE, B4_NOTE + MINOR_THIRD, B4_NOTE + PERFECT_FIFTH, B4_NOTE + MAJOR_NINETH, -1.f}},
+	// Min7b5 chords
+	{
+		// C
+		{C4_NOTE, C4_NOTE + MINOR_THIRD, C4_NOTE + DIM_FIFTH, C4_NOTE + MINOR_SEVENTH, -1.f},
+		// C#/Db
+		{Db4_NOTE, Db4_NOTE + MINOR_THIRD, Db4_NOTE + DIM_FIFTH, Db4_NOTE + MINOR_SEVENTH, -1.f},
+		// D
+		{D4_NOTE, D4_NOTE + MINOR_THIRD, D4_NOTE + DIM_FIFTH, D4_NOTE + MINOR_SEVENTH, -1.f},
+		// D#/Eb
+		{Eb4_NOTE, Eb4_NOTE + MINOR_THIRD, Eb4_NOTE + DIM_FIFTH, Eb4_NOTE + MINOR_SEVENTH, -1.f},
+		// E
+		{E4_NOTE, E4_NOTE + MINOR_THIRD, E4_NOTE + DIM_FIFTH, E4_NOTE + MINOR_SEVENTH, -1.f},
+		// F
+		{F4_NOTE, F4_NOTE + MINOR_THIRD, F4_NOTE + DIM_FIFTH, F4_NOTE + MINOR_SEVENTH, -1.f},
+		// F#/Gb
+		{Gb4_NOTE, Gb4_NOTE + MINOR_THIRD, Gb4_NOTE + DIM_FIFTH, Gb4_NOTE + MINOR_SEVENTH, -1.f},
+		// G
+		{G4_NOTE, G4_NOTE + MINOR_THIRD, G4_NOTE + DIM_FIFTH, G4_NOTE + MINOR_SEVENTH, -1.f},
+		// G#/Ab
+		{Ab4_NOTE, Ab4_NOTE + MINOR_THIRD, Ab4_NOTE + DIM_FIFTH, Ab4_NOTE + MINOR_SEVENTH, -1.f},
+		// A
+		{A4_NOTE, A4_NOTE + MINOR_THIRD, A4_NOTE + DIM_FIFTH, A4_NOTE + MINOR_SEVENTH, -1.f},
+		// A#/Bb
+		{Bb4_NOTE, Bb4_NOTE + MINOR_THIRD, Bb4_NOTE + DIM_FIFTH, Bb4_NOTE + MINOR_SEVENTH, -1.f},
+		// B
+		{B4_NOTE, B4_NOTE + MINOR_THIRD, B4_NOTE + DIM_FIFTH, B4_NOTE + MINOR_SEVENTH, -1.f}},
 	// Major 9 chords
 	{
 		// C
@@ -758,4 +788,30 @@ const float CHORD_NOTES[14][12][5] = {
 		// A#/Bb
 		{Bb4_NOTE, Bb4_NOTE + MAJOR_THIRD, Bb4_NOTE + PERFECT_FIFTH, Bb4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
 		// B
-		{B4_NOTE, B4_NOTE + MAJOR_THIRD, B4_NOTE + PERFECT_FIFTH, B4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH}}};
+		{B4_NOTE, B4_NOTE + MAJOR_THIRD, B4_NOTE + PERFECT_FIFTH, B4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH}},
+	// Minor 9 chords
+	{
+		// C
+		{C4_NOTE, C4_NOTE + MINOR_THIRD, C4_NOTE + PERFECT_FIFTH, C4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// C#/Db
+		{Db4_NOTE, Db4_NOTE + MINOR_THIRD, Db4_NOTE + PERFECT_FIFTH, Db4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// D
+		{D4_NOTE, D4_NOTE + MINOR_THIRD, D4_NOTE + PERFECT_FIFTH, D4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// D#/Eb
+		{Eb4_NOTE, Eb4_NOTE + MINOR_THIRD, Eb4_NOTE + PERFECT_FIFTH, Eb4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// E
+		{E4_NOTE, E4_NOTE + MINOR_THIRD, E4_NOTE + PERFECT_FIFTH, E4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// F
+		{F4_NOTE, F4_NOTE + MINOR_THIRD, F4_NOTE + PERFECT_FIFTH, F4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// F#/Gb
+		{Gb4_NOTE, Gb4_NOTE + MINOR_THIRD, Gb4_NOTE + PERFECT_FIFTH, Gb4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// G
+		{G4_NOTE, G4_NOTE + MINOR_THIRD, G4_NOTE + PERFECT_FIFTH, G4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// G#/Ab
+		{Ab4_NOTE, Ab4_NOTE + MINOR_THIRD, Ab4_NOTE + PERFECT_FIFTH, Ab4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// A
+		{A4_NOTE, A4_NOTE + MINOR_THIRD, A4_NOTE + PERFECT_FIFTH, A4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// A#/Bb
+		{Bb4_NOTE, Bb4_NOTE + MINOR_THIRD, Bb4_NOTE + PERFECT_FIFTH, Bb4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH},
+		// B
+		{B4_NOTE, B4_NOTE + MINOR_THIRD, B4_NOTE + PERFECT_FIFTH, B4_NOTE + MINOR_SEVENTH, C4_NOTE + MAJOR_NINETH}}};

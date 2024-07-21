@@ -73,6 +73,8 @@ struct Spiquencer : Module
 		GATE_IN_INPUT,
 		RESET_IN_INPUT,
 		PROB_MOD_IN_INPUT,
+		ROOT_IN_INPUT,
+		SCALE_IN_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId
@@ -164,6 +166,10 @@ struct Spiquencer : Module
 	int rootNote = 0;		// Root Note as per the menu
 	int rootScale = 0;		// Scale selected
 	int scaleDirection = 0; // Steps to follow scale up/down/random/...
+	int rootNote_CV = 0;	// Rootnote CV value
+	int rootScale_CV = 0;	// Scale/Arp CV value
+	int oldRootNote_CV = 0;
+	int oldRootScale_CV = 0;
 	float transPose = 0.f;
 	float ocTaves = 1.f;
 	float oldTranspose = 0.f;
@@ -265,6 +271,8 @@ struct Spiquencer : Module
 		configParam(OCTAVES_PARAM, 1.f, 6.f, 1.f, "# of Octaves");
 		getParamQuantity(OCTAVES_PARAM)->snapEnabled = true;
 
+		configInput(ROOT_IN_INPUT, "Root Note (CV In)");
+		configInput(SCALE_IN_INPUT, "Scale (CV In)");
 		configInput(GATE_IN_INPUT, "Gate In");
 		configInput(RESET_IN_INPUT, "Reset In");
 		configInput(PROB_MOD_IN_INPUT, "Probablility In");
@@ -284,6 +292,20 @@ struct Spiquencer : Module
 		transPose = getParam(TRANSPOSE_PARAM).getValue();
 		ocTaves = getParam(OCTAVES_PARAM).getValue();
 
+		// Get CV values for Root Note and Scale, if any...
+		if (getInput(ROOT_IN_INPUT).isConnected())
+		{
+			// Assume 0..10V as CV input, scale it to fall into 0..(Notes - 1) range
+			rootNote_CV = 0.1f * (12 - 0.1f) * getInput(ROOT_IN_INPUT).getVoltage();
+			rootNote = rootNote_CV;
+		}
+		if (getInput(SCALE_IN_INPUT).isConnected())
+		{
+			// Assume 0..10V as CV input, scale it to fall into 0..(ALL SCALES - 1) range
+			rootScale_CV = 0.1f * (ALL_SCALES_AND_ARPS - 0.1f) * getInput(SCALE_IN_INPUT).getVoltage();
+			rootScale = rootScale_CV;
+		}
+
 		// Did we change scale, root note?, scale direction?
 		if (rootScale != oldRootScale)
 			changedParams = true;
@@ -297,6 +319,10 @@ struct Spiquencer : Module
 			changedParams = true;
 		else if (scaleDirection != oldScaleDirection)
 			changedParams = true;
+		else if (rootNote_CV != oldRootNote_CV)
+			changedParams = true;
+		else if (rootScale_CV != oldRootScale_CV)
+			changedParams = true;
 
 		if (changedParams)
 		{
@@ -306,6 +332,8 @@ struct Spiquencer : Module
 			oldScaleDirection = scaleDirection;
 			oldTranspose = transPose;
 			oldOctaves = ocTaves;
+			oldRootNote_CV = rootNote_CV;
+			oldRootScale_CV = rootScale_CV;
 			changedParams = false;
 
 			// Compute the index for the modes. This may change when adding scales to the menu!
@@ -416,7 +444,7 @@ struct Spiquencer : Module
 							}
 						}
 						// 4-note chords
-						else if (rootScale >= 18 && rootScale <= 24) // 7, maj7, min7, maj6, min6, add9, min(add9)
+						else if (rootScale >= 18 && rootScale <= 25) // 7, maj7, min7, maj6, min6, add9, min(add9), min7b5
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
@@ -435,7 +463,7 @@ struct Spiquencer : Module
 							}
 						}
 						// 5-note chords
-						else if (rootScale > 24) // 9, min9, ...
+						else if (rootScale > 25) // 9, min9, ...
 						{
 							// Direction is up or down?
 							if (scaleDirection == 0)
@@ -609,7 +637,7 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(26.608, 85.100)), module, Spiquencer::V_103_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(36.177, 85.100)), module, Spiquencer::V_104_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(45.746, 85.100)), module, Spiquencer::V_105_PARAM));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(56.314, 85.100)), module, Spiquencer::V_106_PARAM));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(55.314, 85.100)), module, Spiquencer::V_106_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.883, 85.100)), module, Spiquencer::V_107_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.451, 85.100)), module, Spiquencer::V_108_PARAM));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.071, 85.100)), module, Spiquencer::V_109_PARAM));
@@ -619,6 +647,10 @@ struct SpiquencerWidget : ModuleWidget
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(32.0, 105.0)), module, Spiquencer::PROBABILITY_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(54.0, 105.0)), module, Spiquencer::TRANSPOSE_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(65.0, 105.0)), module, Spiquencer::OCTAVES_PARAM));
+
+		// Root/SCale Inputs (CV)
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 21.0)), module, Spiquencer::ROOT_IN_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(21.0, 21.0)), module, Spiquencer::SCALE_IN_INPUT));
 
 		// Inputs
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.0, 105.0)), module, Spiquencer::GATE_IN_INPUT));
@@ -694,7 +726,7 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:maj6", "Arp: min6", "Arp:add9", "Arp:min(add9)"},
+		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:maj6", "Arp: min6", "Arp:add9", "Arp:min(add9)", "Arp:min7b5", "Arp:9", "Arp:min9"},
 												 &module->rootScale));
 		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down"}, &module->scaleDirection));
 	}
