@@ -163,13 +163,11 @@ struct Spiquencer : Module
 	int curSpikeRow = 0; // current row of spike that is sent to output
 	int curSpikeCol = 0; // current spike within row that is sent to output
 
-	int rootNote = 0;		// Root Note as per the menu
-	int rootScale = 0;		// Scale selected
-	int scaleDirection = 0; // Steps to follow scale up/down/random/...
-	int rootNote_CV = 0;	// Rootnote CV value
-	int rootScale_CV = 0;	// Scale/Arp CV value
-	int oldRootNote_CV = 0;
-	int oldRootScale_CV = 0;
+	int rootNote = 0;		  // Root Note as per the menu
+	int rootScale = 0;		  // Scale selected
+	int scaleDirection = 0;	  // Steps to follow scale up/down/random/...
+	float rootNote_CV = 0.f;  // To catch the root note CV input
+	int rootNote_CV_Conv = 0; // rootNote_CV converted to integer, to map it to a menu item
 	float transPose = 0.f;
 	float ocTaves = 1.f;
 	float oldTranspose = 0.f;
@@ -295,16 +293,40 @@ struct Spiquencer : Module
 		// Get CV values for Root Note and Scale, if any...
 		if (getInput(ROOT_IN_INPUT).isConnected())
 		{
-			// Assume 0..10V as CV input, scale it to fall into 0..(Notes - 1) range
-			rootNote_CV = 0.1f * (12 - 0.1f) * getInput(ROOT_IN_INPUT).getVoltage();
-			rootNote = rootNote_CV;
+			// Assume 0..1V as CV input, so C4 till B4 are the voltages to select the root note.
+			// This so you can select the root note via a keyboard
+			rootNote_CV = getInput(ROOT_IN_INPUT).getVoltage();
+			// Now map the CV to the selected menu number by taking the 100 x modulo 100, so we can map all 0..10V voltages to the C4-B4 range
+			rootNote_CV_Conv = ((int)(100.f * rootNote_CV)) % 100;
+			if (rootNote_CV_Conv == 0)
+				rootNote = 0;
+			else if (rootNote_CV_Conv == 8)
+				rootNote = 1;
+			else if (rootNote_CV_Conv == 16)
+				rootNote = 2;
+			else if (rootNote_CV_Conv == 25)
+				rootNote = 3;
+			else if (rootNote_CV_Conv == 33)
+				rootNote = 4;
+			else if (rootNote_CV_Conv == 41)
+				rootNote = 5;
+			else if (rootNote_CV_Conv == 50)
+				rootNote = 6;
+			else if (rootNote_CV_Conv == 58)
+				rootNote = 7;
+			else if (rootNote_CV_Conv == 66)
+				rootNote = 8;
+			else if (rootNote_CV_Conv == 75)
+				rootNote = 9;
+			else if (rootNote_CV_Conv == 83)
+				rootNote = 10;
+			else
+				rootNote = 11;
 		}
+
 		if (getInput(SCALE_IN_INPUT).isConnected())
-		{
 			// Assume 0..10V as CV input, scale it to fall into 0..(ALL SCALES - 1) range
-			rootScale_CV = 0.1f * (ALL_SCALES_AND_ARPS - 0.1f) * getInput(SCALE_IN_INPUT).getVoltage();
-			rootScale = rootScale_CV;
-		}
+			rootScale = 0.1f * (ALL_SCALES_AND_ARPS - 0.1f) * getInput(SCALE_IN_INPUT).getVoltage();
 
 		// Did we change scale, root note?, scale direction?
 		if (rootScale != oldRootScale)
@@ -319,10 +341,6 @@ struct Spiquencer : Module
 			changedParams = true;
 		else if (scaleDirection != oldScaleDirection)
 			changedParams = true;
-		else if (rootNote_CV != oldRootNote_CV)
-			changedParams = true;
-		else if (rootScale_CV != oldRootScale_CV)
-			changedParams = true;
 
 		if (changedParams)
 		{
@@ -332,8 +350,6 @@ struct Spiquencer : Module
 			oldScaleDirection = scaleDirection;
 			oldTranspose = transPose;
 			oldOctaves = ocTaves;
-			oldRootNote_CV = rootNote_CV;
-			oldRootScale_CV = rootScale_CV;
 			changedParams = false;
 
 			// Compute the index for the modes. This may change when adding scales to the menu!
