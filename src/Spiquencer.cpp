@@ -284,7 +284,7 @@ struct Spiquencer : Module
 	void process(const ProcessArgs &args) override
 	{
 		float stepVoltage, prob_mod_Input;
-		int row, col, step, oct, note, modeIndex, chordIndex;
+		int row, col, step, oct, note, max_note, no_notes;
 
 		// Get transposition & # of octaves
 		transPose = getParam(TRANSPOSE_PARAM).getValue();
@@ -326,7 +326,7 @@ struct Spiquencer : Module
 
 		if (getInput(SCALE_IN_INPUT).isConnected())
 			// Assume 0..10V as CV input, scale it to fall into 0..(ALL SCALES - 1) range
-			rootScale = 0.1f * (ALL_SCALES_AND_ARPS - 0.1f) * getInput(SCALE_IN_INPUT).getVoltage();
+			rootScale = 0.1f * (NO_ALL_SCALES_AND_ARPS - 0.1f) * getInput(SCALE_IN_INPUT).getVoltage();
 
 		// Did we change scale, root note?, scale direction?
 		if (rootScale != oldRootScale)
@@ -344,6 +344,10 @@ struct Spiquencer : Module
 
 		if (changedParams)
 		{
+			// Get the # of notes & max note number for the current scale
+			no_notes = (int)ALL_SCALES_AND_ARPS[rootScale][rootNote][12];
+			max_note = no_notes - 1;
+
 			// Neutralize change detection
 			oldRootScale = rootScale;
 			oldRootNote = rootNote;
@@ -351,10 +355,6 @@ struct Spiquencer : Module
 			oldTranspose = transPose;
 			oldOctaves = ocTaves;
 			changedParams = false;
-
-			// Compute the index for the modes. This may change when adding scales to the menu!
-			modeIndex = rootScale - 5;
-			chordIndex = rootScale - 12;
 
 			note = 0;
 			oct = 0; // number of octaves (volts) to be added
@@ -365,137 +365,18 @@ struct Spiquencer : Module
 					step = mapRowColtoParam[row][col];
 					if (step > -1)
 					{
-						// Chromatic?
-						if (rootScale == 0)
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(CHROMATIC_SCALES[rootNote][11 - note] + transPose + oct);
-							note += 1;
+						// Direction is up or down?
+						if (scaleDirection == 0)
+							getParam(step).setValue(ALL_SCALES_AND_ARPS[rootScale][rootNote][note] + transPose + oct);
+						else
+							getParam(step).setValue(ALL_SCALES_AND_ARPS[rootScale][rootNote][max_note - note] + transPose + oct);
 
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 11)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						// Pentatonic
-						else if (rootScale == 1 || rootScale == 2)
+						// Note modulo scale lenght, increase octave modulo # of octaves
+						if (++note > max_note)
 						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(PENTATONIC_SCALES[rootScale - 1][rootNote][4 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 4)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						// Blues
-						else if (rootScale == 3 || rootScale == 4)
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(BLUES_SCALES[rootScale - 3][rootNote][5 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 5)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						else if (rootScale >= 5 && rootScale <= 11) // One of the modes
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(MODES_SCALES[modeIndex][rootNote][6 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 6)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						// Triads / 3-note chords
-						else if (rootScale >= 12 && rootScale <= 17) // Major, minor, diminished, augmnented, sus2, sus4 triads
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][2 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 2)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						// 4-note chords
-						else if (rootScale >= 18 && rootScale <= 25) // 7, maj7, min7, maj6, min6, add9, min(add9), min7b5
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][3 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 3)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
-						}
-						// 5-note chords
-						else if (rootScale > 25) // 9, min9, ...
-						{
-							// Direction is up or down?
-							if (scaleDirection == 0)
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][note] + transPose + oct);
-							else
-								getParam(step).setValue(CHORD_NOTES[chordIndex][rootNote][4 - note] + transPose + oct);
-							note += 1;
-
-							// Note modulo scale lenght, increase octave modulo # of octaves
-							if (note > 4)
-							{
-								note = 0;
-								oct += 1;
-								if (oct >= ocTaves)
-									oct = 0;
-							}
+							note = 0;
+							if (++oct >= ocTaves)
+								oct = 0;
 						}
 					}
 				}
