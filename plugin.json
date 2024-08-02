@@ -1,6 +1,6 @@
 {
-  "slug": "STS-Free-Dev",
-  "name": "STS-Free-Dev",
+  "slug": "SmarTAZZStudio-Free",
+  "name": "Sm@rTAZZ Studio Free",
   "version": "2.3.0",
   "license": "GPL-3.0-or-later",
   "brand": "Sm@rTAZZ Studio",
@@ -106,7 +106,7 @@
     {
       "slug": "Spiquencer",
       "name": "Spiquencer",
-      "description": "Sequencer based on a spike board",
+      "description": "Sequencer based on a triangular spike board where you drop a marble in",
       "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/Spiquencer.html",
       "tags": [
         "Sequencer"
