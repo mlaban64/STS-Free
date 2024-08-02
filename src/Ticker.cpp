@@ -51,10 +51,11 @@ struct Ticker : Module
 
 	const float MIN_BPM_PARAM = 10.f;										 // minimum BPM value
 	const float MAX_BPM_PARAM = 400.f;										 // maximum BPM value
-	const float MIN_GATE_LEN = 5.f;											 // minimum gate lenght as % of a cycle
-	const float MAX_GATE_LEN = 95.f;										 // maximum gate lenght as % of a cycle
+	const float MIN_GATE_LEN = 10.f;										 // minimum gate lenght as % of a cycle
+	const float MAX_GATE_LEN = 90.f;										 // maximum gate lenght as % of a cycle
 	const float SWING_PHASE_TO_WAIT = (MAX_GATE_LEN - MIN_GATE_LEN) / 100.f; // wait for phase to reach this before computing next swing amount
-	const float MAX_SWING_AMOUNT = 5.f;										 // maximum swing about as % of a cycle
+	const float MAX_SWING_AMOUNT = 9.999f;									 // maximum swing about as % of a cycle
+	const float MAX_PHASE_SHIFT = 0.25f;									 // Maximum phase shift as % of a cycle
 	const float BPM_TO_HERTZ = 1.f / 60.f;									 // Factor to convert BPM to Hertz
 
 	// Triggers to detect an button push on run or reset signal
@@ -147,26 +148,6 @@ struct Ticker : Module
 			return 0.f;
 	}
 
-	// DEBUG version of STS_My_Pulse
-	float STS_My_Pulse_DBG(const char *txt, float phase, float phase_shift, float swing_value, float pulse_width)
-	{
-		float local_phase, ret_val;
-
-		// Displace by phase shift, map into 0..1. Note that phase_shift can be negative in this code
-		local_phase = (phase + phase_shift + swing_value) * 100.f;
-		if (local_phase < 0.f)
-			local_phase += 100.f;
-		if (local_phase > 100.f)
-			local_phase -= 100.f;
-
-		if (local_phase < pulse_width)
-			ret_val = 10.f;
-		else
-			ret_val = 0.f;
-		INFO("%s: RET = %f , LOCAL_PHASE = %f, phase=%f, phase_shift = %f, swing_value = %f, pulse_width = %f", txt, ret_val, local_phase, phase, phase_shift, swing_value, pulse_width);
-		return ret_val;
-	}
-
 	// This is an Initialize, not a RESET button push
 	void onReset() override
 	{
@@ -223,6 +204,10 @@ struct Ticker : Module
 
 	Ticker()
 	{
+		int i = 0;		 // index for clock loops
+		std::string fmt; // string to format text
+		char name[64];	 // string to format text
+
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
 		// Master Clock Params
@@ -232,71 +217,43 @@ struct Ticker : Module
 		configButton(MSR_RESET_BTN_PARAM, "Reset");
 		configButton(MSR_RUN_BTN_PARAM, "Run");
 		// Master Clock Inputs
-		configInput(MSR_BPM_INPUT, "BPM Voltage (0..10V)");
+		configInput(MSR_BPM_INPUT, "BPM CV (0..10V)");
 		configInput(MSR_RESET_INPUT, "Reset Trigger");
 		configInput(MSR_RUN_INPUT, "Run Trigger");
-		configInput(MSR_GATE_INPUT, "Gate Length Voltage (0..10V)");
+		configInput(MSR_GATE_INPUT, "Gate Length CV (0..10V)");
 		// Master Clock Outputs
 		configOutput(MSR_GATE_OUTPUT, "Master Clock Gate");
 		configOutput(MSR_TRIGGER_OUTPUT, "Master Clock Trigger");
 		configOutput(MSR_RESET_OUTPUT, "Reset Out");
 		configOutput(MSR_RUN_OUTPUT, "Run Out");
 
-		// Clock 1 Params
-		configParam(CLK_DIV_PARAMS + 0, 0.f, 72.f, 36.f, "Divider", "");
-		getParamQuantity(CLK_DIV_PARAMS + 0)->snapEnabled = true;
-		configParam(CLK_PHASE_PARAMS + 0, -0.5f, 0.5f, 0.f, "Phase Shift", " Cycle");
-		configParam(CLK_GATE_PARAMS + 0, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
-		configParam(CLK_SWING_PARAMS + 0, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
-		// Clock 1 Inputs
-		configInput(CLK_PHASE_INPUTS + 0, "Phase Shift Voltage (0..10V)");
-		configInput(CLK_GATE_INPUTS + 0, "Gate Length Voltage (0..10V)");
-		configInput(CLK_SWING_INPUTS + 0, "Swing Amount Voltage (0..10V)");
-		// Clock 1 Outputs
-		configOutput(CLK_GATE_OUTPUTS + 0, "Clock 1 Gate");
-		configOutput(CLK_TRIGGER_OUTPUTS + 0, "Clock 1 Trigger");
+		// Clockw
+		for (i = 0; i < 4; i++)
+		{
+			// Clock Params
+			configParam(CLK_DIV_PARAMS + i, 0.f, 72.f, 36.f, "Divider", "");
+			getParamQuantity(CLK_DIV_PARAMS + i)->snapEnabled = true;
+			configParam(CLK_PHASE_PARAMS + i, -MAX_PHASE_SHIFT, MAX_PHASE_SHIFT, 0.f, "Phase shift", " Cycle");
+			configParam(CLK_GATE_PARAMS + i, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
+			configParam(CLK_SWING_PARAMS + i, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
 
-		// Clock 2 Params
-		configParam(CLK_DIV_PARAMS + 1, 0.f, 72.f, 36.f, "Divider", "");
-		getParamQuantity(CLK_DIV_PARAMS + 1)->snapEnabled = true;
-		configParam(CLK_PHASE_PARAMS + 1, -0.5f, 0.5f, 0.f, "Phase Shift", " Cycle");
-		configParam(CLK_GATE_PARAMS + 1, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
-		configParam(CLK_SWING_PARAMS + 1, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
-		// Clock 2 Inputs
-		configInput(CLK_PHASE_INPUTS + 1, "Phase Shift Voltage (0..10V)");
-		configInput(CLK_GATE_INPUTS + 1, "Gate Length Voltage (0..10V)");
-		configInput(CLK_SWING_INPUTS + 1, "Swing Amount Voltage (0..10V)");
-		// Clock 2 Outputs
-		configOutput(CLK_GATE_OUTPUTS + 1, "Clock 2 Gate");
-		configOutput(CLK_TRIGGER_OUTPUTS + 1, "Clock 2 Trigger");
+			(void)sprintf(name, "Clock %d Phase Shift CV (-5..5V)", i + 1);
+			fmt = name;
+			configInput(CLK_PHASE_INPUTS + i, fmt);
+			(void)sprintf(name, "Clock %d Gate Lenth CV (0..10V)", i + 1);
+			fmt = name;
+			configInput(CLK_GATE_INPUTS + i, fmt);
+			(void)sprintf(name, "Clock %d Swing Amount CV (0..10V)", i + 1);
+			fmt = name;
+			configInput(CLK_SWING_INPUTS + i, fmt);
 
-		// Clock 3 Params
-		configParam(CLK_DIV_PARAMS + 2, 0.f, 72.f, 36.f, "Divider", "");
-		getParamQuantity(CLK_DIV_PARAMS + 2)->snapEnabled = true;
-		configParam(CLK_PHASE_PARAMS + 2, -0.5f, 0.5f, 0.f, "Phase Shift", " Cycle");
-		configParam(CLK_GATE_PARAMS + 2, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
-		configParam(CLK_SWING_PARAMS + 2, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
-		// Clock 3 Inputs
-		configInput(CLK_PHASE_INPUTS + 2, "Phase Shift Voltage (0..10V)");
-		configInput(CLK_GATE_INPUTS + 2, "Gate Length Voltage (0..10V)");
-		configInput(CLK_SWING_INPUTS + 2, "Swing Amount Voltage (0..10V)");
-		// Clock 3 Outputs
-		configOutput(CLK_GATE_OUTPUTS + 2, "Clock 3 Gate");
-		configOutput(CLK_TRIGGER_OUTPUTS + 2, "Clock 3 Trigger");
-
-		// Clock 4 Params
-		configParam(CLK_DIV_PARAMS + 3, 0.f, 72.f, 36.f, "Divider", "");
-		getParamQuantity(CLK_DIV_PARAMS + 3)->snapEnabled = true;
-		configParam(CLK_PHASE_PARAMS + 3, -0.5f, 0.5f, 0.f, "Phase Shift", " Cycle");
-		configParam(CLK_GATE_PARAMS + 3, MIN_GATE_LEN, MAX_GATE_LEN, 50.f, "Gate Length", "%");
-		configParam(CLK_SWING_PARAMS + 3, 0.f, MAX_SWING_AMOUNT, 0.f, "Swing Amount", "%");
-		// Clock 4 Inputs
-		configInput(CLK_PHASE_INPUTS + 3, "Phase Shift Voltage (0..10V)");
-		configInput(CLK_GATE_INPUTS + 3, "Gate Length Voltage (0..10V)");
-		configInput(CLK_SWING_INPUTS + 3, "Swing Amount Voltage (0..10V)");
-		// Clock 4 Outputs
-		configOutput(CLK_GATE_OUTPUTS + 3, "Clock 4 Gate");
-		configOutput(CLK_TRIGGER_OUTPUTS + 3, "Clock 4 Trigger");
+			(void)sprintf(name, "Clock %d Gate", i + 1);
+			fmt = name;
+			configOutput(CLK_GATE_OUTPUTS + i, fmt);
+			(void)sprintf(name, "Clock %d Trigger", i + 1);
+			fmt = name;
+			configOutput(CLK_TRIGGER_OUTPUTS + i, fmt);
+		}
 
 		onReset();
 	}
@@ -317,7 +274,14 @@ struct Ticker : Module
 
 		// Gate Length Data = 10V mapped to range MIN/MAX_GATE_LEN%
 		if (getInput(MSR_GATE_INPUT).isConnected())
+		{
 			msr_Gate_Len = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * getInput(MSR_GATE_INPUT).getVoltage() * 0.1f;
+			// Check to ensure Gate Length is in limits, which can happen if CV not inside [0..10] Volt
+			if (msr_Gate_Len < MIN_GATE_LEN)
+				msr_Gate_Len = MIN_GATE_LEN;
+			if (msr_Gate_Len > MAX_GATE_LEN)
+				msr_Gate_Len = MAX_GATE_LEN;
+		}
 		else
 			msr_Gate_Len = (int)getParam(MSR_GATE_PARAM).getValue();
 
@@ -343,21 +307,43 @@ struct Ticker : Module
 				msr_Phase = 0.f;
 				clk_Phase[0] = clk_Phase[1] = clk_Phase[2] = clk_Phase[3] = 0.f;
 			}
-			// Phase data, 0..10V mapped to 0..1
+			// Phase data, -5..5V mapped to -0.5..0.5
 			if (getInput(CLK_PHASE_INPUTS + 0).isConnected())
+			{
 				clk_Phase_Shift[i] = getInput(CLK_PHASE_INPUTS + i).getVoltage() * 0.1f;
+				// Check to ensure phase shift is in limits, which can happen if CV not inside [0..10] Volt
+				if (clk_Phase_Shift[i] < -MAX_PHASE_SHIFT)
+					clk_Phase_Shift[i] = -MAX_PHASE_SHIFT;
+				if (clk_Phase_Shift[i] > MAX_PHASE_SHIFT)
+					clk_Phase_Shift[i] = MAX_PHASE_SHIFT;
+			}
 			else
+
 				clk_Phase_Shift[i] = getParam(CLK_PHASE_PARAMS + i).getValue();
 
 			// Gate Length Data = 10V mapped to range 5-95%
 			if (getInput(CLK_GATE_INPUTS + i).isConnected())
+			{
 				clk_Gate_Len[i] = MIN_GATE_LEN + (MAX_GATE_LEN - MIN_GATE_LEN) * getInput(CLK_GATE_INPUTS + i).getVoltage() * 0.1f;
+				// Check to ensure gate length is in limits, which can happen if CV not inside [0..10] Volt
+				if (clk_Gate_Len[i] < MIN_GATE_LEN)
+					clk_Gate_Len[i] = MIN_GATE_LEN;
+				if (clk_Gate_Len[i] > MAX_GATE_LEN)
+					clk_Gate_Len[i] = MAX_GATE_LEN;
+			}
 			else
 				clk_Gate_Len[i] = (int)getParam(CLK_GATE_PARAMS + i).getValue();
 
-			// Swing Amount Data = 10V mapped to a 5% range
+			// Swing Amount Data = 10V mapped to a MAX_SWING_AMOUNT % range
 			if (getInput(CLK_SWING_INPUTS + i).isConnected())
-				clk_Swing_Amount[i] = getInput(CLK_SWING_INPUTS + i).getVoltage() * 0.5f;
+			{
+				clk_Swing_Amount[i] = MAX_SWING_AMOUNT * getInput(CLK_SWING_INPUTS + i).getVoltage() * 0.1f;
+				// Check to ensure swing amount is in limits, which can happen if CV not inside [0..10] Volt
+				if (clk_Swing_Amount[i] < -MAX_SWING_AMOUNT)
+					clk_Swing_Amount[i] = -MAX_SWING_AMOUNT;
+				if (clk_Swing_Amount[i] > MAX_SWING_AMOUNT)
+					clk_Swing_Amount[i] = MAX_SWING_AMOUNT;
+			}
 			else
 				clk_Swing_Amount[i] = (int)getParam(CLK_SWING_PARAMS + i).getValue();
 		}
@@ -409,8 +395,7 @@ struct Ticker : Module
 			{
 				clk_Freq[i] = msr_Freq * clk_Divider_Mapped[i];
 				clk_Gate_Duration[i] = clk_Gate_Len[i] / (clk_Freq[i] * 100.f);
-				clk_Gate_Voltage[i] = master_Pulse(clk_Phase[i], clk_Gate_Len[i]);
-				// clk_Gate_Voltage[i] = clock_Pulse(clk_Phase[i], clk_Phase_Shift[i], clk_Swing_value[i], clk_Gate_Len[i]);
+				clk_Gate_Voltage[i] = clock_Pulse(clk_Phase[i], clk_Phase_Shift[i], clk_Swing_value[i], clk_Gate_Len[i]);
 			}
 
 			// Start the master clock trigger, if the new pulse started
@@ -450,7 +435,7 @@ struct Ticker : Module
 				// If gate is running (gate pulse itself should be over) & wait finished and swing amount > 0, recompute swing
 				if (clk_Gate_Started[i] && clk_Phase[i] > SWING_PHASE_TO_WAIT && !clk_GateState[i])
 				{
-					// Recompute a new swing value as part of a cycle
+					// Recompute a new swing value as % of a cycle
 					clk_Swing_value[i] = (1.f - 2.f * rack::random::uniform()) * clk_Swing_Amount[i] * 0.01;
 					clk_Gate_Started[i] = false;
 				}
@@ -479,10 +464,9 @@ struct Ticker : Module
 			{
 				// If clk is not same as msr clock speed, # of master cycles is a whole number of clock_cycles needed, reset phase to avoid phase getting out of sync
 				modulo = msr_Passed_Cycles % div_to_msr_cycles[clk_Divider[i]];
-				if ((clk_Last_Reset_Count[i] != msr_Passed_Cycles) && (modulo == 0) && (clk_Divider_Mapped[i] != 1.f) && msr_Phase == 0.f)
+				if ((clk_Last_Reset_Count[i] != msr_Passed_Cycles) && (modulo == 0) && msr_Phase == 0.f)
 				{
 					clk_Phase[i] = 0.f;
-					INFO("Clock %d RESET: PC = %u, LAST = %d, DIV = %d, MOD = %d", i, msr_Passed_Cycles, clk_Last_Reset_Count[i], div_to_msr_cycles[clk_Divider[i]], modulo);
 					clk_Last_Reset_Count[i] = msr_Passed_Cycles;
 				}
 

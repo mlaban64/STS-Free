@@ -85,9 +85,9 @@ const float div_to_factor[73] = {1.f / 96.f, 1.f / 92.f, 1.f / 88.f, 1.f / 84.f,
 								 8.f, 9.f, 10.f, 12.f, 16.f, 18.f, 20.f, 24.f, 28.f, 32.f, 36.f, 40.f, 44.f, 48.f, 52.f, 56.f, 60.f, 64.f, 68.f, 72.f, 76.f,
 								 80.f, 84.f, 88.f, 92.f, 96.f};
 
-// array with # of master cycles to pass before a phase reset. Odd integers are doubled to avoid a phase shift of half a cycle
+// array with # of master cycles to pass before a phase reset.
 const int div_to_msr_cycles[73] = {96, 92, 88, 84, 80, 76, 72, 68, 64, 60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 18, 16, 12, 10, 9, 8, 7, 6, 5, 4, 7,
-								   3, 5, 2, 3, 4, 1, 3, 2, 2, 5, 3, 7, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+								   3, 5, 2, 3, 4, 1, 3, 2, 2, 2, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 // array with divider to text mapping for the UI
 const char *div_to_text[73] = {"/ 96 . 0", "/ 92 . 0", "/ 88 . 0", "/ 84 . 0", "/ 80 . 0", "/ 76 . 0", "/ 72 . 0", "/ 68 . 0", "/ 64 . 0", "/ 60 . 0", "/ 56 . 0",
