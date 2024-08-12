@@ -331,15 +331,15 @@ struct Spiquencer : Module
 		// Did we change scale, root note?, scale direction?
 		if (rootScale != oldRootScale)
 			changedParams = true;
-		else if (rootNote != oldRootNote)
+		if (rootNote != oldRootNote)
 			changedParams = true;
-		else if (scaleDirection != oldScaleDirection)
+		if (scaleDirection != oldScaleDirection)
 			changedParams = true;
-		else if (transPose != oldTranspose)
+		if (transPose != oldTranspose)
 			changedParams = true;
-		else if (ocTaves != oldOctaves)
+		if (ocTaves != oldOctaves)
 			changedParams = true;
-		else if (scaleDirection != oldScaleDirection)
+		if (scaleDirection != oldScaleDirection)
 			changedParams = true;
 
 		if (changedParams)
@@ -367,7 +367,9 @@ struct Spiquencer : Module
 					{
 						// Direction is up or down?
 						if (scaleDirection == 0)
+
 							getParam(step).setValue(ALL_SCALES_AND_ARPS[rootScale][rootNote][note] + transPose + oct);
+
 						else
 							getParam(step).setValue(ALL_SCALES_AND_ARPS[rootScale][rootNote][max_note - note] + transPose + oct);
 
@@ -623,7 +625,7 @@ struct SpiquencerWidget : ModuleWidget
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Root Note", {"C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"}, &module->rootNote));
-		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:maj6", "Arp: min6", "Arp:add9", "Arp:min(add9)", "Arp:min7b5", "Arp:9", "Arp:min9"},
+		menu->addChild(createIndexPtrSubmenuItem("Scale/Arp", {"Chromatic", "Ionian/Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian/Minor", "Locrian", "Minor Pentatonic", "Major Pentatonic", "Minor Blues", "Major Blues", "Arp:Major", "Arp:Minor", "Arp:Dim", "Arp:Aug", "Arp:sus2", "Arp:sus4", "Arp:7", "Arp:maj7", "Arp: min7", "Arp:maj6", "Arp: min6", "Arp:add9", "Arp:min(add9)", "Arp:min7b5", "Arp:9", "Arp:min9"},
 												 &module->rootScale));
 		menu->addChild(createIndexPtrSubmenuItem("Scale Direction", {"Up", "Down"}, &module->scaleDirection));
 	}
