@@ -1,4 +1,9 @@
 # Changelog VCV-Rack STS Free bundle
+19-AUG-2024
+-----------
+2.4.0 Release
+- Start of Harmoblender
+- Fixed issue in Spiquencer (bad mapping of menu scales to actual scales)
 
 10-AUG-2024
 -----------
