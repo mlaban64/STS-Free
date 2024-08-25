@@ -45,7 +45,7 @@ struct Harmoblender : Module
 	float hrm_Lvl_In[16];			   // To store the level modulation for this harmonic
 	float hrm_Phase_Shift[16];		   // To store the phase shift for this harmonic
 	float hrm_Phase_Shift_In[16];	   // To store the phase shift modulation for this harmonic
-	int hrm_Multiplication[16];		   // To sore the multiplication factor for this harmonic
+	float hrm_Multiplication[16];	   // To sore the multiplication factor for this harmonic
 	float lvl_Multiplier = 0.f;		   // Global Level param, used to reduce the output level
 
 	float freq = 0.f, pitch = 0.f, phase_shift = 0.f;
@@ -122,7 +122,8 @@ struct Harmoblender : Module
 
 	void process(const ProcessArgs &args) override
 	{
-		int i = 0; // used to loop through harmonics
+		int i = 0;			  // used to loop through harmonics
+		float temp_Out = 0.f; // temp output for looping through harmonics
 
 		// Get all the relevant values from the module UI
 
@@ -134,11 +135,16 @@ struct Harmoblender : Module
 		{
 			// Compute the phase shift as per the controls. Assume it is always in [0..1)]
 			if (getInput(HRM_PHASE_INPUTS + i).isConnected())
-				hrm_Phase_Shift[i] = getInput(HRM_PHASE_INPUTS + i).getVoltage(); // Assuming phase shift is
+				hrm_Phase_Shift[i] = getInput(HRM_PHASE_INPUTS + i).getVoltage();
 			else
 				hrm_Phase_Shift[i] = getParam(HRM_PHASE_PARAMS + i).getValue();
+			// Compute the level as per the controls. Assume it is always in [0..1)]
+			if (getInput(HRM_PHASE_INPUTS + i).isConnected())
+				hrm_Lvl[i] = getInput(HRM_LVL_INPUTS + i).getVoltage();
+			else
+				hrm_Lvl[i] = getParam(HRM_LVL_PARAMS + i).getValue();
 			// Get the multiplication factors
-			hrm_Multiplication[i] = (int)getParam(HRM_MULT_PARAMS + i).getValue();
+			hrm_Multiplication[i] = getParam(HRM_MULT_PARAMS + i).getValue();
 		}
 
 		// Is the V-In connected?
@@ -163,9 +169,14 @@ struct Harmoblender : Module
 			if (phase[0] >= 1.f)
 				phase[0] -= 1.f;
 
-			// Compute the wave via the wave table,
-			// output to the correct channel, multiplied by the output volume
-			getOutput(OUTPUT_OUTPUT).setVoltage(lvl_Multiplier * STS_My_Sine(phase[0], phase_shift));
+			// Compute the wave by adding all harmonics
+			// output to the correct channel, multiplied by the output level
+			temp_Out = 0.f;
+			for (i = 0; i < 16; i++)
+			{
+				temp_Out += hrm_Lvl[i] * STS_My_Sine(hrm_Multiplication[i] * phase[0], phase_shift);
+			}
+			getOutput(OUTPUT_OUTPUT).setVoltage(lvl_Multiplier * temp_Out);
 		}
 		else
 		{
@@ -187,9 +198,14 @@ struct Harmoblender : Module
 				if (phase[idx] >= 1.f)
 					phase[idx] -= 1.f;
 
-				// Compute the wave via the wave table,
-				// output to the correct channel, multiplied by the output volume
-				getOutput(OUTPUT_OUTPUT).setVoltage(lvl_Multiplier * STS_My_Sine(phase[idx], phase_shift), idx);
+				// Compute the wave by adding all harmonics
+				// output to the correct channel, multiplied by the output level
+				temp_Out = 0.f;
+				for (i = 0; i < 16; i++)
+				{
+					temp_Out += hrm_Lvl[i] * STS_My_Sine(hrm_Multiplication[i] * phase[idx], phase_shift);
+				}
+				getOutput(OUTPUT_OUTPUT).setVoltage(lvl_Multiplier * temp_Out, idx);
 			}
 		}
 	}
