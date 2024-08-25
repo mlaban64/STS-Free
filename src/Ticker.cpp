@@ -227,7 +227,7 @@ struct Ticker : Module
 		configOutput(MSR_RESET_OUTPUT, "Reset Out");
 		configOutput(MSR_RUN_OUTPUT, "Run Out");
 
-		// Clockw
+		// Clocks
 		for (i = 0; i < 4; i++)
 		{
 			// Clock Params

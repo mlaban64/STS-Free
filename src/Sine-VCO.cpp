@@ -52,7 +52,7 @@ struct Sine_VCO : Module
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-	// Maps  phase & phase shift to an index in the wave table
+	// Maps phase & phase shift to an index in the wave table
 	float STS_My_Sine(float phase, float phase_shift)
 	{
 		int index;
