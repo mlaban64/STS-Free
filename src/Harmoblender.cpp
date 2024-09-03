@@ -9,6 +9,7 @@ struct Harmoblender : Module
 		ENUMS(HRM_LVL_PARAMS, 16),
 		ENUMS(HRM_PHASE_PARAMS, 16),
 		ENUMS(HRM_MULT_PARAMS, 16),
+		PITCH_PARAM,
 		LVL_OUT_PARAM,
 		PARAMS_LEN
 	};
@@ -16,6 +17,7 @@ struct Harmoblender : Module
 	{
 		ENUMS(HRM_LVL_INPUTS, 16),
 		ENUMS(HRM_PHASE_INPUTS, 16),
+		PITCH_IN_PARAM,
 		V_OCT_IN_INPUT,
 		INPUTS_LEN
 	};
@@ -30,7 +32,7 @@ struct Harmoblender : Module
 	};
 
 	// Some class-wide constants
-	const float FREQ_MOD_MULTIPLIER = 0.5f;
+	const float FREQ_MOD_MULTIPLIER = 0.1f;
 	const float PHASE_MOD_MULTIPLIER = 0.1f;
 	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
@@ -40,13 +42,12 @@ struct Harmoblender : Module
 	float sine_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable
-	float tuning_Value = dsp::FREQ_C4; // Tuning value, to be set by future Tuning param
-	float hrm_Lvl[16];				   // To store the level for this harmonic
-	float hrm_Lvl_In[16];			   // To store the level modulation for this harmonic
-	float hrm_Phase_Shift[16];		   // To store the phase shift for this harmonic
-	float hrm_Phase_Shift_In[16];	   // To store the phase shift modulation for this harmonic
-	float hrm_Multiplication[16];	   // To sore the multiplication factor for this harmonic
-	float lvl_Multiplier = 0.f;		   // Global Level param, used to reduce the output level
+	float hrm_Lvl[16];			  // To store the level for this harmonic
+	float hrm_Lvl_In[16];		  // To store the level modulation for this harmonic
+	float hrm_Phase_Shift[16];	  // To store the phase shift for this harmonic
+	float hrm_Phase_Shift_In[16]; // To store the phase shift modulation for this harmonic
+	float hrm_Multiplication[16]; // To sore the multiplication factor for this harmonic
+	float lvl_Multiplier = 0.f;	  // Global Level param, used to reduce the output level
 
 	float freq = 0.f, pitch = 0.f, phase_shift = 0.f;
 	int num_channels, idx;
@@ -113,7 +114,9 @@ struct Harmoblender : Module
 		}
 
 		// General In & Out
+		configParam(PITCH_PARAM, 10.f, 20000.f, dsp::FREQ_C4, "Fixed pitch", " Hz");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
+		configInput(PITCH_IN_PARAM, "Pitch Modulation");
 		configParam(LVL_OUT_PARAM, 0.f, 1.f, 0.5f, "Ouput Level");
 		configOutput(OUTPUT_OUTPUT, "Audio");
 
@@ -122,8 +125,9 @@ struct Harmoblender : Module
 
 	void process(const ProcessArgs &args) override
 	{
-		int i = 0;			  // used to loop through harmonics
-		float temp_Out = 0.f; // temp output for looping through harmonics
+		int i = 0;				 // used to loop through harmonics
+		float temp_Out = 0.f;	 // temp output for looping through harmonics
+		float pitch_param = 0.f; // Pitch parameter
 
 		// Get all the relevant values from the module UI
 
@@ -155,8 +159,13 @@ struct Harmoblender : Module
 		if (num_channels == 0) // no V/Oct input, so use standard pitch of C4 (0 V)
 		// If not, set the frequency as per the pitch parameter, using phase[0]
 		{
-			// Compute the pitch as per the controls (should be from PITCH pRm & modulation in the future). For now, fixed to C4
-			freq = tuning_Value;
+			// Compute the pitch as per the controls
+			pitch_param = getParam(PITCH_PARAM).getValue();
+			if (getInput(PITCH_IN_PARAM).isConnected())
+				freq = pitch_param + pitch_param * getInput(PITCH_IN_PARAM).getVoltage() * FREQ_MOD_MULTIPLIER;
+			else
+				freq = pitch_param;
+			pitch_param = getParam(PITCH_PARAM).getValue();
 
 			// limit the pitch if modulation takes it too extreme
 			if (freq < 10.f)
@@ -184,8 +193,13 @@ struct Harmoblender : Module
 			// Loop through all input channels
 			for (idx = 0; idx < num_channels; idx++)
 			{
+				// Compute the pitch as per the controls
+				pitch_param = getParam(PITCH_PARAM).getValue();
 				pitch = getInput(V_OCT_IN_INPUT).getVoltage(idx);
-				freq = tuning_Value * std::pow(2.f, pitch);
+				freq = pitch_param * std::pow(2.f, pitch);
+
+				if (getInput(PITCH_IN_PARAM).isConnected())
+					freq = freq + pitch_param * getInput(PITCH_IN_PARAM).getVoltage() * FREQ_MOD_MULTIPLIER;
 
 				// limit the pitch if modulation takes it too extreme
 				if (freq < 10.f)
@@ -320,6 +334,8 @@ struct HarmoblenderWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.668, 96.841)), module, Harmoblender::HRM_LVL_INPUTS + 15));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(118.668, 96.841)), module, Harmoblender::HRM_PHASE_INPUTS + 15));
 		// General In & Put
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(89.0, 110.0)), module, Harmoblender::PITCH_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.0, 110.0)), module, Harmoblender::PITCH_IN_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.0, 110.0)), module, Harmoblender::V_OCT_IN_INPUT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(128.0, 110.0)), module, Harmoblender::LVL_OUT_PARAM));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.5, 110.0)), module, Harmoblender::OUTPUT_OUTPUT));

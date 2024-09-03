@@ -150,7 +150,7 @@ struct Pulse_VCO : Module
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");
 		configParam(PULSE_PARAM, 1.f, 99.f, 50.0f, "Pulse Width", " %");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
-		configInput(FM_IN_INPUT, "Frequence modulation");
+		configInput(FM_IN_INPUT, "Frequency modulation");
 		configInput(PM_IN_INPUT, "Phase modulation");
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configInput(PW_IN_INPUT, "Pulse-width modulation");

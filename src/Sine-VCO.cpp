@@ -86,7 +86,7 @@ struct Sine_VCO : Module
 		configParam(PHASE_PARAM, 0.f, 1.f, 0.f, "Phase shift", " Cycle");
 		configParam(VOLUME_PARAM, 0.f, 1.f, 0.5f, "Output volume");
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
-		configInput(FM_IN_INPUT, "Frequence modulation");
+		configInput(FM_IN_INPUT, "Frequency modulation");
 		configInput(PM_IN_INPUT, "Phase modulation");
 		configInput(VM_IN_INPUT, "Volume modulation");
 		configOutput(OUTPUT_OUTPUT, "Audio Out");
