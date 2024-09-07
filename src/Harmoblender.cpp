@@ -139,7 +139,7 @@ struct Harmoblender : Module
 		{
 			// Compute the phase shift as per the controls. Assume it is always in [0..1)]
 			if (getInput(HRM_PHASE_INPUTS + i).isConnected())
-				hrm_Phase_Shift[i] = 0.1f * getInput(HRM_PHASE_INPUTS + i).getVoltage();
+				hrm_Phase_Shift[i] = abs(0.1f * getInput(HRM_PHASE_INPUTS + i).getVoltage());
 			else
 				hrm_Phase_Shift[i] = getParam(HRM_PHASE_PARAMS + i).getValue();
 			// Compute the level as per the controls. Assume it is always in [0..1)]
