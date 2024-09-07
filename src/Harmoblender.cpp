@@ -101,7 +101,7 @@ struct Harmoblender : Module
 
 			(void)sprintf(name, "Harmonic %d Multiplication", i + 1);
 			fmt = name;
-			configParam(HRM_MULT_PARAMS + i, 0.f, 20.f, 0.f, fmt);
+			configParam(HRM_MULT_PARAMS + i, 0.f, 20.f, float(i + 1), fmt);
 			getParamQuantity(HRM_MULT_PARAMS + i)->snapEnabled = true;
 
 			(void)sprintf(name, "Harmonic %d Level CV (0..10V)", i + 1);
