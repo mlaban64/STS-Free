@@ -101,7 +101,7 @@ struct Harmoblender : Module
 
 			(void)sprintf(name, "Harmonic %d Multiplication", i + 1);
 			fmt = name;
-			configParam(HRM_MULT_PARAMS + i, 0.f, 20.f, float(i + 1), fmt);
+			configParam(HRM_MULT_PARAMS + i, 0.f, 32.f, float(i + 1), fmt);
 			getParamQuantity(HRM_MULT_PARAMS + i)->snapEnabled = true;
 
 			(void)sprintf(name, "Harmonic %d Level CV (0..10V)", i + 1);
@@ -139,7 +139,7 @@ struct Harmoblender : Module
 		{
 			// Compute the phase shift as per the controls. Assume it is always in [0..1)]
 			if (getInput(HRM_PHASE_INPUTS + i).isConnected())
-				hrm_Phase_Shift[i] = abs(0.1f * getInput(HRM_PHASE_INPUTS + i).getVoltage());
+				hrm_Phase_Shift[i] = abs(0.1f * getInput(HRM_PHASE_INPUTS + i).getVoltage()) + getParam(HRM_PHASE_PARAMS + i).getValue();
 			else
 				hrm_Phase_Shift[i] = getParam(HRM_PHASE_PARAMS + i).getValue();
 			// Compute the level as per the controls. Assume it is always in [0..1)]
