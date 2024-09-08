@@ -1,4 +1,9 @@
 # Changelog VCV-Rack STS Free bundle
+08-SEP-2024
+-----------
+2.4.0 Release
+- 1st release of Harmoblender
+
 19-AUG-2024
 -----------
 2.4.0 Release
