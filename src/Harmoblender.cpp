@@ -165,7 +165,6 @@ struct Harmoblender : Module
 				freq = pitch_param + pitch_param * getInput(PITCH_IN_PARAM).getVoltage() * FREQ_MOD_MULTIPLIER;
 			else
 				freq = pitch_param;
-			pitch_param = getParam(PITCH_PARAM).getValue();
 
 			// limit the pitch if modulation takes it too extreme
 			if (freq < 10.f)
