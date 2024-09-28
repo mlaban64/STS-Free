@@ -178,7 +178,7 @@ struct SuperZzzaw : Module
 
 			(void)sprintf(name, "Sawtooth %d Pan", i + 1);
 			fmt = name;
-			configParam(SZZ_DETUNE_PARAMS + i, -1.f, 1.f, 0.f, fmt);
+			configParam(SZZ_PAN_PARAMS + i, -1.f, 1.f, 0.f, fmt);
 
 			(void)sprintf(name, "Sawtooth %d Level CV", i + 1);
 			fmt = name;
@@ -348,11 +348,11 @@ struct SuperZzzawWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(8.0, 15.5)), module, SuperZzzaw::SZZ_LVL_PARAMS + 0));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.0, 15.5)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 0));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(28.0, 15.5)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 0));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(41.556, 15.5)), module, SuperZzzaw::SZZ_PAN_PARAMS + 0));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38, 15.5)), module, SuperZzzaw::SZZ_PAN_PARAMS + 0));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(8.0, 26.0)), module, SuperZzzaw::SZZ_LVL_INPUTS + 0));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(18.0, 26.0)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 0));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(41.556, 26.0)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 1));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(51.556, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 1));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(28, 26.0)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 0));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 0));
 
 		// General In & Out
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(89.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
@@ -360,8 +360,6 @@ struct SuperZzzawWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.0, 110.0)), module, SuperZzzaw::V_OCT_IN_INPUT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(128.0, 110.0)), module, SuperZzzaw::LVL_OUT_PARAM));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.5, 110.0)), module, SuperZzzaw::OUTPUT_OUTPUT));
-
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(18.5, 14.0)), module, SuperZzzaw::OUTPUT_OUTPUT));
 	}
 
 	void appendContextMenu(Menu *menu) override
@@ -377,4 +375,4 @@ struct SuperZzzawWidget : ModuleWidget
 	}
 };
 
-Model *modelSuperZzzaw = createModel<SuperZzzaw, SuperZzzawWidget>("Saw-VCO");
+Model *modelSuperZzzaw = createModel<SuperZzzaw, SuperZzzawWidget>("SuperZzzaw");
