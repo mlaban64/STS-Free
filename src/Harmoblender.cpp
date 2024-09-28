@@ -81,13 +81,13 @@ struct Harmoblender : Module
 
 	Harmoblender()
 	{
-		int i = 0;		 // index for harmoics loops
+		int i = 0;		 // index for harmonics loops
 		std::string fmt; // string to format text
 		char name[64];	 // string to format text
 
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
-		// Harmoic Blenders
+		// Harmonic Blenders
 		for (i = 0; i < 16; i++)
 		{
 			// Harmonic Blender Params
@@ -332,7 +332,7 @@ struct HarmoblenderWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(128.668, 86.341)), module, Harmoblender::HRM_MULT_PARAMS + 15));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.668, 96.841)), module, Harmoblender::HRM_LVL_INPUTS + 15));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(118.668, 96.841)), module, Harmoblender::HRM_PHASE_INPUTS + 15));
-		// General In & Put
+		// General In & Out
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(89.0, 110.0)), module, Harmoblender::PITCH_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.0, 110.0)), module, Harmoblender::PITCH_IN_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.0, 110.0)), module, Harmoblender::V_OCT_IN_INPUT));

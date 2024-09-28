@@ -20,6 +20,7 @@ extern Model *modelD_Octer;
 extern Model *modelSpiquencer;
 extern Model *modelTicker;
 extern Model *modelHarmoblender;
+extern Model *modelSuperZzzaw;
 
 // Some useful constants
 #define M_2PI 6.2831853071758f

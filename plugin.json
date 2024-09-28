@@ -121,6 +121,16 @@
         "Polyphonic",
         "Oscillator"
       ]
+    },
+    {
+      "slug": "SuperZzzaw",
+      "name": "SuperZzzaw",
+      "description": "VCO that combines multiple sawtooth waves",
+      "manualUrl": "https://mlaban.home.xs4all.nl/music/VCV/SuperZzzaw.html",
+      "tags": [
+        "Polyphonic",
+        "Oscillator"
+      ]
     }
   ]
 }

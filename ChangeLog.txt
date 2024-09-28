@@ -1,4 +1,9 @@
 # Changelog VCV-Rack STS Free bundle
+28-SEP-2024
+-----------
+2.4.1 Release
+- Start of SuperZzzaw
+
 08-SEP-2024
 -----------
 2.4.0 Release
