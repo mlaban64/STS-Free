@@ -26,18 +26,14 @@ struct SuperZzzaw : Module
 	};
 	enum OutputId
 	{
-		OUTPUT_OUTPUT,
+		LEFT_OUT_OUTPUT,
+		RIGHT_OUT_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId
 	{
 		LIGHTS_LEN
 	};
-
-	// Some class-wide constants
-	const float FREQ_MOD_MULTIPLIER = 0.5f;
-	const float PHASE_MOD_MULTIPLIER = 0.1f;
-	const float VOLUME_MOD_MULTIPLIER = 0.1f;
 
 #define STS_NUM_WAVE_SAMPLES 1000
 #define STS_DEF_NUM_HARMONICS 10
@@ -57,11 +53,17 @@ struct SuperZzzaw : Module
 	float saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable declarations
-	float pitch_param, phase_param, volume_param;
-	float freq = 0.f, pitch = 0.f, phase_shift = 0.f, volume_out = 0.f;
-	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
-	float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f;
+	float szz_Level[8];
+	float szz_Level_In[8];
+	float szz_Phase[8];
+	float szz_Phase_In[8];
+	float szz_Detune[8];
+	float szz_Detune_In[8];
+	float szz_Pan[8];
+	float szz_Pan_In[8];
+
 	int num_channels, idx;
+	bool szz_Stereo = false;
 
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
@@ -202,13 +204,20 @@ struct SuperZzzaw : Module
 		configInput(V_OCT_IN_INPUT, "Pitch (V//Oct)");
 		configInput(PITCH_IN_PARAM, "Pitch Modulation");
 		configParam(LVL_OUT_PARAM, 0.f, 1.f, 0.5f, "Ouput Level");
-		configOutput(OUTPUT_OUTPUT, "Audio");
+		configOutput(LEFT_OUT_OUTPUT, "Left/Mono Audio Out");
+		configOutput(RIGHT_OUT_OUTPUT, "Right Audio Out");
 
 		InitSaw_Waves(STS_DEF_NUM_HARMONICS);
 	}
 
 	void process(const ProcessArgs &args) override
 	{
+		int i = 0;				 // used to loop through harmonics
+		float temp_Out = 0.f;	 // temp output for looping through harmonics
+		float pitch_param = 0.f; // Pitch parameter
+		float level_param = 0.f; // Level Out parameter
+		float freq = 0.f;		 // Frequency
+
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
 		{
@@ -218,44 +227,53 @@ struct SuperZzzaw : Module
 		}
 
 		// Get all the values from the module UI
-		pitch_param = getParam(PITCH_PARAM).getValue();
-		/*
-		phase_param = getParam(PHASE_PARAM).getValue();
-		volume_param = getParam(VOLUME_PARAM).getValue();
-		freq_mod_attn = getParam(FM_ATTN_PARAM).getValue();
-		phase_mod_attn = getParam(PM_ATTN_PARAM).getValue();
-		volume_mod_attn = getParam(VM_ATTN_PARAM).getValue();
-		freq_mod = getInput(FM_IN_INPUT).getVoltage();
-		phase_mod = getInput(PM_IN_INPUT).getVoltage();
-		volume_mod = getInput(VM_IN_INPUT).getVoltage();
+		level_param = getParam(LVL_OUT_PARAM).getValue();
 
-		// Compute the volume output as per the controls
-		if (getInput(VM_IN_INPUT).isConnected())
-			volume_out = volume_param + volume_mod * volume_mod_attn * VOLUME_MOD_MULTIPLIER;
-		else
-			volume_out = volume_param;
-
-		// Compute the phase shift as per the controls. Make sure it is not negative, as this may happen with modulation with a bipolar signal
-		if (getInput(PM_IN_INPUT).isConnected())
+		// Recompute array values
+		for (i = 0; i < 8; i++)
 		{
-			phase_shift = phase_param + phase_mod * phase_mod_attn * PHASE_MOD_MULTIPLIER;
-			if (phase_shift < 0.0f)
-				phase_shift += 1.0f;
+			// Compute the level as per the controls. Assume it is always in [0..1)]
+			if (getInput(SZZ_LVL_INPUTS + i).isConnected())
+				szz_Level[i] = 0.1f * getInput(SZZ_LVL_INPUTS + i).getVoltage();
+			else
+				szz_Level[i] = getParam(SZZ_LVL_PARAMS + i).getValue();
+			// Compute the phase shift as per the controls. Assume it is always in [0..1)]
+			if (getInput(SZZ_PHASE_INPUTS + i).isConnected())
+				szz_Phase[i] = abs(0.1f * getInput(SZZ_PHASE_INPUTS + i).getVoltage()) + getParam(SZZ_PHASE_PARAMS + i).getValue();
+			else
+				szz_Phase[i] = getParam(SZZ_PHASE_PARAMS + i).getValue();
+			// Compute the detune as per the controls. Assume it is always in [0..1)]
+			if (getInput(SZZ_DETUNE_INPUTS + i).isConnected())
+				szz_Detune[i] = 0.1f * getInput(SZZ_DETUNE_INPUTS + i).getVoltage();
+			else
+				szz_Detune[i] = getParam(SZZ_DETUNE_PARAMS + i).getValue();
+			// Compute the panning as per the controls. Assume it is always in [0..1)]
+			if (getInput(SZZ_PAN_INPUTS + i).isConnected())
+				szz_Pan[i] = 0.1f * getInput(SZZ_PAN_INPUTS + i).getVoltage();
+			else
+				szz_Pan[i] = getParam(SZZ_PAN_PARAMS + i).getValue();
 		}
-		else
-			phase_shift = phase_param;
 
 		// Is the V-In connected?
 		num_channels = getInput(V_OCT_IN_INPUT).getChannels();
+
+		// Is only left Out connected?
+		if (getInput(LEFT_OUT_OUTPUT).isConnected() && getInput(RIGHT_OUT_OUTPUT).isConnected())
+			szz_Stereo = true;
+		else
+			szz_Stereo = false;
+
 		// First, match the # of output channels to the number of input channels, to ensure all other channels are reset to 0 V
-		getOutput(OUTPUT_OUTPUT).setChannels(num_channels);
+		getOutput(LEFT_OUT_OUTPUT).setChannels(num_channels);
+		getOutput(RIGHT_OUT_OUTPUT).setChannels(num_channels);
 
 		if (num_channels == 0)
 		// If not, set the frequency as per the pitch parameter, using phase[0]
 		{
 			// Compute the pitch as per the controls
-			if (getInput(FM_IN_INPUT).isConnected())
-				freq = pitch_param + pitch_param * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
+			pitch_param = getParam(PITCH_PARAM).getValue();
+			if (getInput(PITCH_IN_PARAM).isConnected())
+				freq = pitch_param + pitch_param * getInput(PITCH_IN_PARAM).getVoltage();
 			else
 				freq = pitch_param;
 
@@ -272,7 +290,16 @@ struct SuperZzzaw : Module
 
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
-			getOutput(OUTPUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+			if (szz_Stereo)
+			{
+				getOutput(LEFT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
+				getOutput(RIGHT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
+			}
+			else
+			{
+				getOutput(LEFT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
+				getOutput(RIGHT_OUT_OUTPUT).setVoltage(0);
+			}
 		}
 		else
 		{
@@ -280,11 +307,12 @@ struct SuperZzzaw : Module
 			// Loop through all input channels
 			for (idx = 0; idx < num_channels; idx++)
 			{
+				/*
 				pitch = getInput(V_OCT_IN_INPUT).getVoltage(idx);
 				freq = pitch_param * std::pow(2.f, pitch);
 
 				// Compute the pitch as per the controls
-				if (getInput(FM_IN_INPUT).isConnected())
+				if (getInput(PITCH_IN_PARAM).isConnected())
 					freq = freq + freq * freq_mod * freq_mod_attn * FREQ_MOD_MULTIPLIER;
 
 				// limit the pitch if modulation takes it too extreme
@@ -300,10 +328,17 @@ struct SuperZzzaw : Module
 
 				// Compute the wave via the wave table,
 				// output to the correct channel, multiplied by the output volume
-				getOutput(OUTPUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[idx], phase_shift), idx);
+				if (Stereo)
+				{
+					getOutput(LEFT_OUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+					getOutput(RIGHT_OUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+				}
+
+				else
+					getOutput(LEFT_OUT_OUTPUT).setVoltage(volume_out * STS_My_Saw(phase[0], phase_shift));
+				*/
 			}
 		}
-		*/
 	}
 
 	json_t *dataToJson() override
@@ -355,11 +390,12 @@ struct SuperZzzawWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 0));
 
 		// General In & Out
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(89.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.0, 110.0)), module, SuperZzzaw::PITCH_IN_PARAM));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(108.0, 110.0)), module, SuperZzzaw::V_OCT_IN_INPUT));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(79.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(89.0, 110.0)), module, SuperZzzaw::PITCH_IN_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.0, 110.0)), module, SuperZzzaw::V_OCT_IN_INPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(109.5, 110.0)), module, SuperZzzaw::LEFT_OUT_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(117.5, 110.0)), module, SuperZzzaw::RIGHT_OUT_OUTPUT));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(128.0, 110.0)), module, SuperZzzaw::LVL_OUT_PARAM));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(119.5, 110.0)), module, SuperZzzaw::OUTPUT_OUTPUT));
 	}
 
 	void appendContextMenu(Menu *menu) override

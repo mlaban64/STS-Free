@@ -43,9 +43,7 @@ struct Harmoblender : Module
 
 	// local class variable
 	float hrm_Lvl[16];			  // To store the level for this harmonic
-	float hrm_Lvl_In[16];		  // To store the level modulation for this harmonic
 	float hrm_Phase_Shift[16];	  // To store the phase shift for this harmonic
-	float hrm_Phase_Shift_In[16]; // To store the phase shift modulation for this harmonic
 	float hrm_Multiplication[16]; // To sore the multiplication factor for this harmonic
 	float lvl_Multiplier = 0.f;	  // Global Level param, used to reduce the output level
 
