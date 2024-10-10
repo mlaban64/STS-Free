@@ -53,21 +53,19 @@ struct SuperZzzaw : Module
 	float saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable declarations to hold data for each VCO
-	float szz_Level[8];		// Level for each VCO
-	float szz_Level_In[8];	// Level Input each VCO
-	float szz_Phase[8];		// Phase for each VCO
-	float szz_Phase_In[8];	// Phase Input for each VCO
-	float szz_Detune[8];	// Detune for each VCO
-	float szz_Detune_In[8]; // Detune Input for each VCO
-	float szz_Pan[8];		// Pan for each VCO
-	float szz_Pan_In[8];	// Pan Input for each VCO
-	float szz_Pitch[8];		// Pitch for each VCO
-	float szz_Out[8];		// Output for each VCO
+	float szz_Level[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Level for each VCO
+	float szz_Phase[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Phase for each VCO
+	float szz_Detune[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}; // Detune for each VCO
+	float szz_Pan[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Pan for each VCO
+	float szz_Pitch[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Pitch for each VCO
+	float mono_Phase[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}; // Phase per VCO in case of monophonic (disconnected VCO_IN)
+	float szz_Out[2][8] = {{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f},
+						   {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}}; // Stereo output for each VCO
 
 	bool szz_Stereo = false;
 
 	// Array of 16 phases to accomodate for polyphony
-	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+	float channel_phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
 	// Maps phase & phase shift to an index in the wave table
 	float STS_My_Saw(float phase, float phase_shift)
@@ -214,7 +212,7 @@ struct SuperZzzaw : Module
 	void process(const ProcessArgs &args) override
 	{
 		int i = 0, channel = 0, num_channels = 0; // used to loop through harmonics & polyphonic channels
-		float temp_Out = 0.f;					  // temp output for looping through VCO's
+		float left_Out, right_Out;				  // temp output for looping through VCO's
 		float pitch_param = 0.f;				  // Pitch parameter
 		float level_param = 0.f;				  // Level Out parameter
 		float freq = 0.f;						  // Frequency
@@ -233,22 +231,25 @@ struct SuperZzzaw : Module
 		// Recompute array values
 		for (i = 0; i < 8; i++)
 		{
-			// Compute the level as per the controls. Assume it is always in [0..1)]
+			// Compute the level modulation as per the controls.
 			if (getInput(SZZ_LVL_INPUTS + i).isConnected())
 				szz_Level[i] = 0.1f * getInput(SZZ_LVL_INPUTS + i).getVoltage();
 			else
 				szz_Level[i] = getParam(SZZ_LVL_PARAMS + i).getValue();
-			// Compute the phase shift as per the controls. Assume it is always in [0..1)]
+
+			// Compute the phase shift modulation as per the controls.
 			if (getInput(SZZ_PHASE_INPUTS + i).isConnected())
 				szz_Phase[i] = abs(0.1f * getInput(SZZ_PHASE_INPUTS + i).getVoltage()) + getParam(SZZ_PHASE_PARAMS + i).getValue();
 			else
 				szz_Phase[i] = getParam(SZZ_PHASE_PARAMS + i).getValue();
-			// Compute the detune as per the controls. Assume it is always in [0..1)]
+
+			// Compute the detune as per the controls.
 			if (getInput(SZZ_DETUNE_INPUTS + i).isConnected())
-				szz_Detune[i] = 0.1f * getInput(SZZ_DETUNE_INPUTS + i).getVoltage();
+				szz_Detune[i] = 0.01f * getInput(SZZ_DETUNE_INPUTS + i).getVoltage();
 			else
-				szz_Detune[i] = getParam(SZZ_DETUNE_PARAMS + i).getValue();
-			// Compute the panning as per the controls. Assume it is always in [0..1)]
+				szz_Detune[i] = 0.01f * getParam(SZZ_DETUNE_PARAMS + i).getValue();
+
+			// Compute the panning as per the controls.
 			if (getInput(SZZ_PAN_INPUTS + i).isConnected())
 				szz_Pan[i] = 0.1f * getInput(SZZ_PAN_INPUTS + i).getVoltage();
 			else
@@ -285,35 +286,68 @@ struct SuperZzzaw : Module
 			else if (freq > 20000.f)
 				freq = 20000.f;
 
-			// Accumulate the phase, make sure it rotates between 0.0 and 1.0
-			phase[0] += freq * args.sampleTime;
-			if (phase[0] >= 1.f)
-				phase[0] -= 1.f;
+			// Loop through all VCO's
+			for (i = 0; i < 8; i++)
+			{
+				if (szz_Level[i] != 0.f)
+				{
+					szz_Pitch[i] = freq + freq * szz_Detune[i];
+
+					// Accumulate the phase, make sure it rotates between 0.0 and 1.0
+					mono_Phase[i] += szz_Pitch[i] * args.sampleTime;
+					if (mono_Phase[i] >= 1.f)
+						mono_Phase[i] -= 1.f;
+
+					// Now compute the output
+					if (szz_Stereo)
+					{
+						float pan = 0.f, saw_wave = 0.f;
+
+						// Map panning to 0..1
+						pan = (1.f + szz_Pan[i]) * 0.5f;
+						saw_wave = level_param * szz_Level[i] * STS_My_Saw(mono_Phase[i], 0.f);
+						szz_Out[0][i] = (1.0 - pan) * saw_wave;
+						szz_Out[1][i] = pan * saw_wave;
+					}
+					else
+						szz_Out[0][i] = szz_Out[1][i] = STS_My_Saw(mono_Phase[i], 0.f);
+				}
+				// If Level = 0.0, make sure this VCO does not contribute
+				else
+					szz_Out[0][i] = szz_Out[1][i] = 0.f;
+			}
+
+			left_Out = right_Out = 0.f;
+			for (i = 0; i < 8; i++)
+			{
+				left_Out += szz_Out[0][i];
+				right_Out += szz_Out[1][i];
+			}
 
 			// Compute the wave via the wave table,
 			// output to the correct channel, multiplied by the output volume
 			if (szz_Stereo)
 			{
-				getOutput(LEFT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
-				getOutput(RIGHT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
+				getOutput(LEFT_OUT_OUTPUT).setVoltage(left_Out);
+				getOutput(RIGHT_OUT_OUTPUT).setVoltage(right_Out);
 			}
 			else
 			{
-				getOutput(LEFT_OUT_OUTPUT).setVoltage(level_param * STS_My_Saw(phase[0], 0));
+				getOutput(LEFT_OUT_OUTPUT).setVoltage(left_Out + right_Out);
 				getOutput(RIGHT_OUT_OUTPUT).setVoltage(0);
 			}
 		}
 		else
 		{
 			// Else, compute it as per the V/Oct input for each poly channel
-			// Loop through all input channels
-			for (channel = 0; channel < num_channels; channel++)
+			// Loop through all VCO's
+			for (i = 0; i < 8; i++)
 			{
-				// Loop through all VCO's
-				for (i = 0; i < 8; i++)
+				// If this VCO has a level != 0.0, then process it, else ignore
+				if (szz_Level[i] != 0.f)
 				{
-					// If this VCO has a level != 0.0, then process it, else ignore
-					if (szz_Level[i] != 0.f)
+					// Loop through each poly channel
+					for (channel = 0; channel < num_channels; channel++)
 					{
 						szz_Pitch[i] = getInput(V_OCT_IN_INPUT).getVoltage(channel);
 						freq = pitch_param * std::pow(2.f, szz_Pitch[i]);
@@ -330,22 +364,25 @@ struct SuperZzzaw : Module
 							freq = 20000.f;
 
 						// Accumulate the phase, make sure it rotates between 0.0 and 1.0
-						phase[channel] += freq * args.sampleTime;
-						if (phase[channel] >= 1.f)
-							phase[channel] -= 1.f;
+						channel_phase[channel] += freq * args.sampleTime;
+						if (channel_phase[channel] >= 1.f)
+							channel_phase[channel] -= 1.f;
+
+						// Compute the combined output per channel
+						szz_Out[channel][0] += szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]);
+						szz_Out[channel][1] += szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]);
 
 						// Compute the wave via the wave table,
 						// output to the correct channel, multiplied by the output volume
 						if (szz_Stereo)
 						{
-							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(phase[channel], szz_Phase[i]));
-							getOutput(RIGHT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(phase[channel], szz_Phase[i]));
+							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
+							getOutput(RIGHT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
 						}
-
 						else
 						{
-							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(phase[channel], szz_Phase[i]));
-							getOutput(RIGHT_OUT_OUTPUT).setVoltage(0);
+							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
+							getOutput(RIGHT_OUT_OUTPUT).setVoltage(0, channel);
 						}
 					}
 				}
@@ -353,7 +390,8 @@ struct SuperZzzaw : Module
 		}
 	}
 
-	json_t *dataToJson() override
+	json_t *
+	dataToJson() override
 	{
 		json_t *rootJ = json_object();
 
@@ -395,11 +433,21 @@ struct SuperZzzawWidget : ModuleWidget
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(8.0, 15.5)), module, SuperZzzaw::SZZ_LVL_PARAMS + 0));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.0, 15.5)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 0));
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(28.0, 15.5)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 0));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38, 15.5)), module, SuperZzzaw::SZZ_PAN_PARAMS + 0));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38.0, 15.5)), module, SuperZzzaw::SZZ_PAN_PARAMS + 0));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(8.0, 26.0)), module, SuperZzzaw::SZZ_LVL_INPUTS + 0));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(18.0, 26.0)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 0));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(28, 26.0)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 0));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 0));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(28.0, 26.0)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 0));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38.0, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 0));
+
+		// S2 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(52.0, 15.5)), module, SuperZzzaw::SZZ_LVL_PARAMS + 1));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(62.0, 15.5)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 1));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(72.0, 15.5)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 1));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(82.0, 15.5)), module, SuperZzzaw::SZZ_PAN_PARAMS + 1));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(52.0, 26.0)), module, SuperZzzaw::SZZ_LVL_INPUTS + 1));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(62.0, 26.0)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 1));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(72.0, 26.0)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 1));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(82.0, 26.0)), module, SuperZzzaw::SZZ_PAN_INPUTS + 1));
 
 		// General In & Out
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(79.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
