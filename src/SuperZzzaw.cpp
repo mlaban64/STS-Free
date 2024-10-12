@@ -53,14 +53,13 @@ struct SuperZzzaw : Module
 	float saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable declarations to hold data for each VCO
-	float szz_Level[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Level for each VCO
-	float szz_Phase[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Phase for each VCO
-	float szz_Detune[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}; // Detune for each VCO
-	float szz_Pan[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Pan for each VCO
-	float szz_Pitch[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};	// Pitch for each VCO
-	float mono_Phase[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}; // Phase per VCO in case of monophonic (disconnected VCO_IN)
-	float szz_Out[2][8] = {{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f},
-						   {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f}}; // Stereo output for each VCO
+	float szz_Level[8] = {};  // Level for each VCO
+	float szz_Phase[8] = {};  // Phase for each VCO
+	float szz_Detune[8] = {}; // Detune for each VCO
+	float szz_Pan[8] = {};	  // Pan for each VCO
+	float szz_Pitch[8] = {};  // Pitch for each VCO
+	float mono_Phase[8] = {}; // Phase per VCO in case of monophonic (disconnected VCO_IN)
+	float szz_Out[2][8] = {}; // Stereo output for each VCO
 
 	bool szz_Stereo = false;
 
@@ -305,12 +304,12 @@ struct SuperZzzaw : Module
 
 						// Map panning to 0..1
 						pan = (1.f + szz_Pan[i]) * 0.5f;
-						saw_wave = level_param * szz_Level[i] * STS_My_Saw(mono_Phase[i], 0.f);
+						saw_wave = level_param * szz_Level[i] * STS_My_Saw(mono_Phase[i], szz_Phase[i]);
 						szz_Out[0][i] = (1.0 - pan) * saw_wave;
 						szz_Out[1][i] = pan * saw_wave;
 					}
 					else
-						szz_Out[0][i] = szz_Out[1][i] = STS_My_Saw(mono_Phase[i], 0.f);
+						szz_Out[0][i] = szz_Out[1][i] = STS_My_Saw(mono_Phase[i], szz_Phase[i]);
 				}
 				// If Level = 0.0, make sure this VCO does not contribute
 				else

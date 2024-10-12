@@ -59,7 +59,7 @@ struct Triangle_VCO : Module
 	int num_channels, idx;
 
 	// Array of 16 phases to accomodate for polyphony
-	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+	float phase[16] = {};
 
 	// Maps phase & phase shift to an index in the wave table
 	float STS_My_Triangle(float phase, float phase_shift)

@@ -102,16 +102,16 @@ struct Ticker : Module
 	bool clk_Gate_Started[4] = {false, false, false, false}; // Toggle to see if we started a new CLK1 gate
 	int clk_Divider[4] = {36, 36, 36, 36};					 // current CLK1 Divider param
 	int clk_Divider_Old[4] = {36, 36, 36, 36};				 // Old CLK1 Divider
-	unsigned clk_Last_Reset_Count[4] = {0, 0, 0, 0};		 // Last master cycle count at which the clocks were reset
+	unsigned clk_Last_Reset_Count[4] = {};					 // Last master cycle count at which the clocks were reset
 	float clk_Divider_Mapped[4] = {1.f, 1.f, 1.f, 1.f};		 // current CLK1 Divider param mapped to actual divider factor
 	float clk_Freq[4] = {2.f, 2.f, 2.f, 2.f};				 // current CLK1 Frequency
-	float clk_Phase[4] = {0.f, 0.f, 0.f, 0.f};				 // holds the phase of CLK1
+	float clk_Phase[4] = {};								 // holds the phase of CLK1
 	float clk_Gate_Len[4] = {50.f, 50.f, 50.f, 50.f};		 // CLK1 Gate length in %
-	float clk_Gate_Duration[4] = {0.f, 0.f, 0.f, 0.f};		 // CLK1 Gate duration
-	float clk_Phase_Shift[4] = {0.f, 0.f, 0.f, 0.f};		 // Phase shift / delay of the pulse
-	float clk_Swing_Amount[4] = {0.f, 0.f, 0.f, 0.f};		 // Amount of Swing to apply
-	float clk_Swing_value[4] = {0.f, 0.f, 0.f, 0.f};		 // Amount of swing to apply
-	float clk_Gate_Voltage[4] = {0.f, 0.f, 0.f, 0.f};		 // Output voltage for CLK1 Gate
+	float clk_Gate_Duration[4] = {};						 // CLK1 Gate duration
+	float clk_Phase_Shift[4] = {};							 // Phase shift / delay of the pulse
+	float clk_Swing_Amount[4] = {};							 // Amount of Swing to apply
+	float clk_Swing_value[4] = {};							 // Amount of swing to apply
+	float clk_Gate_Voltage[4] = {};							 // Output voltage for CLK1 Gate
 
 	// A clock is basically a pulse, so using a modified part of the Pulse_VCO code here
 	// Master pulse has no swing and phase_shift, pulse_width is a percentage

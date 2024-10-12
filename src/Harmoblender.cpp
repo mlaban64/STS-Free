@@ -42,16 +42,16 @@ struct Harmoblender : Module
 	float sine_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable
-	float hrm_Lvl[16];			  // To store the level for this harmonic
-	float hrm_Phase_Shift[16];	  // To store the phase shift for this harmonic
-	float hrm_Multiplication[16]; // To sore the multiplication factor for this harmonic
-	float lvl_Multiplier = 0.f;	  // Global Level param, used to reduce the output level
+	float hrm_Lvl[16] = {};			   // To store the level for this harmonic
+	float hrm_Phase_Shift[16] = {};	   // To store the phase shift for this harmonic
+	float hrm_Multiplication[16] = {}; // To sore the multiplication factor for this harmonic
+	float lvl_Multiplier = 0.f;		   // Global Level param, used to reduce the output level
 
 	float freq = 0.f, pitch = 0.f, phase_shift = 0.f;
 	int num_channels, idx;
 
 	// Array of 16 phases to accomodate for polyphony
-	float phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+	float phase[16] = {};
 
 	// Maps phase & phase shift to an index in the wave table
 	float STS_My_Sine(float phase, float phase_shift)
@@ -79,9 +79,9 @@ struct Harmoblender : Module
 
 	Harmoblender()
 	{
-		int i = 0;		 // index for harmonics loops
-		std::string fmt; // string to format text
-		char name[64];	 // string to format text
+		int i = 0;			// index for harmonics loops
+		std::string fmt;	// string to format text
+		char name[64] = {}; // string to format text
 
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 
