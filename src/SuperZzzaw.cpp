@@ -57,14 +57,13 @@ struct SuperZzzaw : Module
 	float szz_Phase[8] = {};  // Phase for each VCO
 	float szz_Detune[8] = {}; // Detune for each VCO
 	float szz_Pan[8] = {};	  // Pan for each VCO
-	float szz_Pitch[8] = {};  // Pitch for each VCO
 	float mono_Phase[8] = {}; // Phase per VCO in case of monophonic (disconnected VCO_IN)
-	float szz_Out[2][8] = {}; // Stereo output for each VCO
+	float szz_Out[2][8] = {}; // Stereo output for each VCO for each channel
 
 	bool szz_Stereo = false;
 
-	// Array of 16 phases to accomodate for polyphony
-	float channel_phase[16] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+	// Array of 16 phases to accomodate for polyphony, one for each VCO, as each VCO has a detune/phase that needs to be administered separately
+	float channel_phase[16][8] = {};
 
 	// Maps phase & phase shift to an index in the wave table
 	float STS_My_Saw(float phase, float phase_shift)
@@ -214,6 +213,7 @@ struct SuperZzzaw : Module
 		float left_Out, right_Out;				  // temp output for looping through VCO's
 		float pitch_param = 0.f;				  // Pitch parameter
 		float level_param = 0.f;				  // Level Out parameter
+		float chan_voltage = 0.f;				  // Input voltage for the channel
 		float freq = 0.f;						  // Frequency
 
 		// Check if we need to recompute the wave tables
@@ -224,8 +224,9 @@ struct SuperZzzaw : Module
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
 
-		// Get all the values from the module UI
+		// Get all the values from thebasic module UI
 		level_param = getParam(LVL_OUT_PARAM).getValue();
+		pitch_param = getParam(PITCH_PARAM).getValue();
 
 		// Recompute array values
 		for (i = 0; i < 8; i++)
@@ -269,13 +270,12 @@ struct SuperZzzaw : Module
 		else
 			szz_Stereo = false;
 
+		// If no VC-In, use the fixed pitch parameter for each VCO
+		// Use szz_OutP[][][0] for storing the intermediate VCO wave values
 		if (num_channels == 0)
-		// If no VC-In, set the frequency as per the pitch parameter, using phase[0]
 		{
-			// Compute the pitch as per the controls
-			pitch_param = getParam(PITCH_PARAM).getValue();
 			if (getInput(PITCH_IN_INPUT).isConnected())
-				freq = pitch_param + pitch_param * getInput(PITCH_IN_INPUT).getVoltage();
+				freq = pitch_param + 0.1f * pitch_param * getInput(PITCH_IN_INPUT).getVoltage();
 			else
 				freq = pitch_param;
 
@@ -288,12 +288,11 @@ struct SuperZzzaw : Module
 			// Loop through all VCO's
 			for (i = 0; i < 8; i++)
 			{
+				// Process only if level != 0.0, as only then it contributes
 				if (szz_Level[i] != 0.f)
 				{
-					szz_Pitch[i] = freq + freq * szz_Detune[i];
-
 					// Accumulate the phase, make sure it rotates between 0.0 and 1.0
-					mono_Phase[i] += szz_Pitch[i] * args.sampleTime;
+					mono_Phase[i] += (freq + freq * szz_Detune[i]) * args.sampleTime;
 					if (mono_Phase[i] >= 1.f)
 						mono_Phase[i] -= 1.f;
 
@@ -309,7 +308,7 @@ struct SuperZzzaw : Module
 						szz_Out[1][i] = pan * saw_wave;
 					}
 					else
-						szz_Out[0][i] = szz_Out[1][i] = STS_My_Saw(mono_Phase[i], szz_Phase[i]);
+						szz_Out[0][i] = szz_Out[1][i] = level_param * szz_Level[i] * STS_My_Saw(mono_Phase[i], szz_Phase[i]);
 				}
 				// If Level = 0.0, make sure this VCO does not contribute
 				else
@@ -339,51 +338,71 @@ struct SuperZzzaw : Module
 		else
 		{
 			// Else, compute it as per the V/Oct input for each poly channel
-			// Loop through all VCO's
-			for (i = 0; i < 8; i++)
+			// Loop through each poly channel
+			for (channel = 0; channel < num_channels; channel++)
 			{
-				// If this VCO has a level != 0.0, then process it, else ignore
-				if (szz_Level[i] != 0.f)
+				chan_voltage = getInput(V_OCT_IN_INPUT).getVoltage(channel);
+				freq = pitch_param * std::pow(2.f, chan_voltage);
+
+				// Compute the pitch as per the controls
+				if (getInput(PITCH_IN_INPUT).isConnected())
+					// Future
+					freq = freq + freq * getInput(PITCH_IN_INPUT).getVoltage();
+
+				// limit the pitch if modulation takes it too extreme
+				if (freq < 10.f)
+					freq = 10.f;
+				else if (freq > 20000.f)
+					freq = 20000.f;
+
+				// Loop through all VCO's
+				for (i = 0; i < 8; i++)
 				{
-					// Loop through each poly channel
-					for (channel = 0; channel < num_channels; channel++)
+					// Accumulate the phase for this VCO, make sure it rotates between 0.0 and 1.0
+					// Note that you have to do this, even if the VCO has no contrubution at this point
+					channel_phase[channel][i] += (freq + freq * szz_Detune[i]) * args.sampleTime;
+					if (channel_phase[channel][i] >= 1.f)
+						channel_phase[channel][i] -= 1.f;
+
+					// If this VCO has a level != 0.0, then process it, else ignore
+					if (szz_Level[i] != 0.f)
 					{
-						szz_Pitch[i] = getInput(V_OCT_IN_INPUT).getVoltage(channel);
-						freq = pitch_param * std::pow(2.f, szz_Pitch[i]);
-
-						// Compute the pitch as per the controls
-						if (getInput(PITCH_IN_INPUT).isConnected())
-							// Future
-							freq = freq + freq * getInput(PITCH_IN_INPUT).getVoltage();
-
-						// limit the pitch if modulation takes it too extreme
-						if (freq < 10.f)
-							freq = 10.f;
-						else if (freq > 20000.f)
-							freq = 20000.f;
-
-						// Accumulate the phase, make sure it rotates between 0.0 and 1.0
-						channel_phase[channel] += freq * args.sampleTime;
-						if (channel_phase[channel] >= 1.f)
-							channel_phase[channel] -= 1.f;
-
-						// Compute the combined output per channel
-						szz_Out[channel][0] += szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]);
-						szz_Out[channel][1] += szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]);
-
-						// Compute the wave via the wave table,
-						// output to the correct channel, multiplied by the output volume
+						// Compute the combined output for the channel
 						if (szz_Stereo)
 						{
-							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
-							getOutput(RIGHT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
+							float pan = 0.f, saw_wave = 0.f;
+
+							// Map panning to 0..1
+							pan = (1.f + szz_Pan[i]) * 0.5f;
+							saw_wave = level_param * szz_Level[i] * STS_My_Saw(channel_phase[channel][i], szz_Phase[i]);
+							szz_Out[0][i] = (1.0 - pan) * saw_wave;
+							szz_Out[1][i] = pan * saw_wave;
 						}
 						else
-						{
-							getOutput(LEFT_OUT_OUTPUT).setVoltage(szz_Level[i] * STS_My_Saw(channel_phase[channel], szz_Phase[i]), channel);
-							getOutput(RIGHT_OUT_OUTPUT).setVoltage(0, channel);
-						}
+							szz_Out[0][i] = szz_Out[1][i] = level_param * szz_Level[i] * STS_My_Saw(channel_phase[channel][i], szz_Phase[i]);
 					}
+					else
+						// Set out to zero as starting point for this VCO
+						szz_Out[0][i] = szz_Out[1][i] = 0.f;
+				}
+
+				// Now compute the total output for the channel
+				left_Out = right_Out = 0.f;
+				for (i = 0; i < 8; i++)
+				{
+					left_Out += szz_Out[0][i];
+					right_Out += szz_Out[1][i];
+				}
+
+				if (szz_Stereo)
+				{
+					getOutput(LEFT_OUT_OUTPUT).setVoltage(left_Out, channel);
+					getOutput(RIGHT_OUT_OUTPUT).setVoltage(right_Out, channel);
+				}
+				else
+				{
+					getOutput(LEFT_OUT_OUTPUT).setVoltage((left_Out + right_Out), channel);
+					getOutput(RIGHT_OUT_OUTPUT).setVoltage(0.f, channel);
 				}
 			}
 		}
