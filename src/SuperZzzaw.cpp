@@ -56,12 +56,13 @@ struct SuperZzzaw : Module
 	float saw_bu_down_wave_lookup_table[STS_NUM_WAVE_SAMPLES];
 
 	// local class variable declarations to hold data for each VCO
-	float szz_Level[STS_NUM_VCOS] = {};	 // Level for each VCO
-	float szz_Phase[STS_NUM_VCOS] = {};	 // Phase for each VCO
-	float szz_Detune[STS_NUM_VCOS] = {}; // Detune for each VCO
-	float szz_Pan[STS_NUM_VCOS] = {};	 // Pan for each VCO
-	float mono_Phase[STS_NUM_VCOS] = {}; // Phase per VCO in case of monophonic (disconnected VCO_IN)
-	float szz_Out[2][STS_NUM_VCOS] = {}; // Stereo output for each VCO for each channel
+	float szz_Level[STS_NUM_VCOS] = {};																	// Level for each VCO
+	float szz_Phase[STS_NUM_VCOS] = {};																	// Phase for each VCO
+	float szz_Detune[STS_NUM_VCOS] = {};																// Detune for each VCO
+	float szz_Pan[STS_NUM_VCOS] = {};																	// Pan for each VCO
+	float mono_Phase[STS_NUM_VCOS] = {};																// Phase per VCO in case of monophonic (disconnected VCO_IN)
+	float szz_Out[2][STS_NUM_VCOS] = {};																// Stereo output for each VCO for each channel
+	int mapped_Harmonics[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 50}; // Mapping menu number to value
 
 	bool szz_Stereo = false;
 
@@ -176,7 +177,7 @@ struct SuperZzzaw : Module
 
 			(void)sprintf(name, "Sawtooth %d Detune (%%)", i + 1);
 			fmt = name;
-			configParam(SZZ_DETUNE_PARAMS + i, -10.f, 10.f, 0.f, fmt);
+			configParam(SZZ_DETUNE_PARAMS + i, -5.f, 5.f, 0.f, fmt);
 
 			(void)sprintf(name, "Sawtooth %d Pan", i + 1);
 			fmt = name;
@@ -222,7 +223,7 @@ struct SuperZzzaw : Module
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
 		{
-			num_Harmonics = menu_num_Harmonics + 1;
+			num_Harmonics = mapped_Harmonics[menu_num_Harmonics];
 			InitSaw_Waves(num_Harmonics);
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
@@ -491,25 +492,54 @@ struct SuperZzzawWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38.556, 49.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 3));
 
 		// S5 Panel
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(54.162, 15.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 4));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.162, 15.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 4));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.162, 15.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 4));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.162, 15.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 4));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(54.162, 25.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 4));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(64.162, 25.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 4));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.162, 25.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 4));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(84.162, 25.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 4));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(54.162, 39.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 4));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.162, 39.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 4));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.162, 39.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 4));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.162, 39.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 4));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(54.162, 49.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 4));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(64.162, 49.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 4));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.162, 49.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 4));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(84.162, 49.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 4));
 
 		// S6 Panel
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(99.162, 15.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 5));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(109.162, 15.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 5));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(119.162, 15.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 5));
-		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(129.162, 15.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 5));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.162, 25.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 5));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(109.162, 25.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 5));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(119.162, 25.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 5));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(129.162, 25.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 5));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(99.162, 39.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 5));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(109.162, 39.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 5));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(119.162, 39.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 5));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(129.162, 39.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 5));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.162, 49.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 5));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(109.162, 49.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 5));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(119.162, 49.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 5));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(129.162, 49.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 5));
 
+		// S7 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(8.556, 63.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 6));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.556, 63.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 6));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(28.556, 63.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 6));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38.556, 63.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 6));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(8.556, 73.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 6));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(18.556, 73.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 6));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(28.556, 73.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 6));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38.556, 73.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 6));
+
+		// S8 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(54.162, 63.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 7));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.162, 63.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 7));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.162, 63.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 7));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.162, 63.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 7));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(54.162, 73.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 7));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(64.162, 73.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 7));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.162, 73.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 7));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(84.162, 73.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 7));
+
+		// S9 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(99.162, 63.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 8));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(109.162, 63.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 8));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(119.162, 63.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 8));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(129.162, 63.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 8));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.162, 73.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 8));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(109.162, 73.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 8));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(119.162, 73.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 8));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(129.162, 73.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 8));
 		// General In & Out
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(79.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(89.0, 110.0)), module, SuperZzzaw::PITCH_IN_INPUT));
@@ -521,13 +551,14 @@ struct SuperZzzawWidget : ModuleWidget
 
 	void appendContextMenu(Menu *menu) override
 	{
+
 		SuperZzzaw *module = getModule<SuperZzzaw>();
 
 		menu->addChild(new MenuSeparator);
 
 		menu->addChild(createIndexPtrSubmenuItem("Ramp", {"Up", "Down"}, &module->rampDir));
 		menu->addChild(createIndexPtrSubmenuItem("Band", {"Unlimited", "Limited"}, &module->bandLimited));
-		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"},
+		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", "14", "16", "18", "20", "25", "30", "35", "40", "50"},
 												 &module->menu_num_Harmonics));
 	}
 };
