@@ -219,6 +219,8 @@ struct SuperZzzaw : Module
 		float level_param = 0.f;				  // Level Out parameter
 		float chan_voltage = 0.f;				  // Input voltage for the channel
 		float freq = 0.f;						  // Frequency
+		float pan = 0.f;						  // temp pan value
+		float saw_wave = 0.f;					  // temp saw wave value
 
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
@@ -372,18 +374,16 @@ struct SuperZzzaw : Module
 					if (szz_Level[i] != 0.f)
 					{
 						// Compute the combined output for the channel
+						saw_wave = level_param * szz_Level[i] * STS_My_Saw(channel_phase[channel][i], szz_Phase[i]);
 						if (szz_Stereo)
 						{
-							float pan = 0.f, saw_wave = 0.f;
-
 							// Map panning to 0..1
 							pan = (1.f + szz_Pan[i]) * 0.5f;
-							saw_wave = level_param * szz_Level[i] * STS_My_Saw(channel_phase[channel][i], szz_Phase[i]);
 							szz_Out[0][i] = (1.0 - pan) * saw_wave;
 							szz_Out[1][i] = pan * saw_wave;
 						}
 						else
-							szz_Out[0][i] = szz_Out[1][i] = level_param * szz_Level[i] * STS_My_Saw(channel_phase[channel][i], szz_Phase[i]);
+							szz_Out[0][i] = szz_Out[1][i] = saw_wave;
 					}
 					else
 						// Set out to zero as starting point for this VCO
@@ -540,6 +540,37 @@ struct SuperZzzawWidget : ModuleWidget
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(109.162, 73.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 8));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(119.162, 73.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 8));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(129.162, 73.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 8));
+
+		// S10 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(8.556, 87.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 9));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(18.556, 87.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 9));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(28.556, 87.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 9));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38.556, 87.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 9));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(8.556, 97.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 9));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(18.556, 97.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 9));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(28.556, 97.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 9));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(38.556, 97.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 9));
+
+		// S11 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(54.162, 87.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 10));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(64.162, 87.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 10));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(74.162, 87.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 10));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(84.162, 87.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 10));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(54.162, 97.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 10));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(64.162, 97.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 10));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(74.162, 97.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 10));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(84.162, 97.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 10));
+
+		// S12 Panel
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(99.162, 87.171)), module, SuperZzzaw::SZZ_LVL_PARAMS + 11));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(109.162, 87.171)), module, SuperZzzaw::SZZ_PHASE_PARAMS + 11));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(119.162, 87.171)), module, SuperZzzaw::SZZ_DETUNE_PARAMS + 11));
+		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(129.162, 87.171)), module, SuperZzzaw::SZZ_PAN_PARAMS + 11));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(99.162, 97.671)), module, SuperZzzaw::SZZ_LVL_INPUTS + 11));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(109.162, 97.671)), module, SuperZzzaw::SZZ_PHASE_INPUTS + 11));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(119.162, 97.671)), module, SuperZzzaw::SZZ_DETUNE_INPUTS + 11));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(129.162, 97.671)), module, SuperZzzaw::SZZ_PAN_INPUTS + 11));
+
 		// General In & Out
 		addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(79.0, 110.0)), module, SuperZzzaw::PITCH_PARAM));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(89.0, 110.0)), module, SuperZzzaw::PITCH_IN_INPUT));
