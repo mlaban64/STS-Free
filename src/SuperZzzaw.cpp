@@ -62,7 +62,7 @@ struct SuperZzzaw : Module
 	float szz_Pan[STS_NUM_VCOS] = {};																	// Pan for each VCO
 	float mono_Phase[STS_NUM_VCOS] = {};																// Phase per VCO in case of monophonic (disconnected VCO_IN)
 	float szz_Out[2][STS_NUM_VCOS] = {};																// Stereo output for each VCO for each channel
-	int mapped_Harmonics[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 50}; // Mapping menu number to value
+	int mapped_Harmonics[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 50}; // Mapping harmonics menu number to value
 
 	bool szz_Stereo = false;
 

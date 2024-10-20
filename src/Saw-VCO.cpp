@@ -60,6 +60,7 @@ struct Saw_VCO : Module
 	float freq_mod = 0.f, phase_mod = 0.f, volume_mod = 0.f;
 	float freq_mod_attn = 0.f, phase_mod_attn = 0.f, volume_mod_attn = 0.f;
 	int num_channels, idx;
+	int mapped_Harmonics[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 50}; // Mapping harmonics menu number to value
 
 	// Array of 16 phases to accomodate for polyphony
 	float phase[16] = {};
@@ -173,7 +174,7 @@ struct Saw_VCO : Module
 		// Check if we need to recompute the wave tables
 		if (last_menu_num_Harmonics != menu_num_Harmonics)
 		{
-			num_Harmonics = menu_num_Harmonics + 1;
+			num_Harmonics = mapped_Harmonics[menu_num_Harmonics];
 			InitSaw_Waves(num_Harmonics);
 			last_menu_num_Harmonics = menu_num_Harmonics;
 		}
@@ -326,7 +327,7 @@ struct Saw_VCOWidget : ModuleWidget
 
 		menu->addChild(createIndexPtrSubmenuItem("Ramp", {"Up", "Down"}, &module->rampDir));
 		menu->addChild(createIndexPtrSubmenuItem("Band", {"Unlimited", "Limited"}, &module->bandLimited));
-		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"},
+		menu->addChild(createIndexPtrSubmenuItem("Harmonics", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", "14", "16", "18", "20", "25", "30", "35", "40", "50"},
 												 &module->menu_num_Harmonics));
 	}
 };
