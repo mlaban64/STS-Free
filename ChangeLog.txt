@@ -1,4 +1,12 @@
 # Changelog VCV-Rack STS Free bundle
+
+21-OCT-2024
+-----------
+2.4.1 Release
+- Enhanced Harmoblender Screen
+- Changed Saw-VCO to support additional harmonics in Limited mode
+- 1st release of the SuperZzzaw VCO
+
 28-SEP-2024
 -----------
 2.4.1 Release
