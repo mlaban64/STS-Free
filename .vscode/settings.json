@@ -83,5 +83,6 @@
         "*.tcc": "cpp",
         "memory_resource": "cpp",
         "string_view": "cpp"
-    }
+    },
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }
